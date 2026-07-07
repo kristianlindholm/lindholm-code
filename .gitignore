@@ -1,0 +1,14 @@
+# Transient scratch handoff files (see rules/agents.md)
+.claude/scratch/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs and temp
+*.log
+*.tmp
