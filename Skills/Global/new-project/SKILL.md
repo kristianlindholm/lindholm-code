@@ -201,23 +201,38 @@ Present the milestone plan. Wait for confirmation.
 
 ## Gate 5 — Git Workflow
 
-Ask explicitly: "How will you handle git for this project?"
+Ask two things explicitly — do not set either as a silent default:
 
-Recommend: feature branches with --no-ff merges into main. Do not set this as a silent default.
+1. "How will you handle git for this project?" Recommend: feature branches with --no-ff
+   merges into main.
+2. "Is this project remote-backed or local-only? If remote-backed, what is the remote name
+   and URL?"
 
-Record the confirmed choice in .claude/wrap-it-up.json:
+Record `remote` to reflect **reality**, never a fabricated default — a recorded remote that
+does not exist is what turns `wrap-it-up`'s push into a silent no-op:
+
+- **Local-only** → set `"remote": null` and steer to a no-push workflow (`commit-only`, or
+  `merge-to-main` without push).
+- **Remote-backed** → verify or create it: `git remote add <name> <url>` if not already
+  present, confirm with `git remote get-url <name>`, and record **only a name that
+  resolves**. If the user intends a remote but has no URL yet, record `null` and note it as
+  pending — do not assert `origin`.
+
+Record the confirmed choices in .claude/wrap-it-up.json:
 
 ```json
 {
   "gitWorkflow": "merge-to-main",
   "mainBranch": "main",
-  "remote": "origin",
+  "remote": "<remote name that resolves, or null for local-only>",
   "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
 }
 ```
 
-Adjust values to match the confirmed choice. Carry `storeRoot` over from the path resolved
-in Gate 2. Wait for confirmation.
+`remote` must name a remote that resolves via `git remote get-url`, or be `null` for a
+local-only project. Never a name that does not exist. Adjust all values to match the
+confirmed choices. Carry `storeRoot` over from the path resolved in Gate 2. Wait for
+confirmation.
 
 ## Files Created
 

@@ -100,8 +100,33 @@ The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but 
 | Workflow | Actions |
 |----------|---------|
 | `merge-to-main` | commit remaining work on `feat/*` → `git merge --no-ff` into main → push → delete the feature branch → record the merge in docs/PROGRESS.md Housekeeping as prose (date + branch, **never the literal merge SHA** — see note) |
-| `push-feature-branch` | commit → `git push -u origin <branch>` (no merge) |
+| `push-feature-branch` | commit → `git push -u <remote> <branch>` (no merge) |
 | `commit-only` | commit; no push/merge |
+
+### Remote resolution (before any push)
+
+A push step is only ever planned or executed against a remote **proven to exist**. Before
+printing any plan that includes a push, resolve the configured `remote`:
+
+- **`remote` is `null` or absent** → the project is local-only. Never list "push" in the
+  plan. `merge-to-main` degrades to commit + `--no-ff` merge then delete the feature branch
+  locally, **no push**; `commit-only` is unchanged; `push-feature-branch` is invalid here —
+  fall back to `commit-only` and note it. State plainly: "local-only — no push."
+- **`remote` is a non-null name** → verify it resolves with `git remote get-url <remote>`
+  (offline; confirms the remote is *configured*, not that it is reachable — the post-push
+  check below confirms the push actually landed):
+  - **Resolves** → include the push in the plan as normal.
+  - **Does not resolve → STOP.** Do not push — a push to a missing remote is a no-op or
+    error, never a success. Surface loudly and gate, naming the actual configured remote:
+    > Config names remote `<remote>`, but `git remote get-url <remote>` finds no such remote.
+    > Push cannot happen.
+    >
+    > 1. Add a remote now — give me the URL; I will `git remote add <remote> <url>`, verify it, then push.
+    > 2. Proceed local-only this wrap — commit/merge without pushing and set `remote: null` in `.claude/wrap-it-up.json` so this stops recurring.
+    >
+    > Which? (1/2)
+
+Never silently skip the push, and never report a milestone as pushed when it was not.
 
 - If already on the main branch: **skip the merge**, just commit + push main (still gated).
 - `--no-ff` is used so each milestone is a single revertable merge commit visible in
@@ -113,7 +138,9 @@ The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but 
   `git log --graph` (the record) and `.claude/wrap-it-up.json` `lastWrappedSha`
   (untracked local baseline, written in step 10). Housekeeping records the merge as prose
   (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
-- Always print the plan in this format before executing — milestone wrap example:
+- Always print the plan in this format before executing — milestone wrap example
+  (remote-confirmed form; on a local-only project omit the push line and the merge line
+  reads "Merge feature branch into main (local-only — no push)"):
   > Wrapping milestone "Authentication":
   >
   > Commit message:
@@ -121,7 +148,7 @@ The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but 
   >
   > Git actions:
   > - Merge feature branch into main
-  > - Push to remote
+  > - Push to remote (`<remote>` — verified)
   > - Delete feature branch
   >
   > Proceed? (Y/N)
@@ -137,6 +164,15 @@ The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but 
   > - Commit to current branch
   >
   > Proceed? (Y/N)
+
+### After a push runs — verify it landed
+
+Confirm success from **evidence** before reporting "pushed": a non-error exit **and** the
+remote-tracking ref now matches what was pushed — `git rev-parse <remote>/<branch>` equals
+local `HEAD` (git updates that ref on a successful push, so this is reliable immediately
+after). Only then report "pushed." If the push failed, report the actual state and write
+**no** doc claiming the milestone was pushed. This is "Verification Before Completion"
+(`~/.claude/rules/development-workflow.md`) applied to the outward-facing push.
 
 ## Checklist task commits
 
@@ -170,12 +206,16 @@ Asked **once** on first run (detected where possible), then always visible/overr
 {
   "gitWorkflow": "merge-to-main",
   "mainBranch": "main",
-  "remote": "origin",
+  "remote": "<remote name that resolves, or null for local-only>",
   "storeRoot": "<absolute path to the Lindholm Code store>",
   "lastWrappedSha": "cbb5103…",
   "lastWrappedAt": "2026-06-16"
 }
 ```
+
+`remote` must name a remote that resolves via `git remote get-url`, or be `null` for a
+local-only project. Never a name that does not exist — a fabricated remote is exactly what
+turns "push" into a silent no-op (see Git Ritual → Remote resolution).
 
 Preserve any keys already in the file that this skill does not own — notably `storeRoot`
 (written by `new-project` / `continue-project`). Update `lastWrappedSha` / `lastWrappedAt`;
@@ -202,23 +242,30 @@ leave the rest untouched.
    If found, invoke the graphify update workflow before the git step so that the updated graph
    is included in the milestone commit.
 8. If CLAUDE.md has proposed additions → show diff → confirm.
-9. Print the git plan → confirm → execute (or skip). If `[x]` checklist tasks are being committed,
-   the plan includes removing their lines from `docs/CHECKLIST.md` in the same commit (see
-   "Checklist task commits").
+9. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
+   execute (or skip) → if a push ran, **verify it landed** before reporting success (see "After a
+   push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
+   removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
 10. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
 11. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them and ask which to delete; do not delete by default.
 12. Print a **short** closing instruction (see below).
 
 ## Closing Instruction (keep it short)
 
+The "safe to clear" statement is always the **last line** of the message — never
+interleaved with other information. Put every status and next-step detail above it, so the
+final line the user reads is the clear-to-proceed signal and nothing follows it.
+
 After a successful wrap:
 
-> Milestone `<name>` wrapped & merged (`<sha>`). Safe to `/clear`.
+> Milestone `<name>` wrapped & merged (`<sha>`).
 > Next session: read docs/PROGRESS.md → start `<next pending milestone>`.
+> Safe to `/clear`.
 
 Empty diff (nothing changed since last wrap):
 
-> Nothing changed since last wrap — session ready to clear.
+> Nothing changed since last wrap.
+> Safe to `/clear`.
 
 ## docs/PROGRESS.md Template (living-state, overwrite in place)
 
