@@ -53,16 +53,36 @@ rather than reproducing its content:
 
 ## Interaction design
 
-How to surface questions and decisions:
+How to surface questions and decisions. One decision per message.
 
-- **Disambiguation**: required input is missing. Ask one open question; number the options when there are several.
-- **Confirmation gate**: a deliverable is ready or an action is about to run. State what was decided or what will happen (bulleted), state what Y leads to, then ask "Proceed? (Y/N)"
-- **Stopping question**: a condition requires a decision before work can continue. State what was found and the consequence, then give numbered options or Y/N if binary — mark the recommended path.
-- **Recommendation**: suggest the next action without waiting. "Recommend `/command` to [purpose]."
+Four modes:
+- **Disambiguation** — required input is missing. Ask one open question; number the options when there are several.
+- **Confirmation gate** — a deliverable is ready or an action is about to run. State what was decided or what will happen (bulleted), state what Y leads to, then ask "Proceed? (Y/N)".
+- **Stopping question** — a condition blocks progress. State what was found and the consequence, then give numbered options, or (Y/N) if truly binary; mark the recommended path.
+- **Recommendation** — suggest the next action without waiting: "Recommend `/command` to [purpose]."
 
-Never surface informational observations that require no action — act silently and move on. Always bullet or number multiple items; no comma-separated lists in decisions or plans. (Y/N) both caps throughout, and only for true yes/no — Y = proceed, N = don't. When two or more distinct paths exist, number them instead. One question at a time; never batch.
+Always:
+- Ask one decision at a time. End every message that hands control back with an explicit closing prompt — (Y/N), a numbered choice, an open question, or "What's next?" — never trail off.
+- Use (Y/N) in both caps and only for a true binary: Y = proceed, N = don't. Two or more distinct outcomes get numbered options instead.
+- Bullet or number multiple items; never a comma-separated list in a decision or plan.
+- Act silently on informational observations that need no action; do not surface them.
 
-Always end a message that hands control back to the user with an explicit closing prompt: (Y/N) for binary decisions, a numbered choice for options, an open question for disambiguation, or "What's next?" for open-ended handoffs. Never let a message trail off without signaling what kind of input is expected.
+Never:
+- Hide multiple outcomes behind one (Y/N) — "...either of those?" when there are more than two.
+- Ask several questions in one turn, even under a single "Question 1" heading.
+- Mix a confirmation with open sub-questions.
+- Bury the ask under a framing paragraph, or trail off without a closing prompt.
+
+Example — flagging two documentation fixes to fold in:
+
+    Bad:  Want me to fold in either of those? (Y/N)
+          -> fake binary; there are four outcomes, not two
+
+    Good: 1. Fold in both
+          2. The caching note only
+          3. The framing note only
+          4. Neither
+          Which? (1-4)
 
 ## graphify
 
