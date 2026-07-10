@@ -1,6 +1,9 @@
 # Transient scratch handoff files (see rules/agents.md)
 .claude/scratch/
 
+# User-provided scratch input (behaviour examples, not shipped)
+Examples of bad behaviour.txt
+
 # OS cruft
 .DS_Store
 Thumbs.db
