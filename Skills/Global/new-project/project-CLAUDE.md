@@ -27,7 +27,10 @@
 From Gate 2.]
 
 ## Git Conventions
-[Branch strategy, merge strategy, and commit message format. From Gate 4.]
+[GitHub-backed or no version control (from Gate 5 — Version Control). For a GitHub-backed
+project: the remote (normally `origin`), branch and merge strategy (default: feature
+branches with `--no-ff` merges into main), and commit message format. For a project with
+no version control, state "No version control." No local-only git repositories.]
 
 ## Design Foundation
 [UI projects only. docs/DESIGN.md is the signed-off source of truth for the visual language;

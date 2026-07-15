@@ -73,7 +73,18 @@ Done: the project is classified as first-session, resumable-from-session-file, o
 
 ## Step 4 — Check git integrity
 
-Run this only when the project uses git and `lastWrappedSha` is set:
+**Version-control integrity first** — read `gitBackend` from `.claude/wrap-it-up.json`:
+- **`github`:** confirm `origin` resolves (`git remote get-url origin`). If it does not,
+  this is drift — a GitHub-backed project has lost its remote. Make it a stopping
+  condition; do not begin work until it is fixed (re-add the remote, or republish via
+  `gh repo create --source=. --remote=origin --push`).
+- **`none`:** no version control — skip the git checks below entirely.
+- **No `gitBackend` (legacy config):** if `origin` resolves, record `gitBackend: github`;
+  if the config has `remote: null` or no remote, flag the legacy local-only project as a
+  stopping condition (GitHub-or-nothing no longer allows it) and offer to publish to GitHub
+  or record `gitBackend: none`.
+
+Then the baseline drift check — run this only when the project uses git and `lastWrappedSha` is set:
 - No git repository: note it, skip drift detection, and proceed — there is no baseline to compare against (the same stance `wrap-it-up` takes).
 - `lastWrappedSha` not set (no wrap has happened yet): skip the diff; `git status` alone is enough.
 

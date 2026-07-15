@@ -203,42 +203,46 @@ One row per milestone. wrap-it-up fills in all other docs/PROGRESS.md sections o
 
 Present the milestone plan. Wait for confirmation.
 
-## Gate 5 — Git Workflow
+## Gate 5 — Version Control
 
-Two things must be settled here, neither set as a silent default. Ask them as two separate
-turns — one decision per message (see the global interaction-design doctrine), never
-batched into a single prompt:
+One decision, no third option: **will this project live on GitHub?** Every project is
+either GitHub-backed — git plus a remote, with every milestone pushed and verified — or
+it has no version control at all. There are no local-only git repositories.
 
-1. First turn — ask: "How will you handle git for this project?" Recommend feature branches
-   with --no-ff merges into main. Wait for the answer.
-2. Next turn — ask: "Is this project remote-backed or local-only? If remote-backed, what is
-   the remote name and URL?" Wait for the answer.
+Ask: "Will this project live on GitHub? (Y/N)"
 
-Record `remote` to reflect **reality**, never a fabricated default — a recorded remote that
-does not exist is what turns `wrap-it-up`'s push into a silent no-op:
+- **Yes → GitHub-backed.** Confirm the setup parameters (recommend the defaults; ask only
+  about what the user wants to change):
+  1. Repository name — default the project folder name.
+  2. Visibility — default **private**.
+  3. Workflow — default `merge-to-main` (feature branches, `--no-ff` merges into main).
 
-- **Local-only** → set `"remote": null` and steer to a no-push workflow (`commit-only`, or
-  `merge-to-main` without push).
-- **Remote-backed** → verify or create it: `git remote add <name> <url>` if not already
-  present, confirm with `git remote get-url <name>`, and record **only a name that
-  resolves**. If the user intends a remote but has no URL yet, record `null` and note it as
-  pending — do not assert `origin`.
+  The owner is the authenticated `gh` account. Check `gh auth status` first; if it is not
+  authenticated, STOP and tell the user to run `gh auth login`, then re-run this gate —
+  never fall back to a local-only repo. The repository itself is created in the
+  "Initialize and publish to GitHub" step below, after the scaffold files exist. Record:
 
-Record the confirmed choices in .claude/wrap-it-up.json:
+  ```json
+  {
+    "gitBackend": "github",
+    "gitWorkflow": "merge-to-main",
+    "mainBranch": "main",
+    "remote": "origin",
+    "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
+  }
+  ```
 
-```json
-{
-  "gitWorkflow": "merge-to-main",
-  "mainBranch": "main",
-  "remote": "<remote name that resolves, or null for local-only>",
-  "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
-}
-```
+- **No → no version control.** Do not run `git init`; do not create `.gitignore` (nothing
+  to ignore without git). Record:
 
-`remote` must name a remote that resolves via `git remote get-url`, or be `null` for a
-local-only project. Never a name that does not exist. Adjust all values to match the
-confirmed choices. Carry `storeRoot` over from the path resolved in Gate 2. Wait for
-confirmation.
+  ```json
+  {
+    "gitBackend": "none",
+    "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
+  }
+  ```
+
+Carry `storeRoot` over from the path resolved in Gate 2. Wait for confirmation.
 
 ## Files Created
 
@@ -254,7 +258,7 @@ After all gates are confirmed, create:
   docs/DESIGN.md is the authored design foundation (output of the Design Foundation gate);
   raw inspiration and reference material the user brings in belongs here."
 
-**.gitignore** (root) — write exactly these entries:
+**.gitignore** (root, GitHub-backed projects only — skipped when `gitBackend` is `none`) — write exactly these entries:
 ```
 # Environment — matches anywhere in the repo (root, product/, subdirectories)
 .env*
@@ -297,7 +301,28 @@ in Gate 2 step 2 (including the `design/` rules for frontend stacks), and delete
 guidance comments. Keep it project-specific: do not restate global preferences or the general
 ruleset.
 
+## Initialize and publish to GitHub
+
+Run this only when `gitBackend` is `github` (skip entirely for `none`). The scaffold
+files must already exist (previous section) so they land in the first commit.
+
+1. `git init -b main` — skip if the directory is already a git repository.
+2. Stage everything and make the initial commit: `chore: initialize project scaffold`.
+3. Create and wire the remote in one step:
+   `gh repo create <name> --private --source=. --remote=origin --push` (use `--public`
+   if the user chose public at Gate 5). If the name already exists on the account, STOP
+   and ask whether to use the existing repo or choose a new name — do not overwrite or
+   guess.
+4. **Verify with evidence** before reporting success — the same discipline `wrap-it-up`
+   applies to every push: `git remote get-url origin` must resolve, and
+   `git rev-parse origin/main` must equal local `HEAD`. Only then report the repo as
+   published. On any failure (auth lost, network, name collision), report the actual
+   state, record no success, and leave the step re-runnable — never claim a publish that
+   did not land.
+
 ## Closing
 
-After files are created, print a concise summary of all decisions made across the gates.
-Then recommend `/implement-milestone` to begin Milestone 1 — the first step once the project is set up.
+After files are created — and, for a GitHub-backed project, the repo published — print a
+concise summary of all decisions made across the gates, including the GitHub URL (or
+"no version control" for a `none` project). Then recommend `/implement-milestone` to
+begin Milestone 1 — the first step once the project is set up.
