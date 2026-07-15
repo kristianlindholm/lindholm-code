@@ -11,6 +11,14 @@ Types: feat, fix, refactor, docs, test, chore, perf, ci
 
 Note: Attribution disabled globally via ~/.claude/settings.json.
 
+## Repository policy
+
+Every project is either GitHub-backed or has no version control — there is no local-only
+git repository (git without a remote). A GitHub-backed project is set up in full at
+creation (git, a GitHub remote, an initial commit, and a push) and every milestone is
+pushed and verified. `new-project` provisions this; `wrap-it-up` re-checks it every wrap
+and never silently skips a push.
+
 ## Pull Request Workflow
 
 When creating PRs:

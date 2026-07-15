@@ -55,8 +55,10 @@ the casing of existing cells.
 - **First run** (no `lastWrappedSha`): diff since the last `--no-ff` merge commit on the
   main branch. If none exists, fall back to conversation + working-tree state **with a
   note that doc accuracy is unverified**.
-- **No git repo:** offer to `git init`. If declined, proceed conversation-only with a
-  **loud accuracy warning**.
+- **`gitBackend: none`:** the project has no version control — reconcile docs only, run no
+  git ritual, and state "no version control — docs only." **`gitBackend: github` with no
+  git repo or no working `origin`:** this is drift — STOP loudly and resolve before
+  wrapping (it should not happen after `new-project`).
 - Any claim the diff cannot confirm is **surfaced to the user, never silently written**.
 
 ## Confirmation Model
@@ -95,38 +97,49 @@ redirect and take the task-commit path (see "Checklist task commits"); do not pu
 
 ## Git Ritual
 
-The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but never runs blind.
+The git ritual runs only for a `gitBackend: github` project; a `none` project has no ritual
+(docs only). The saved `gitWorkflow` in `.claude/wrap-it-up.json` **pre-fills** the plan but
+never runs blind. Both workflows push — there is no no-push mode.
 
 | Workflow | Actions |
 |----------|---------|
 | `merge-to-main` | commit remaining work on `feat/*` → `git merge --no-ff` into main → push → delete the feature branch → record the merge in docs/PROGRESS.md Housekeeping as prose (date + branch, **never the literal merge SHA** — see note) |
 | `push-feature-branch` | commit → `git push -u <remote> <branch>` (no merge) |
-| `commit-only` | commit; no push/merge |
 
 ### Remote resolution (before any push)
 
-A push step is only ever planned or executed against a remote **proven to exist**. Before
-printing any plan that includes a push, resolve the configured `remote`:
+A push step is only ever planned or executed against a remote **proven to exist**. This
+runs for every `gitBackend: github` project (a `none` project never reaches here). Before
+printing any plan, resolve the configured `remote`:
 
-- **`remote` is `null` or absent** → the project is local-only. Never list "push" in the
-  plan. `merge-to-main` degrades to commit + `--no-ff` merge then delete the feature branch
-  locally, **no push**; `commit-only` is unchanged; `push-feature-branch` is invalid here —
-  fall back to `commit-only` and note it. State plainly: "local-only — no push."
-- **`remote` is a non-null name** → verify it resolves with `git remote get-url <remote>`
-  (offline; confirms the remote is *configured*, not that it is reachable — the post-push
-  check below confirms the push actually landed):
-  - **Resolves** → include the push in the plan as normal.
-  - **Does not resolve → STOP.** Do not push — a push to a missing remote is a no-op or
-    error, never a success. Surface loudly and gate, naming the actual configured remote:
-    > Config names remote `<remote>`, but `git remote get-url <remote>` finds no such remote.
-    > Push cannot happen.
-    >
-    > 1. Add a remote now — give me the URL; I will `git remote add <remote> <url>`, verify it, then push.
-    > 2. Proceed local-only this wrap — commit/merge without pushing and set `remote: null` in `.claude/wrap-it-up.json` so this stops recurring.
-    >
-    > Which? (1/2)
+- **Resolves** (`git remote get-url <remote>` succeeds — offline; confirms the remote is
+  *configured*, not reachable; the post-push check below confirms the push landed) →
+  include the push in the plan as normal.
+- **Does not resolve → STOP.** This is drift: a GitHub-backed project has lost its remote.
+  Do not push and do not downgrade to local-only (that state no longer exists). Surface
+  loudly and gate, naming the configured remote:
+  > Config names `gitBackend: github` with remote `<remote>`, but
+  > `git remote get-url <remote>` finds no such remote. Push cannot happen.
+  >
+  > 1. Re-add the remote now — give me the URL (or I will `gh repo create <name> --private
+  >    --source=. --remote=<remote> --push`), verify it, then push.
+  > 2. Do not wrap until version control is fixed.
+  >
+  > Which? (1/2)
 
-Never silently skip the push, and never report a milestone as pushed when it was not.
+**Legacy configs (no `gitBackend`):** infer once and record it. If `origin` resolves, treat
+as `github` and write `gitBackend: github`. If the config has `remote: null` or no remote,
+this is a legacy local-only project — the state no longer allowed. STOP loudly every wrap
+until resolved:
+  > This project predates the GitHub-or-nothing policy: it has git but no GitHub remote.
+  >
+  > 1. Publish to GitHub now — `gh repo create <name> --private --source=. --remote=origin
+  >    --push`, verify, then record `gitBackend: github`.
+  > 2. Confirm it should have no remote — record `gitBackend: none`; wrap does docs only.
+  >
+  > Which? (1/2)
+
+Never silently skip a push, and never report a milestone as pushed when it was not.
 
 - If already on the main branch: **skip the merge**, just commit + push main (still gated).
 - `--no-ff` is used so each milestone is a single revertable merge commit visible in
@@ -139,8 +152,7 @@ Never silently skip the push, and never report a milestone as pushed when it was
   (untracked local baseline, written in step 10). Housekeeping records the merge as prose
   (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
 - Always print the plan in this format before executing — milestone wrap example
-  (remote-confirmed form; on a local-only project omit the push line and the merge line
-  reads "Merge feature branch into main (local-only — no push)"):
+  (GitHub-backed; the remote is always confirmed before the push is listed):
   > Wrapping milestone "Authentication":
   >
   > Commit message:
@@ -204,18 +216,21 @@ Asked **once** on first run (detected where possible), then always visible/overr
 
 ```json
 {
+  "gitBackend": "github",
   "gitWorkflow": "merge-to-main",
   "mainBranch": "main",
-  "remote": "<remote name that resolves, or null for local-only>",
+  "remote": "origin",
   "storeRoot": "<absolute path to the Lindholm Code store>",
   "lastWrappedSha": "cbb5103…",
   "lastWrappedAt": "2026-06-16"
 }
 ```
 
-`remote` must name a remote that resolves via `git remote get-url`, or be `null` for a
-local-only project. Never a name that does not exist — a fabricated remote is exactly what
-turns "push" into a silent no-op (see Git Ritual → Remote resolution).
+`gitBackend` is `github` or `none`. For `github`, `remote` must name a remote that resolves
+via `git remote get-url` (normally `origin`) — never a name that does not exist, since a
+fabricated remote is exactly what turns "push" into a silent no-op (see Git Ritual → Remote
+resolution). For `none` the git keys are omitted and no git ritual runs. There is no
+local-only (git without a remote) state.
 
 Preserve any keys already in the file that this skill does not own — notably `storeRoot`
 (written by `new-project` / `continue-project`). Update `lastWrappedSha` / `lastWrappedAt`;
