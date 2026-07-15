@@ -36,7 +36,7 @@ Done: the vault root is resolved and validated by the presence of `00 - Home.md`
 
 ## Step 3 — Choose the target section
 
-The vault has two sections, and one run writes to exactly one of them. Read the root to find the two section folders, then ask the user which to write to as a numbered choice:
+The vault has two sections, and one run writes to exactly one of them. Read the root to find the two section folders, then ask the user which to write to as a numbered choice, closing with a single `Which? (1-2)` (the global interaction-design doctrine):
 
 1. **Claude Code** — general, product-level knowledge of how Claude Code itself works: concepts, skills, hooks, agents, memory, rules, commands, workflow. Nothing project-specific and nothing framework-specific. Its folder is the general section (currently `01. Claude Code/`), holding the topic subfolders `Core Concepts`, `Skills`, `Hooks`, `Agents`, `Memory`, `Rules & Config`, `Commands`, `Workflow Optimization`; notes are tagged `#claude-code`.
 2. **Lindholm Code framework** — how *this* framework is built and used: its agents, skills, rules, commands, lifecycle, and authoring conventions. Its folder is the framework section (currently `02. Lindholm Code Framework/`), with lifecycle skills under its `Meta-Skills/` subfolder; notes are tagged `#lindholm-code`.

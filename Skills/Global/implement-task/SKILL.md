@@ -14,7 +14,7 @@ This skill is the single-task sibling of `implement-milestone`. Both sequence th
 
 ## Step 1 — Load the task
 
-Read `docs/CHECKLIST.md`. Select the open `[ ]` item by the number given on the command line (counting open items top to bottom). If no number was given, list the open items and ask which to run; wait. Ignore `[x]` items — those are done and awaiting commit.
+Read `docs/CHECKLIST.md`. Select the open `[ ]` item by the number given on the command line (counting open items top to bottom). If no number was given, list the open items numbered and close with a single `Which? (1-N)`, then wait (global interaction-design doctrine). Ignore `[x]` items — those are done and awaiting commit.
 
 The entry has no formal done-criteria the way a milestone does. Read the entry text and its `while:` context, then state a concrete done-criterion for the task — what must be true for it to count as finished. Read `CLAUDE.md` and the PRD (`docs/PRD.md`) for constraints that bind the work; product code lives under `product/` per `CLAUDE.md`'s Project Layout.
 

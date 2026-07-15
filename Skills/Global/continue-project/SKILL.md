@@ -91,6 +91,9 @@ Done: the working tree is classified as clean or drifted, with drifting files na
 
 ## Step 5 — Report and wait
 
+When this step offers the user a choice, follow the global interaction-design doctrine: one
+decision per message, options as a numbered list closing with a single `Which? (1-N)`.
+
 Clean state: print the current milestone and what is next. Recommend `/implement-milestone` to execute the next milestone to best practice. Wait for direction.
 
 If `docs/CHECKLIST.md` holds open `[ ]` tasks: list them, numbered by open-item ordinal (count only `[ ]` items, skipping any `[x]` entries — this is how `/implement-task` resolves `<n>`), as a pickable option alongside the milestone path, and offer `/implement-task <n>` to execute one. The milestone path stays primary; the checklist is an alternative, not a replacement. These are granular parked side-tracks, distinct from docs/PROGRESS.md's milestone-scale "Deferred / future tasks". If any `[x]` done-awaiting-commit tasks exist, note them once: "done, awaiting commit — run `/wrap-it-up`".

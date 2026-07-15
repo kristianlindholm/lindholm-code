@@ -42,7 +42,7 @@ c. Evaluate the change against ADR criteria:
    - Surprising without context
    - A real trade-off with genuine alternatives
    If all three apply, draft an ADR in docs/adr/ before updating the milestone plan.
-d. Present the updated milestone plan. Wait for confirmation before any implementation begins.
+d. Present the updated milestone plan as a confirmation gate: what changed (bulleted), then `Proceed? (Y/N)` (global interaction-design doctrine). Wait for confirmation before any implementation begins.
 
 Done: docs/PRD.md and the milestone plan reflect every requirement change, any qualifying ADR is drafted, and the updated plan is presented and awaiting confirmation.
 
