@@ -10,6 +10,10 @@ Sequential gates before any code is written. Each gate produces a concrete outpu
 
 Do not write code. Do not skip or combine gates.
 
+Every gate asks the user one decision at a time and waits — follow the global
+interaction-design doctrine: present options as a numbered list closing with a single
+`Which? (1-N)`, and never batch several questions into one prompt.
+
 ## Directory Layout
 
 Every project this skill scaffolds uses one canonical layout. It separates authored
@@ -201,12 +205,14 @@ Present the milestone plan. Wait for confirmation.
 
 ## Gate 5 — Git Workflow
 
-Ask two things explicitly — do not set either as a silent default:
+Two things must be settled here, neither set as a silent default. Ask them as two separate
+turns — one decision per message (see the global interaction-design doctrine), never
+batched into a single prompt:
 
-1. "How will you handle git for this project?" Recommend: feature branches with --no-ff
-   merges into main.
-2. "Is this project remote-backed or local-only? If remote-backed, what is the remote name
-   and URL?"
+1. First turn — ask: "How will you handle git for this project?" Recommend feature branches
+   with --no-ff merges into main. Wait for the answer.
+2. Next turn — ask: "Is this project remote-backed or local-only? If remote-backed, what is
+   the remote name and URL?" Wait for the answer.
 
 Record `remote` to reflect **reality**, never a fabricated default — a recorded remote that
 does not exist is what turns `wrap-it-up`'s push into a silent no-op:

@@ -247,7 +247,7 @@ leave the rest untouched.
    push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
    removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
 10. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
-11. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them and ask which to delete; do not delete by default.
+11. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
 12. Print a **short** closing instruction (see below).
 
 ## Closing Instruction (keep it short)
@@ -255,6 +255,13 @@ leave the rest untouched.
 The "safe to clear" statement is always the **last line** of the message — never
 interleaved with other information. Put every status and next-step detail above it, so the
 final line the user reads is the clear-to-proceed signal and nothing follows it.
+
+The "Next session" line is a single pointer, not a menu: name the one highest-value next
+step, or point to `docs/PROGRESS.md` — never enumerate two or more candidate next-works
+here. Enumerating balloons the closer and tempts you to end on the guidance instead of the
+clear-to-proceed signal.
+
+Before sending, verify the final line is exactly `Safe to /clear.` with nothing after it.
 
 After a successful wrap:
 
@@ -266,6 +273,16 @@ Empty diff (nothing changed since last wrap):
 
 > Nothing changed since last wrap.
 > Safe to `/clear`.
+
+Never invert the order — the exact failure to avoid:
+
+> Bad:
+> Milestone M13 wrapped & merged (`c4854a6`). Safe to `/clear`.
+> Next session: read docs/PROGRESS.md. Highest-value next work is the ADR 0007
+> validation, or M11 real-data validation of the concurrency model ...
+
+Here "Safe to `/clear`" is buried mid-message and a multi-option next-step paragraph
+follows it. The clear-to-proceed signal must be the last thing the user reads.
 
 ## docs/PROGRESS.md Template (living-state, overwrite in place)
 

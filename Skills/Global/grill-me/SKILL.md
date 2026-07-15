@@ -11,7 +11,7 @@ Interview the user relentlessly about every aspect of this plan until you reach 
 
 1. **Map the design space.** Before and during the interview, maintain an explicit design tree of every decision the plan implies — data, interfaces, edge cases, failure modes, dependencies, non-functional concerns (security, performance, scope). Note branches the user has not mentioned; these are the ones most likely to be missed. Keep this map current as answers arrive.
 
-2. **Ask one question at a time.** Never batch. For each question, state your recommended answer and the reasoning behind it, so the user can confirm or redirect quickly.
+2. **Ask one question at a time.** Never batch. For each question, state your recommended answer and the reasoning behind it, so the user can confirm or redirect quickly. When the question offers discrete options, present them as a numbered list closing with a single `Which? (1-N)` (the global interaction-design doctrine).
 
 3. **Explore before asking.** If a question can be answered by exploring the codebase, explore the codebase instead of asking the user.
 

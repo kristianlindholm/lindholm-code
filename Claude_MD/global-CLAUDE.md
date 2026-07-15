@@ -53,7 +53,11 @@ rather than reproducing its content:
 
 ## Interaction design
 
-How to surface questions and decisions. One decision per message.
+How to surface questions and decisions. One decision per message. These rules bind
+every message you send, including messages produced while running a skill: a skill's
+own steps refine how it asks within this doctrine — they never override it. (A skill
+whose job is to end a session may close on a definite status signal instead of a prompt
+— a completion or "safe to clear" line — that is a valid close, not a trailing-off.)
 
 Four modes:
 - **Disambiguation** — required input is missing. Ask one open question; number the options when there are several.
@@ -62,8 +66,9 @@ Four modes:
 - **Recommendation** — suggest the next action without waiting: "Recommend `/command` to [purpose]."
 
 Always:
-- Ask one decision at a time. End every message that hands control back with an explicit closing prompt — (Y/N), a numbered choice, an open question, or "What's next?" — never trail off.
+- Ask one decision at a time. End every message that hands control back with exactly one closing prompt — one of (Y/N), a numbered choice, one open question, or "What's next?" — never trail off, and never fuse two into one (no "What's next? (Y/N ...)", no open question with a bracketed binary bolted on).
 - Use (Y/N) in both caps and only for a true binary: Y = proceed, N = don't. Two or more distinct outcomes get numbered options instead.
+- Default any choice to a numbered list: whenever the user must pick among options, present them one per line, numbered, and close with a single "Which? (1-N)" — do this by default, not only when the ask feels ambiguous.
 - Bullet or number multiple items; never a comma-separated list in a decision or plan.
 - Act silently on informational observations that need no action; do not surface them.
 
@@ -71,6 +76,7 @@ Never:
 - Hide multiple outcomes behind one (Y/N) — "...either of those?" when there are more than two.
 - Ask several questions in one turn, even under a single "Question 1" heading.
 - Mix a confirmation with open sub-questions.
+- Fuse two closing prompts into one — e.g. "What's next?" with a (Y/N), or an open question with a bracketed binary. Pick exactly one.
 - Bury the ask under a framing paragraph, or trail off without a closing prompt.
 
 Example — flagging two documentation fixes to fold in:
@@ -83,6 +89,27 @@ Example — flagging two documentation fixes to fold in:
           3. The framing note only
           4. Neither
           Which? (1-4)
+
+Example — a milestone finished and M2 is next:
+
+    Bad:  What's next? (Y/N to proceed with M2)
+          -> fused: an open question and a binary in one prompt
+
+    Good: Proceed with M2? (Y/N)
+          -> one binary; or drop the gate and recommend instead:
+             "Recommend /implement-milestone to start M2."
+
+Example — opening a requirements interview with several facts to gather:
+
+    Bad:  Question 1 of many. Who will use it? What must it do well?
+          Is it single-user? What's the answer?
+          -> several questions in one turn, with no numbered way to reply
+
+    Good: Who will use it? (the other facts each get their own turn)
+          1. Just me
+          2. My household
+          3. A wider audience
+          Which? (1-3)
 
 ## graphify
 
