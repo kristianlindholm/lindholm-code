@@ -96,7 +96,7 @@ Done when the file is written and either reported or corrected.
 (or: "None.")
 
 ## Exact Next Step
-<the single most important thing to do on resume — precise enough to require zero re-thinking>
+<the single most important thing to do on resume — precise enough to require zero re-thinking. Name the next action, not a tally of remaining work: never embed a count of open items; for the open granular set, point at docs/CHECKLIST.md>
 
 ## Environment Notes
 <only if non-standard setup is needed to run the project; omit otherwise>
@@ -131,6 +131,11 @@ poisons the next session, which trusts it. If you did not observe it pass, it go
 
 **Skipped sections.** Omitting a section reads as "nothing to report" when the truth may
 be "unknown." Write "None" explicitly instead.
+
+**Snapshotting an open-items count.** Writing "N open items" (or listing them) into the next
+step duplicates `docs/CHECKLIST.md`, the single countable surface, and goes stale the moment
+one closes — this handoff is never updated after the fact. Name the next action; point at the
+checklist for the open set.
 
 ## Lifecycle
 

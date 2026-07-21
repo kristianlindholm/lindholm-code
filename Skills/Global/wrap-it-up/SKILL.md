@@ -322,7 +322,7 @@ follows it. The clear-to-proceed signal must be the last thing the user reads.
 ## Deferred / future tasks (don't lose these)
 
 ## RESUME HERE — <next milestone>
-<2-3 line pointer: what's done, what's next, method>
+<2-3 line pointer: what's done, what's next, method — milestone-level only; never a count or list of open checklist items (those live in docs/CHECKLIST.md)>
 
 ## Housekeeping
 ```
@@ -337,3 +337,4 @@ follows it. The clear-to-proceed signal must be the last thing the user reads.
   and keep its parenthetical annotations.
 - **Treating this like `/save-session`.** This is for *completed* milestones, not checkpoints.
 - **Triaging the checklist.** Only commit `[x]` tasks `implement-task` finished; never scan, promote, or pick open `[ ]` items here.
+- **Restating an open-items count/list in RESUME HERE or Next steps.** The open granular set lives only in `docs/CHECKLIST.md`, the single countable surface; a count copied into the note duplicates it and can only go stale (`continue-project` reads the checklist directly). State milestone-level next steps only.
