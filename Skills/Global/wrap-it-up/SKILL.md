@@ -34,7 +34,8 @@ redirects you there if it detects a non-clean boundary (see Boundary Guard).
 | File | Handling | Mandatory? |
 |------|----------|------------|
 | PRD (`docs/PRD.md`) | Reconcile requirements sections (target users, success criteria, constraints); read for context — do not write milestone status here | **Yes** — create if absent |
-| `docs/PROGRESS.md` | Contains the **Delivery Milestones table**; flip the milestone row to the table's own "done" token; overwrite living-state sections in place (see template) | **Yes** — create if absent |
+| `docs/PROGRESS.md` | The **warm** handoff doc. Contains the **Delivery Milestones table**; flip the milestone row to the table's own "done" token; overwrite living-state sections in place; **roll completed history to the archive** (see "Keeping docs/PROGRESS.md bounded") | **Yes** — create if absent |
+| `docs/PROGRESS-ARCHIVE.md` | The **cold** append-only history (completed-milestone narratives, review logs, merge log). Not auto-loaded; consulted on demand. Roll history into it each wrap; never delete or rewrite existing entries | Created lazily on first rollup |
 | `docs/DESIGN.md` (+ `docs/styleboard.html`) | UI projects only. If a UI milestone changed the visual language, reconcile the tokens/sections with what shipped and regenerate the styleboard; the diff is ground truth | No — discovered |
 | `README.md`, `CHANGELOG.md`, other docs | Update only if affected; never invent | No — discovered |
 | `CLAUDE.md` | Propose genuine new conventions only; **the one gated file** | No — rare |
@@ -103,7 +104,7 @@ never runs blind. Both workflows push — there is no no-push mode.
 
 | Workflow | Actions |
 |----------|---------|
-| `merge-to-main` | commit remaining work on `feat/*` → `git merge --no-ff` into main → push → delete the feature branch → record the merge in docs/PROGRESS.md Housekeeping as prose (date + branch, **never the literal merge SHA** — see note) |
+| `merge-to-main` | commit remaining work on `feat/*` → `git merge --no-ff` into main → push → delete the feature branch → record the merge as prose (date + branch, **never the literal merge SHA** — see note) in the `docs/PROGRESS-ARCHIVE.md` Housekeeping log; the warm doc keeps only the pointer (see "Keeping docs/PROGRESS.md bounded") |
 | `push-feature-branch` | commit → `git push -u <remote> <branch>` (no merge) |
 
 ### Remote resolution (before any push)
@@ -149,8 +150,8 @@ Never silently skip a push, and never report a milestone as pushed when it was n
   docs/PROGRESS.md (a tracked file) forces a redundant follow-up commit on main
   every wrap. The SHA already lives in two authoritative places without churn:
   `git log --graph` (the record) and `.claude/wrap-it-up.json` `lastWrappedSha`
-  (untracked local baseline, written in step 10). Housekeeping records the merge as prose
-  (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
+  (untracked local baseline, written in step 10). The archive's Housekeeping log records the
+  merge as prose (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
 - Always print the plan in this format before executing — milestone wrap example
   (GitHub-backed; the remote is always confirmed before the push is listed):
   > Wrapping milestone "Authentication":
@@ -251,7 +252,11 @@ leave the rest untouched.
    reconcile.
 6. Apply PRD + docs/PROGRESS.md + README/CHANGELOG edits autonomously. Flip the milestone to the
    table's own terminal token (preserving its annotation); the next `pending` row becomes
-   "Next steps"; write the `RESUME HERE` section.
+   "Next steps"; write the `RESUME HERE` section. **Then roll history to the archive** (see
+   "Keeping docs/PROGRESS.md bounded"): relocate the previously-current milestone's narrative +
+   review log — and at most one lingering legacy narrative — plus the Housekeeping merge line into
+   `docs/PROGRESS-ARCHIVE.md`, leaving the warm doc describing only the just-shipped + next
+   milestone. Obey the no-loss invariant (relocate, never summarize or delete).
 7. **Graphify update (conditional):** Check whether graphify graph files exist in the project
    (look for `.graphify_chunk_*.files.txt` or a `.graphify_version` file at the project root).
    If found, invoke the graphify update workflow before the git step so that the updated graph
@@ -299,7 +304,49 @@ Never invert the order — the exact failure to avoid:
 Here "Safe to `/clear`" is buried mid-message and a multi-option next-step paragraph
 follows it. The clear-to-proceed signal must be the last thing the user reads.
 
-## docs/PROGRESS.md Template (living-state, overwrite in place)
+## Keeping docs/PROGRESS.md bounded (rollup to the archive)
+
+docs/PROGRESS.md is the **warm** handoff doc: it describes the *present* — the current
+milestone, what works now, open decisions, open future work — and stays roughly constant in
+size no matter how many milestones ship. Completed history lives in the **cold**
+`docs/PROGRESS-ARCHIVE.md` (append-only, tracked, never auto-loaded). Without this discipline the
+warm doc grows O(n) in milestone count: the template's "overwrite in place" was never enforced,
+and review logs / merge records had nowhere to go but the living doc.
+
+**No-loss invariant.** The rollup only ever *relocates* historical content — never summarizes,
+condenses, or deletes it. After a wrap, `docs/PROGRESS.md` + `docs/PROGRESS-ARCHIVE.md` together
+hold every piece of *history* the warm doc held before. The exception is the **current-state
+sections** — "What works right now", "How to run", "Next steps", "RESUME HERE" — which are
+regenerated each wrap to describe the present, not relocated; their prior text stays recoverable
+in git, since docs/PROGRESS.md is tracked. This invariant is the acceptance check for the rollup.
+
+**On each wrap, after flipping the milestone token, roll up:**
+
+1. **"Where we are"** keeps only the current (just-shipped) milestone in full narrative. Move the
+   **previously-current** milestone's narrative — with its full review log — into the archive.
+   **No backfill:** if legacy completed-milestone narratives still linger from before this
+   discipline, move only the **single oldest** this wrap (the backlog drains one per wrap; do not
+   mass-archive).
+2. **Housekeeping merge log** → append the merge-record prose to the archive, not the warm doc.
+   The warm doc keeps only the pointer line (below).
+3. **"Deferred / future tasks"** → when an entry has shipped, move its line to the archive (never
+   delete; git and the milestone table also record it). Open future work stays.
+4. **"Confirmed decisions" / "Environment gotchas"** → stay in the warm doc while they are live
+   guidance. When one is superseded, relocate the entry **verbatim** to the archive — never swap
+   it for an ADR pointer or delete it (the ADR may not carry the operational "do not reintroduce
+   X" phrasing).
+
+**The archive is reachable, not a graveyard** (a rollup obligation, not optional polish):
+
+- One dated section per milestone: `### M<n> — <name> (<YYYY-MM-DD>)`, holding that milestone's
+  relocated narrative + review log + merge-log line — so a later lookup is one open + grep.
+- The warm doc always carries a visible pointer (in the `## Housekeeping` slot):
+  `Full history, the merge log & per-milestone review logs live in docs/PROGRESS-ARCHIVE.md`.
+  The Delivery Milestones table is the always-visible index; the archive is the expand-on-demand
+  detail behind any row — a reader is never *unaware* history exists, only spared its weight.
+- Create `docs/PROGRESS-ARCHIVE.md` lazily, on the first wrap that has something to roll.
+
+## docs/PROGRESS.md Template (living-state, overwrite in place; history rolls to `docs/PROGRESS-ARCHIVE.md`)
 
 ```markdown
 # PROGRESS — <Project>
@@ -308,7 +355,7 @@ follows it. The clear-to-proceed signal must be the last thing the user reads.
 > Last updated: <YYYY-MM-DD>.
 
 ## Where we are
-<milestone status prose>
+<current milestone only — prior milestones roll to docs/PROGRESS-ARCHIVE.md>
 
 ## What works right now
 <verified capabilities with evidence>
@@ -325,6 +372,21 @@ follows it. The clear-to-proceed signal must be the last thing the user reads.
 <2-3 line pointer: what's done, what's next, method — milestone-level only; never a count or list of open checklist items (those live in docs/CHECKLIST.md)>
 
 ## Housekeeping
+Full history, the merge log & per-milestone review logs live in `docs/PROGRESS-ARCHIVE.md`.
+```
+
+## docs/PROGRESS-ARCHIVE.md Template (append-only cold history; not auto-loaded)
+
+```markdown
+# PROGRESS ARCHIVE — <Project>
+
+> Cold history. Not read at session start; consult on demand for past decisions and review
+> findings. Append-only, newest milestone first. Never edit or delete existing entries.
+
+### M<n> — <name> (<YYYY-MM-DD>)
+<the milestone's relocated "Where we are" narrative, verbatim>
+**Review log:** <code / security / design verdicts, findings + measurements, dispositions, test deltas>
+Merged: <e.g. M<n> merged --no-ff into main on <YYYY-MM-DD> (branch feat/...)>
 ```
 
 ## Common Mistakes
@@ -333,6 +395,11 @@ follows it. The clear-to-proceed signal must be the last thing the user reads.
 - **Marking a milestone complete on red/unverified tests.** Record reality instead.
 - **Running the git step without showing the plan.** Always gate and print first.
 - **Reinventing docs/PROGRESS.md structure.** Match the existing file's sections as-is.
+- **Letting "Where we are" accrete completed milestones.** Each wrap, roll the superseded
+  milestone's narrative + review log into `docs/PROGRESS-ARCHIVE.md`; the warm doc describes the
+  present only. Relocate, never delete (see "Keeping docs/PROGRESS.md bounded").
+- **Reading or loading `docs/PROGRESS-ARCHIVE.md` at session start.** It is cold storage —
+  consult it only on demand, for a specific historical decision or review finding.
 - **Hardcoding the milestone status token.** Use the table's own legend (`complete`/`done`/…)
   and keep its parenthetical annotations.
 - **Treating this like `/save-session`.** This is for *completed* milestones, not checkpoints.

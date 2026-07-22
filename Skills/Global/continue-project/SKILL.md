@@ -69,6 +69,12 @@ If docs/PROGRESS.md has a RESUME HERE section:
 - Read that section.
 - Read `.claude/wrap-it-up.json` — note `lastWrappedSha` and `lastWrappedAt`.
 
+`docs/PROGRESS-ARCHIVE.md` (if present) is the project's **cold history** — completed-milestone
+narratives, per-milestone review logs, and the merge log that `wrap-it-up` rolls out of the warm
+doc. It is deliberately **not** part of the resume path: do not read it at session start. Consult
+it **on demand** later, when a specific question needs a past decision or review finding — it is a
+reachable resource, not a forbidden one.
+
 Done: the project is classified as first-session, resumable-from-session-file, or resumable-from-milestone, with the relevant file read; and any parked checklist tasks are noted.
 
 ## Step 4 — Check git integrity
