@@ -96,7 +96,7 @@ The lifecycle skills carry a project from vague idea to shipped milestones, with
 
 ```mermaid
 flowchart TD
-    NP["/new-project<br/>Four sequential gates:<br/>requirements through plan"]
+    NP["/new-project<br/>Six sequential gates:<br/>requirements through version control"]
     GM["/grill-me<br/>Relentless one-question-at-a-time<br/>requirements interview"]
     IM["/implement-milestone<br/>Execute the active milestone<br/>to best practice"]
     CP["/continue-project<br/>Integrity check before<br/>resuming a session"]
@@ -117,7 +117,7 @@ flowchart TD
     SS -.-> CP
 ```
 
-- **`/new-project`** walks four gates — requirements, architecture, design, plan — each confirmed by the user before the next opens. It calls `/grill-me` to interview until intent is concrete, then provisions the project's stack-specific artifacts.
+- **`/new-project`** walks six gates — requirements, architecture, design, plan, product map, version control — each confirmed by the user before the next opens. It calls `/grill-me` to interview until intent is concrete, then provisions the project's stack-specific artifacts. The product-map gate draws the product back to the user and names every assumption Claude inferred, so a misunderstanding surfaces before any code is written.
 - **`/implement-milestone`** executes one milestone through the full development pipeline (below), stopping at the commit gate.
 - **`/wrap-it-up`** closes a milestone: reconciles the living docs (`PRD.md`, plans) with what actually shipped, then performs the git ritual.
 - **`/save-session`** and **`/continue-project`** make work resumable across sessions — state lives in files, not conversation memory.

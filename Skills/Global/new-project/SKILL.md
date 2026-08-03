@@ -1,12 +1,12 @@
 ---
 name: new-project
-description: Sequential, user-confirmed gates before any code is written — requirements, architecture, design, milestones, git.
+description: Sequential, user-confirmed gates before any code is written — requirements, architecture, design, milestones, product map, git.
 disable-model-invocation: true
 ---
 
 # New Project
 
-Sequential gates before any code is written. Each gate produces a concrete output and requires explicit user confirmation before the next gate opens. Gate 3 (Design Foundation) runs only for projects with a user-facing UI; all others are universal.
+Sequential gates before any code is written. Each gate produces a concrete output and requires explicit user confirmation before the next gate opens. Gate 3 (Design Foundation) runs only for projects with a user-facing UI; it is the only conditional gate, and every other gate runs for every project.
 
 Do not write code. Do not skip or combine gates.
 
@@ -85,7 +85,7 @@ After Gate 2 is confirmed, activate rulesets, skills, and agents for the project
 
 First, resolve the store root: ask the user for the absolute path to the Lindholm Code
 store (where this configuration repository lives). Use it for every copy below — written
-as `<storeRoot>` — and record it in `.claude/wrap-it-up.json` at Gate 5 so later sessions
+as `<storeRoot>` — and record it in `.claude/wrap-it-up.json` at Gate 6 so later sessions
 do not have to ask again.
 
 1. Map each confirmed tech choice using this table:
@@ -203,7 +203,67 @@ One row per milestone. wrap-it-up fills in all other docs/PROGRESS.md sections o
 
 Present the milestone plan. Wait for confirmation.
 
-## Gate 5 — Version Control
+## Gate 5 — Product Map
+
+The plan is complete and the user has no further input on it. Before anything is scaffolded,
+draw the product back to the user and check that Claude's picture of it matches theirs. A plan
+reads as agreed even when the two sides are imagining a different product — the same sentence
+hides who performs a step, what is automatic, what is carried by hand, and what the product
+deliberately never touches. A diagram forces the mismatch into the open while it is still free
+to fix.
+
+**Transient, not a deliverable.** Render the map in the conversation; do not save it. No file is
+written, nothing commits it, no later session or skill reads it, and it is never kept current.
+What survives this gate is not the picture but the corrections it provokes, which are written
+back into the documents that already carry the plan forward.
+
+Render it as a diagram, using the best diagram capability available.
+
+Draw these views:
+
+1. **Usage map** (always) — every actor and the path each takes through the product end to end:
+   what starts the use, the steps in order, what they get out, and what falls outside the
+   product's boundary. This is the view that catches a misunderstanding; give it the most care.
+2. **System map** (always) — the pieces confirmed at Gate 2 and how data moves between them.
+   Label every boundary: inside the product, external service, user-supplied, or explicitly
+   never touched.
+3. **Domain map** (only when the product has a non-trivial domain model) — the entities the
+   product works with and what each one holds. Skip it for a product with no real model of its
+   own.
+
+Every node and every edge traces to `docs/PRD.md`, the architecture, or a milestone — or it is
+listed as inferred below. Never draw something the user did not say and leave it unmarked.
+
+Drawing conventions — these are about legibility, and hold whatever the diagram is drawn with:
+- Group into containers, nested where the real thing nests, each named for the boundary it
+  represents.
+- Two-part node labels: the thing, then a short qualifier saying what it is or what it holds.
+- Distinguish automatic flow from anything manual or out-of-band, and label both directions.
+- Two or three accent colours at most, each carrying meaning — the product's own pieces against
+  what sits outside it. Never decoration, and never the only carrier of meaning.
+- One legend line per diagram, explaining any distinction the reader would otherwise guess.
+
+Then, alongside the diagram, an **Inferred assumptions** list: numbered, one plain-language line
+each, covering everything in the map that Claude decided and the user never stated — how a step
+is triggered, who performs it, what happens automatically, what the product deliberately does
+not do. This list is where discrepancies actually surface; a diagram on its own invites a nod.
+
+Present the diagram and the assumptions, then ask:
+
+1. The map matches what I have in mind
+2. Something in the map is wrong — I will say what
+3. Something is missing from the map
+4. An inferred assumption is wrong — I will say which
+
+Which? (1-4)
+
+On anything but 1, fix the source and not only the picture: amend `docs/PRD.md`, the relevant
+ADR, or the milestone row in `docs/PROGRESS.md`, then redraw and present again. Repeat until the
+user picks 1. This is a hard gate — an unconfirmed map means the plan is not agreed. Redrawing
+the diagram without amending the document it contradicts is the one failure that makes this gate
+worthless.
+
+## Gate 6 — Version Control
 
 One decision, no third option: **will this project live on GitHub?** Every project is
 either GitHub-backed — git plus a remote, with every milestone pushed and verified — or
@@ -295,7 +355,7 @@ projects.
 **CLAUDE.md** (root — stays at the repository root so the harness auto-loads it) — create it
 from the `project-CLAUDE.md` scaffold in this skill's own folder. Fill every placeholder from
 the confirmed gate decisions (Purpose from Gate 1; Tech Stack and Architecture from Gate 2;
-visual language from Gate 3 if run; Git Conventions from Gate 5), fill the Project Layout
+visual language from Gate 3 if run; Git Conventions from Gate 6), fill the Project Layout
 section from the Directory Layout above, reference any language-specific rulesets provisioned
 in Gate 2 step 2 (including the `design/` rules for frontend stacks), and delete the scaffold's
 guidance comments. Keep it project-specific: do not restate global preferences or the general
@@ -310,7 +370,7 @@ files must already exist (previous section) so they land in the first commit.
 2. Stage everything and make the initial commit: `chore: initialize project scaffold`.
 3. Create and wire the remote in one step:
    `gh repo create <name> --private --source=. --remote=origin --push` (use `--public`
-   if the user chose public at Gate 5). If the name already exists on the account, STOP
+   if the user chose public at Gate 6). If the name already exists on the account, STOP
    and ask whether to use the existing repo or choose a new name — do not overwrite or
    guess.
 4. **Verify with evidence** before reporting success — the same discipline `wrap-it-up`
