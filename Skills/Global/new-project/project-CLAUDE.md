@@ -27,7 +27,7 @@
 From Gate 2.]
 
 ## Git Conventions
-[GitHub-backed or no version control (from Gate 5 — Version Control). For a GitHub-backed
+[GitHub-backed or no version control (from Gate 6 — Version Control). For a GitHub-backed
 project: the remote (normally `origin`), branch and merge strategy (default: feature
 branches with `--no-ff` merges into main), and commit message format. For a project with
 no version control, state "No version control." No local-only git repositories.]
