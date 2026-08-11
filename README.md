@@ -244,4 +244,4 @@ The conventions in full — frontmatter schemas, body structure, the definition 
 
 ---
 
-*English only, no emojis, explicit over clever — the framework practices what it preaches.*
+*English only, explicit over clever — the framework practices what it preaches.*

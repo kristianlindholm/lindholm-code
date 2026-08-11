@@ -52,7 +52,7 @@ Invoke [`writing-great-skills`](writing-great-skills.md) and apply it. On top of
 - H1 title matching the folder and `name`, then one sentence stating what the skill produces.
 - Any hard constraint (do not implement, do not skip, do not begin new work) on the line immediately after that sentence.
 - Numbered steps, each with a bold title and a checkable completion criterion — what exists when the step is done.
-- English only. No emojis or icons. A list wherever a list carries the meaning as well as prose.
+- English only. No emojis or icons — the one exception is the flagging convention's severity dots, and only if the skill tells Claude to emit flags. A list wherever a list carries the meaning as well as prose.
 
 Done: `SKILL.md` exists, every step ends on a completion criterion, and nothing duplicates the reference or its glossary.
 

@@ -107,7 +107,11 @@ New skills use one of these four forms; a name outside them is a defect.
 
 ### Universal
 - English only, in code, comments, and content.
-- No emojis or icons anywhere.
+- No emojis or icons anywhere. One exception: the four severity dots of the flagging
+  convention (🔴 🟠 🟡 🔵), and only where an artifact defines that convention or tells
+  Claude to use it — see `Claude_MD/global-CLAUDE.md`, "Flagging and severity emphasis".
+  Those dots mark cautions in Claude's conversational output; code, comments,
+  documentation, and generated project files stay emoji-free regardless.
 - Clean, modern, explicit over clever.
 - `Stack_specific` (capital S, underscore) is the canonical folder name;
   any reference using another form — including the retired `Language_specific` —

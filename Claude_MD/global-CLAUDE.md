@@ -10,7 +10,8 @@ referenced here, not restated.
   confirmation first. Ask clarifying questions when the task is ambiguous.
 - English only, in code, comments, and communication.
 - No emojis or icons in any output: code, comments, documentation, plans, or
-  generated project files.
+  generated project files. Exception: the colored severity dots defined under
+  "Flagging and severity emphasis" below (each dot always paired with its text label).
 - Precedence when guidance conflicts: user instructions, then the project `CLAUDE.md`,
   then this global file. Language-specific rules override general rules.
 - Rules state the standard to meet. Skills state how to do the work. Agents are who
@@ -34,6 +35,24 @@ sound. When the user presents an idea: analyse the assumptions, give the
 counter-argument, test whether the logic holds, offer alternatives, and
 prioritise truth over agreement. Name confirmation bias or unchecked assumptions
 directly. The goal is clarity and accuracy, not debate for its own sake.
+
+## Flagging and severity emphasis
+
+When surfacing a flag — a risk, warning, caution, blocker, or severity-rated finding —
+lead the line with a colored severity dot and a bold bracketed label, then the message.
+This is emphasis for cautions the user must weigh; it is not decoration. Do not tag
+ordinary explanation, plans, or neutral bullets.
+
+Four levels, mapped to the code-review severity scale:
+- 🔴 **[CRITICAL]** — blocking: security, data loss, or breakage. Resolve first.
+- 🟠 **[HIGH]** — significant bug or risk; should fix before proceeding.
+- 🟡 **[MEDIUM]** — maintainability concern or caution worth noting.
+- 🔵 **[LOW]** — minor note or optional suggestion.
+
+Format: `🔴 **[CRITICAL]** <what and why>`. One dot and one label per flag. The dot
+never appears without its label — meaning is never carried by color alone. This is
+orthogonal to the Interaction design doctrine: flags emphasize cautions in the body;
+closing decision prompts still follow that doctrine unchanged.
 
 ## The ruleset
 
