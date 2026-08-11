@@ -8,7 +8,7 @@
      STRUCTURE below is fixed; the VALUES are this project's choices. Pick a coherent
      system and hold to it consistently. The numbers in the design-principles.md rule are
      defaults you may override here — but once set here, these values bind the project.
-     Genuine accessibility standards (WCAG AA) are not negotiable; see the floor below.
+     Where an override is bounded, the rule states the bound alongside the default.
 
      The rendered companion to this file is docs/styleboard.html — regenerate it from
      these tokens whenever the language changes. The first UI milestone lifts the :root
@@ -123,17 +123,48 @@ and keep everything around it quiet.]
 - **Interactive states**: describe the hover / focus / active / disabled treatment that all
   interactive elements share (colour shift, elevation, outline).
 
-## Accessibility floor (firm — WCAG 2.2 AA)
+## Usage context
 
-<!-- These are not project preferences; they are the non-negotiable floor from
-     design-principles.md and the accessibility skill. -->
+<!-- Carried forward from docs/PRD.md (new-project Gate 1). Restated here because every
+     decision below depends on it. If it changes, change it in PRD.md first. -->
 
-- Contrast: body text >= 4.5:1, large text and UI objects >= 3:1.
-- Visible `:focus-visible` on every interactive element.
-- Tap targets >= 44x44px.
-- Never convey meaning by colour alone (pair with icon / label / shape).
-- Reduced motion respected (`prefers-reduced-motion`).
-- Semantic HTML and keyboard operability throughout.
+- **Operated on**: [device and screen — e.g. one person's laptop; a laptop plus projector when
+  presenting; desktop and mobile]
+- **Viewport range to build for**: [e.g. 1280-1920 desktop only; 360-1920 mobile through desktop]
+- **Input devices assumed**: [mouse and keyboard / touch / both]
+- **Presentation robustness**: [required — shown on projectors or client screens, so the layout
+  must survive browser zoom and a resolution change / not required]
+
+## Legibility defaults
+
+<!-- Strong defaults from design-principles.md, with real reasons, not compliance obligations.
+     Override deliberately and say why. Reference values on white: 4.5:1 is about #767676,
+     3:1 about #959595. -->
+
+- **Body text contrast**: [target, default 4.5:1] — [note any deliberate override and why]
+- **Large text and UI objects**: [target, default 3:1]
+- **Deliberately quiet text** (timestamps, captions, placeholder hints, disabled controls):
+  [target if it sits below the default — this is the bounded override; primary and body text may
+  not go below]
+- **Visible focus**: [the `:focus-visible` treatment shared by all interactive elements]
+- **Labels**: every input has a visible label; icon-only controls carry a name in the markup
+
+## Interaction decisions
+
+<!-- Answers, not requirements. Resolved during design (new-project Gate 3, or
+     implement-milestone Step 5 per surface) and recorded here so they are not re-asked every
+     milestone. "No, not worth it" is a valid answer — record it, do not leave it blank.
+     Scoped by the usage context above. -->
+
+- **Keyboard paths for frequent actions**: [per action — e.g. Delete key removes the selected
+  item; Enter submits; Escape closes; arrow keys move within the list. Or: none, this surface is
+  used occasionally and mouse-only is fine]
+- **Focus on state change**: [where focus goes when a modal or panel opens, and where it returns
+  on close]
+- **Control sizing**: [which controls are used most and how they are sized and placed for it;
+  any minimum this project sets]
+- **Presentation robustness**: [if required above — how the layout holds up under zoom and a
+  resolution change. Otherwise: not applicable]
 
 ## Avoid
 

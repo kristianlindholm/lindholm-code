@@ -1,11 +1,11 @@
 ---
 name: react-patterns
-description: React 18/19 patterns including hooks discipline, server/client component boundaries, Suspense + error boundaries, form actions, data fetching, state management decision trees, and accessibility-first composition. Use when writing or reviewing React components.
+description: React 18/19 patterns including hooks discipline, server/client component boundaries, Suspense + error boundaries, form actions, data fetching, state management decision trees, and semantic composition. Use when writing or reviewing React components.
 ---
 
 # React Patterns
 
-Idiomatic React 18/19 patterns for building robust, accessible, performant component trees.
+Idiomatic React 18/19 patterns for building robust, performant component trees.
 
 ## When to Activate
 
@@ -242,14 +242,14 @@ Wrap a component in `React.memo` only when:
 - Provide stable `key` props (database id, not array index)
 - Virtualize long lists with `@tanstack/react-virtual` or `react-window` once visible item count exceeds ~50 with non-trivial rows
 
-## Accessibility-First Composition
+## Semantic Composition
 
-- Always render semantic HTML (`<button>`, `<a>`, `<nav>`, `<main>`) before reaching for `role` attributes
-- Every interactive element must be reachable by keyboard
-- Form inputs need labels — `<label htmlFor>` or `aria-label` if visually labeled by an icon
-- Manage focus on route changes and modal open/close
-- Run `axe` in component tests (see [skills/react-testing](../react-testing/SKILL.md))
-- Cross-link: the global `accessibility` skill covers WCAG criteria and pattern libraries
+- Render the element that already behaves correctly (`<button>`, `<a href>`, `<form>`, `<nav>`,
+  `<main>`) before reaching for a `div` plus a `role`. The native element brings keyboard
+  activation, `disabled`, focusability, and form integration at no cost
+- Form inputs need labels — `<label htmlFor>`, or a name in the markup when the control is an icon
+- Manage focus on route changes and on modal open/close. Where focus lands, and where it returns,
+  is a decision recorded per surface in the project's `docs/DESIGN.md` under Interaction decisions
 
 ## Routing
 
@@ -269,7 +269,7 @@ This skill is router-agnostic. The patterns above work with React Router, TanSta
 ## Related
 
 - Rules: [rules/react/](../../rules/react/) — coding-style, hooks, patterns, security, testing
-- Skills: [react-performance](../react-performance/SKILL.md) for the Vercel-derived performance ruleset, [frontend-patterns](../frontend-patterns/SKILL.md) for cross-framework UI concerns, the global `accessibility` skill, [angular-developer](../angular-developer/SKILL.md) for framework comparison
+- Skills: [react-performance](../react-performance/SKILL.md) for the Vercel-derived performance ruleset, [frontend-patterns](../frontend-patterns/SKILL.md) for cross-framework UI concerns, [angular-developer](../angular-developer/SKILL.md) for framework comparison
 - Agents: `react-reviewer` for code review, `react-build-resolver` for build/bundler errors
 
 ## Examples

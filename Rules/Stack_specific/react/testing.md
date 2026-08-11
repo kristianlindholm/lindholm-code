@@ -25,7 +25,7 @@ Pick one component test runner per project — do not mix RTL + Playwright CT in
 
 Test what the user sees and does, not implementation details.
 
-- Query by accessible role first, then label, then text — fall back to `data-testid` only when nothing else fits
+- Query by role first, then label, then visible text — fall back to `data-testid` only when nothing else fits. Role and text queries survive a markup refactor; `data-testid` and DOM selectors do not
 - Never assert on internal state, props passed to children, or which hooks were called
 - Refactor without breaking tests = the test was testing behavior; that is the goal
 
@@ -33,16 +33,16 @@ Test what the user sees and does, not implementation details.
 
 RTL exposes queries in three families. Use this priority order top-down:
 
-1. **Accessible to everyone**
+1. **By role and visible text** — the most durable, because they match what the user sees
    - `getByRole(role, { name })` — primary choice
    - `getByLabelText` — for form inputs
    - `getByPlaceholderText` — when no label is available (and add a label)
    - `getByText` — for non-interactive text
    - `getByDisplayValue` — for form fields with a current value
 
-2. **Semantic queries**
+2. **Semantic attributes**
    - `getByAltText` — for images
-   - `getByTitle` — last resort, low accessibility value
+   - `getByTitle` — last resort; `title` is often absent, so the query is brittle
 
 3. **Test IDs**
    - `getByTestId("some-id")` — escape hatch only, when none of the above work
@@ -161,19 +161,6 @@ test("useCounter increments", () => {
 - Always wrap state-changing calls in `act`
 - Always test through the public hook API, not internal implementation
 
-## Accessibility Assertions
-
-```tsx
-import { axe } from "vitest-axe";   // or jest-axe
-
-test("UserCard has no a11y violations", async () => {
-  const { container } = render(<UserCard user={mockUser} />);
-  expect(await axe(container)).toHaveNoViolations();
-});
-```
-
-Run axe assertions in component tests — catches missing labels, ARIA misuse, color contrast (limited).
-
 ## When to Reach for Playwright / Cypress
 
 Component test with RTL + JSDOM cannot:
@@ -197,7 +184,7 @@ For those, use Playwright Component Testing or end-to-end Playwright/Cypress run
 
 ## Anti-Patterns
 
-- Asserting on `container.querySelector` — bypasses accessibility queries
+- Asserting on `container.querySelector` — couples the test to DOM structure, so it breaks on any markup refactor
 - Asserting on number of renders — implementation detail
 - Mocking React hooks (`jest.mock("react", ...)`) — refactor the component instead
 - Mocking child components by default — tests the integration, not the parent in isolation
@@ -205,4 +192,4 @@ For those, use Playwright Component Testing or end-to-end Playwright/Cypress run
 
 ## Skill Reference
 
-See `skills/react-testing/SKILL.md` for end-to-end test examples, MSW patterns, and accessibility test scaffolding.
+See `skills/react-testing/SKILL.md` for end-to-end test examples and MSW patterns.

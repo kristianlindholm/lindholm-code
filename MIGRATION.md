@@ -51,7 +51,7 @@ The `Global/` folder name is an authoring marker. It is NOT kept at the destinat
 
 - [ ] Each `/command` appears in the slash menu and loads its skill (spot-check `/create-skill`, `/wrap-it-up`).
 - [ ] Each user-invoked skill loads, and its disclosed references resolve (open `create-skill` — its `writing-great-skills.md` and `GLOSSARY.md` links work).
-- [ ] The model-invoked skills (`accessibility`, `codebase-design`, `tdd`) still carry their descriptions and fire from context.
+- [ ] The model-invoked skills (`codebase-design`, `tdd`) still carry their descriptions and fire from context.
 - [ ] Agents are listed and callable.
 - [ ] Global rules are present under `~/.claude/rules/`.
 - [ ] `~/.claude/CLAUDE.md` reads correctly and contradicts none of the installed rules.

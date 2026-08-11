@@ -5,7 +5,7 @@ description: Use when building new UI or reshaping existing UI and the visual di
 
 # Frontend Design
 
-This skill is the procedure (the HOW) for arriving at a distinctive visual design. It meets the standards set in two framework-agnostic web rules (the WHAT), provisioned per project into `.claude/rules/design/`: `design-quality.md` (anti-template policy, banned patterns, required qualities — the aesthetic ceiling) and `design-principles.md` (the measurable usability-craft floor — layout, type, colour, states, forms, navigation, accessibility). Follow both as the standard and this skill as the method: clear the craft floor for any direction you choose, and spend your distinctiveness above it.
+This skill is the procedure (the HOW) for arriving at a distinctive visual design. It meets the standards set in two framework-agnostic web rules (the WHAT), provisioned per project into `.claude/rules/design/`: `design-quality.md` (anti-template policy, banned patterns, required qualities — the aesthetic ceiling) and `design-principles.md` (the usability-craft floor — layout, type, colour, states, forms, navigation, legibility, and the interaction decisions taken during design). Follow both as the standard and this skill as the method: clear the craft floor for any direction you choose, and spend your distinctiveness above it.
 
 Approach this as the design lead at a small studio known for giving every client a visual identity that could not be mistaken for anyone else's. This client has already rejected proposals that felt templated, and is paying for a distinctive point of view: make deliberate, opinionated choices about palette, typography, and layout that are specific to this brief, and take one real aesthetic risk you can justify.
 
@@ -48,7 +48,7 @@ Try to do a lot of this planning and iteration in your thinking, and only show i
 
 ## Restraint and self-critique
 
-Spend your boldness in one place. Let the signature element be the one memorable thing, keep everything around it quiet and disciplined, and cut any decoration that does not serve the brief. Not taking a risk can be a risk itself! Build to a quality floor without announcing it: responsive down to mobile, visible keyboard focus, reduced motion respected. Critique your own work as you build, taking screenshots if your environment supports it – a picture is worth 1000 tokens. Consider Chanel's advice: before leaving the house, take a look in the mirror and remove one accessory. Human creators have memory and always try to do something new, so if you have a space to quickly jot down notes about what you've tried, it can help you in future passes.
+Spend your boldness in one place. Let the signature element be the one memorable thing, keep everything around it quiet and disciplined, and cut any decoration that does not serve the brief. Not taking a risk can be a risk itself! Build to a quality floor without announcing it: legible text, visible focus, and a layout that holds across the project's declared viewport range. Critique your own work as you build, taking screenshots if your environment supports it – a picture is worth 1000 tokens. Consider Chanel's advice: before leaving the house, take a look in the mirror and remove one accessory. Human creators have memory and always try to do something new, so if you have a space to quickly jot down notes about what you've tried, it can help you in future passes.
 
 ## More on writing in design
 

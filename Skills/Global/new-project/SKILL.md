@@ -55,6 +55,23 @@ not infer the product from a one-line prompt. Grill until these are concrete:
    hypothetical problem.
 4. What success looks like — how you will know the need has been met.
 5. Known constraints — technical, legal, time, budget, or otherwise.
+6. **Usage context** — where and how the product is actually operated. Ask it as its own
+   question; never infer it from the stack or from silence. It constrains layout, control
+   sizing, input handling, and robustness for the whole life of the project, and it is far
+   cheaper to state now than to retrofit. Present it as a numbered choice:
+
+   1. One person's own laptop or desktop, nobody else watching
+   2. A laptop, and shown on a projector or a client's screen when presenting
+   3. Desktop and mobile both, in regular use
+   4. Mobile-first
+   5. Shared, embedded, or kiosk display
+   6. Something else — I will describe it
+
+   Then confirm the two facts that follow from the answer, so they are explicit rather than
+   assumed: the **viewport range** to build for, and the **input devices** to assume (mouse
+   and keyboard, touch, or both). If the answer includes a projector, a client's screen, or an
+   unfamiliar resolution, note that presentation robustness applies — the layout must survive
+   browser zoom and a resolution change.
 
 Then produce docs/PRD.md capturing the outcome of that interview:
 - Problem / end-user need: the pain points the product exists to serve
@@ -62,6 +79,10 @@ Then produce docs/PRD.md capturing the outcome of that interview:
 - Why build this: what makes it the right thing to build for that need
 - Success criteria: what "done" looks like for the product
 - Known constraints: technical, legal, time, budget, or otherwise
+- Usage context: where and how it is operated, the viewport range, and the input devices
+  assumed. Gate 3 and every UI milestone read this field; `docs/DESIGN.md` restates it, and the
+  `design/design-principles.md` rule defers to it for viewport range, control sizing, and which
+  interaction decisions apply.
 
 Present the draft. Wait for confirmation.
 
@@ -171,10 +192,14 @@ and `design/design-principles.md`) are already provisioned by Gate 2 for every f
    and the one risk taken). The user reacts; revise and re-present. Repeat until the user
    explicitly approves. This is a hard gate — do not proceed on assumption.
 5. **Persist.** On approval, write `docs/DESIGN.md` from the scaffold in this
-   skill's own folder, filling every placeholder from the approved direction. `docs/DESIGN.md` is
-   the canonical text source of truth; `docs/styleboard.html` is its committed rendered
-   companion. No application code is written here — code-level tokens are seeded by the first
-   UI milestone, which lifts the `:root` block from `docs/DESIGN.md` into the real token layer.
+   skill's own folder, filling every placeholder from the approved direction. Carry the **usage
+   context** across from `docs/PRD.md` verbatim — the scaffold's Usage context section drives the
+   viewport range, control sizing, and which interaction decisions apply. Fill the **interaction
+   decisions** for the surfaces that already exist; leave the rest for `implement-milestone`
+   Step 5, which resolves them per surface. `docs/DESIGN.md` is the canonical text source of
+   truth; `docs/styleboard.html` is its committed rendered companion. No application code is
+   written here — code-level tokens are seeded by the first UI milestone, which lifts the `:root`
+   block from `docs/DESIGN.md` into the real token layer.
 
 Present the design foundation summary. Wait for confirmation.
 
@@ -224,6 +249,10 @@ Draw these views:
 1. **Usage map** (always) — every actor and the path each takes through the product end to end:
    what starts the use, the steps in order, what they get out, and what falls outside the
    product's boundary. This is the view that catches a misunderstanding; give it the most care.
+   State the **usage context** from Gate 1 on this view — the device and screen each actor works
+   from, and who else is watching. A tool driven at one person's laptop and one shown on a
+   projector otherwise draw the identical picture, which is exactly the mismatch this gate exists
+   to catch.
 2. **System map** (always) — the pieces confirmed at Gate 2 and how data moves between them.
    Label every boundary: inside the product, external service, user-supplied, or explicitly
    never touched.
