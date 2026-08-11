@@ -21,8 +21,17 @@ will be authored during this project.
               (`global-CLAUDE.md`, installed to `~/.claude/CLAUDE.md`) and nothing
               else. Unlike the three folders above it is not split into
               `Global/`/`Stack_specific/`.
+- `Archive/` — retired artifacts, kept for provenance and possible restoration.
+              **Never installed and never provisioned**: it sits outside every
+              install path in "How this store is used" below, outside the coverage
+              parity requirement in `COVERAGE.md`, and outside the
+              `Global/`/`Stack_specific/` split rule that follows — its paths
+              mirror each artifact's original location instead, so a restoration
+              is a straight move back. Archived artifacts are not maintained;
+              `Archive/README.md` records why each was retired and what is wrong
+              with it. Retire with `git mv` so history follows the file.
 
-Each top-level folder is split into `Global/` and `Stack_specific/`. These
+Each of `Agents/`, `Rules/`, and `Skills/` is split into `Global/` and `Stack_specific/`. These
 folder names are authoring markers that record where an artifact is installed —
 they are not preserved at the destination:
 - `Global/` artifacts are installed once into the global `~/.claude/` setup.

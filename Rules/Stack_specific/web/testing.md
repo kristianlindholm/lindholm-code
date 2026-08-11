@@ -11,12 +11,12 @@
 - Use Playwright screenshots for visual-heavy work
 - If both themes exist, test both
 
-### 2. Accessibility
+### 2. Interaction Decisions
 
-- Run automated accessibility checks
-- Test keyboard navigation
-- Verify reduced-motion behavior
-- Verify color contrast
+Cover the keyboard paths and focus behaviour the project recorded in `docs/DESIGN.md` under
+Interaction decisions — a shortcut that was signed off but never wired up is a defect, and a
+regression test is how it stays wired. Where the project recorded no keyboard path for a surface,
+there is nothing to test here.
 
 ### 3. Performance
 

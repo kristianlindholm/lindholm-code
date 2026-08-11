@@ -1,11 +1,11 @@
 ---
 name: react-testing
-description: React component testing with React Testing Library, Vitest/Jest, MSW for network mocking, accessibility assertions with axe, and the decision boundary between component tests and Playwright/Cypress end-to-end runs. Use when writing or fixing tests for React components, hooks, or pages.
+description: React component testing with React Testing Library, Vitest/Jest, MSW for network mocking, durable role-based queries, and the decision boundary between component tests and Playwright/Cypress end-to-end runs. Use when writing or fixing tests for React components, hooks, or pages.
 ---
 
 # React Testing
 
-Comprehensive React testing patterns for behavior-focused component tests, custom hook tests, accessibility assertions, and network-level mocking.
+Comprehensive React testing patterns for behavior-focused component tests, custom hook tests, and network-level mocking.
 
 ## When to Activate
 
@@ -14,7 +14,6 @@ Comprehensive React testing patterns for behavior-focused component tests, custo
 - Migrating from Enzyme or class-component-era patterns to React Testing Library
 - Setting up Vitest or Jest for a new React project
 - Mocking HTTP requests in tests
-- Asserting accessibility violations
 - Deciding which tests belong in RTL vs Playwright Component Testing vs full E2E
 
 ## Core Principle
@@ -24,7 +23,7 @@ Test what the user sees and does, not implementation details.
 A test should:
 
 - Render the component with the same providers it has in production
-- Interact with it via accessible queries (role, label) and `userEvent`
+- Interact with it via role and label queries and `userEvent`
 - Assert visible output and observable side effects (callback fired, request sent)
 
 A test should NOT:
@@ -46,10 +45,13 @@ Pick one. Do not run RTL + Vitest AND Playwright CT in the same repo unless you 
 
 ## Query Priority
 
-React Testing Library exposes queries in three tiers — use top-down:
+React Testing Library exposes queries in three tiers — use top-down. The reason is test
+durability: a query written against what the user sees and does survives a refactor of the
+markup, while `data-testid` and `container.querySelector` are coupled to implementation and
+break when the DOM shifts underneath them.
 
-1. **Accessible to everyone**: `getByRole`, `getByLabelText`, `getByPlaceholderText`, `getByText`, `getByDisplayValue`
-2. **Semantic**: `getByAltText`, `getByTitle`
+1. **By role and visible text**: `getByRole`, `getByLabelText`, `getByPlaceholderText`, `getByText`, `getByDisplayValue`
+2. **Semantic attributes**: `getByAltText`, `getByTitle`
 3. **Test IDs (escape hatch)**: `getByTestId`
 
 ```tsx
@@ -253,28 +255,6 @@ test("GET /api/users rejects an invalid limit with 400", async () => {
 - Mock only at true boundaries (database client, third-party APIs); inject them or use MSW for outbound HTTP. Do not mock your own route logic.
 - For dynamic segments, pass the context argument: `await GET(request, { params: { id: "1" } })`.
 
-## Accessibility Assertions
-
-```tsx
-import { axe, toHaveNoViolations } from "jest-axe"; // or vitest-axe
-expect.extend(toHaveNoViolations);
-
-test("UserCard has no a11y violations", async () => {
-  const { container } = render(<UserCard user={mockUser} />);
-  expect(await axe(container)).toHaveNoViolations();
-});
-```
-
-Run axe in component tests for every interactive component. Catches:
-
-- Missing labels on form inputs
-- Invalid ARIA usage
-- Poor color contrast (limited — JSDOM has no real CSS engine, so this works for inline styles only; visual contrast belongs in Playwright)
-- Missing alt text on images
-- Heading order violations
-
-See the global `accessibility` skill for the broader WCAG 2.2 playbook.
-
 ## When NOT to Use Snapshot Tests
 
 Snapshots of rendered output:
@@ -338,7 +318,7 @@ test: {
 
 ## Anti-Patterns
 
-- `container.querySelector("...")` — bypasses accessibility queries, lets tests pass when real users would fail
+- `container.querySelector("...")` — couples the test to the DOM structure, so it breaks on any markup refactor and passes on markup a user could not operate
 - Asserting on number of renders — implementation detail
 - `jest.mock("react", ...)` — never mock React. Refactor the component instead
 - Mocking child components by default — tests the integration, not isolation. Mock only when the child has heavy side effects
@@ -385,7 +365,7 @@ CI=true vitest run --coverage
 ## Related
 
 - Rules: [rules/react/testing.md](../../rules/react/testing.md)
-- Skills: [react-patterns](../react-patterns/SKILL.md), [e2e-testing](../e2e-testing/SKILL.md); the global `tdd` skill (RED/GREEN workflow) and `accessibility` skill (a11y playbook)
+- Skills: [react-patterns](../react-patterns/SKILL.md), [e2e-testing](../e2e-testing/SKILL.md); the global `tdd` skill (RED/GREEN workflow)
 - Agents: `react-reviewer` (reviews test quality during code review)
 
 ## Examples

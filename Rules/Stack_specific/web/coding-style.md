@@ -86,7 +86,11 @@ Avoid animating layout-bound properties:
 <footer>...</footer>
 ```
 
-Do not reach for generic wrapper `div` stacks when a semantic element exists.
+Do not reach for generic wrapper `div` stacks when a semantic element exists. The semantic element
+already carries the behaviour you would otherwise hand-write: `<button>` gives Enter and Space
+activation, `disabled`, focusability, and form submit; `<form>` gives submit-on-Enter, autofill,
+and reset; `<a href>` gives middle-click, open-in-new-tab, and the browser's own history handling.
+A `div` with a click handler reimplements a subset of that in more code.
 
 ## Naming
 

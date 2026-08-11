@@ -15,7 +15,7 @@ Modern frontend patterns for React, Next.js, and performant user interfaces.
 - Optimizing performance (memoization, virtualization, code splitting)
 - Working with forms (validation, controlled inputs, Zod schemas)
 - Handling client-side routing and navigation
-- Building accessible, responsive UI patterns
+- Building responsive UI patterns
 
 ## Component Patterns
 
@@ -575,7 +575,11 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 }
 ```
 
-## Accessibility Patterns
+## Keyboard and Focus Patterns
+
+Reference implementations for the keyboard paths and focus behaviour a project records in
+`docs/DESIGN.md` under Interaction decisions. Reach for these when a surface has decided it wants
+a keyboard route — not by default on every widget.
 
 ### Keyboard Navigation
 

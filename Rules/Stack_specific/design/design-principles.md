@@ -6,10 +6,11 @@
 > governs aesthetics and distinctiveness (the taste ceiling); this one governs usability craft
 > (the floor every direction must clear).
 
-This rule states the usability-craft standard for web UI: layout, typography, colour,
-hierarchy, interaction states, forms, navigation, data visualisation, and accessibility.
-For the procedure that applies it while designing, use the Global `frontend-design` skill;
-for aesthetic direction and anti-template policy, follow [design-quality.md](design-quality.md).
+This rule states the usability-craft standard for web UI: layout, typography, colour, hierarchy,
+interaction states, forms, navigation, data visualisation, legibility, and the interaction
+decisions taken during design. For the procedure that applies it while designing, use the Global
+`frontend-design` skill; for aesthetic direction and anti-template policy, follow
+[design-quality.md](design-quality.md).
 
 ## Scope
 
@@ -26,15 +27,22 @@ record them in its `DESIGN.md`. Once chosen there, those project values are what
 they must be applied **consistently**. The discipline is "pick a system and hold to it," not
 "use exactly these numbers."
 
-Two categories are exceptions and are stated as **firm requirements**, marked `[STANDARD]`:
-
-1. **Accessibility** — WCAG 2.2 AA thresholds (contrast, tap-target, visible focus, reduced
-   motion, never-colour-alone). A project does not get to opt out of accessibility.
-2. **Consistency itself** — whatever scale a project picks, ad-hoc off-scale values are a
-   defect regardless of the specific numbers.
+One category is the exception and is stated as a **firm requirement**, marked
+`[STANDARD: consistency]`: **consistency itself** — whatever scale a project picks, ad-hoc
+off-scale values are a defect regardless of the specific numbers.
 
 Everything unmarked is a default: honour it unless the project's `DESIGN.md` deliberately
 overrides it.
+
+Some of the numbers below are legibility thresholds — contrast in particular. They are strong
+defaults with real reasons stated alongside them, not compliance obligations, and a project may
+override them deliberately in its `DESIGN.md`. Where an override is bounded (some text may go
+quieter, some may not), the bound is stated with the default.
+
+Beyond the defaults, this rule also carries **Interaction decisions** — questions resolved during
+design rather than thresholds checked afterwards. Their answers are recorded in the project's
+`DESIGN.md`, and any answer, including "no", is valid. They are never review findings. See the
+Interaction decisions section below.
 
 ## Cognitive Load and Attention
 
@@ -97,11 +105,23 @@ overrides it.
 - **Define colours as tokens.** All colours live as CSS custom properties (or the framework's
   token layer), never as scattered hard-coded hex in component styles. This is what makes a
   theme swap or a `DESIGN.md` change a one-place edit.
-- **`[STANDARD]` Meaning is never carried by hue alone.** Pair any colour-coded distinction
-  with an icon, label, shape, or weight. [WCAG 1.4.1]
-- **`[STANDARD]` Contrast meets WCAG 2.2 AA.** Body text >= 4.5:1 against its background;
-  large text (>= 24px regular or >= 18.66px bold) and UI/graphical objects >= 3:1. Aim higher
-  (7:1) where practical for resilience. [WCAG 1.4.3, 1.4.11]
+- **Text stays legible against its background.** Body text at 4.5:1 or better; large text
+  (>= 24px regular or >= 18.66px bold) and UI or graphical objects at 3:1 or better. The reasons
+  are ordinary: presbyopia sets in for everyone from around 40, and real work happens on
+  projectors, borrowed client screens, cheap external monitors, and in rooms with daylight on
+  the glass.
+
+  Reference values, so the ratio is usable without a checker — on white, 4.5:1 is about
+  `#767676`, 3:1 about `#959595`, 7:1 about `#595959`, and 12.6:1 about `#333333`. A ratio
+  belongs to a *pair*, not to a colour: `#959595` is 3:1 on white and 7:1 on black.
+
+  Do not push everything higher than the default "for safety". Hierarchy needs the range above
+  the floor: four text levels distribute comfortably across 4.5-to-21, and badly across
+  7-to-21, where secondary and tertiary text stop reading as subordinate.
+
+  **Bounded override.** Deliberately de-emphasised text may sit below the default when the
+  project's `DESIGN.md` records it — timestamps, captions, placeholder hints, and disabled
+  controls are meant to recede. Primary and body text may not.
 
 ## Layout and Grid
 
@@ -114,18 +134,24 @@ overrides it.
   align to it rather than drifting to arbitrary widths.
 - **Content never touches the viewport edge** without padding; safe-zone margins scale up from
   mobile to desktop, or content is centred within a max width.
-- **Responsive by default.** Layout works from small mobile widths up through desktop with no
-  horizontal scroll; design mobile-first and add breakpoints upward.
+- **Layout matches the project's declared viewport range** — the usage context captured at
+  `new-project` Gate 1 and recorded in `DESIGN.md`. Where that range includes mobile, design
+  mobile-first and add breakpoints upward. Where it does not — a desktop tool driven at a
+  laptop, or one shown on a projector — build for the stated range and do not invent mobile
+  breakpoints nothing will use. No layout scrolls horizontally within its own declared range.
 
 ## Components and Interaction States
 
 - **Every interactive element has designed states:** default, hover, active/pressed, focus,
   and disabled. An undesigned state is an unfinished component.
-- **`[STANDARD]` Focus is always visible.** Every interactive element has a visible
-  `:focus-visible` style with sufficient contrast against its surroundings. Never remove the
-  focus outline without an equivalent replacement. [WCAG 2.4.7]
-- **`[STANDARD]` Adequate tap targets.** Interactive elements meet at least a 44x44px hit area
-  (expand with padding if the visual is smaller). [WCAG 2.5.8]
+- **Focus is visible.** Every interactive element has a `:focus-visible` style that stands out
+  against its surroundings. Never remove the focus outline without an equivalent replacement.
+  This is a power-user affordance before anything else: tabbing is the fast path through a form,
+  and an invisible focus ring means the operator cannot tell where they are.
+- **Targets are sized to how often they are hit.** Fitts's law, not a floor: a control used two
+  hundred times a day earns more area and a shorter travel distance than one used monthly.
+  Expand a small visual with padding rather than shrinking the hit area to match it. A project
+  whose usage context includes touch states its own minimum in `DESIGN.md`.
 - **Disabled state is legible as disabled** (reduced opacity plus `cursor: not-allowed`), not
   just greyed text with no affordance.
 - **Async actions give feedback.** Any action with perceptible delay shows a loading state and
@@ -143,8 +169,9 @@ overrides it.
 
 - **Single-column by default.** Multi-column only for short, logically paired fields (e.g.
   city + postcode).
-- **Labels above fields, always visible.** Never use placeholder text as the label — it
-  disappears on input and fails accessibility.
+- **Labels above fields, always visible.** Never use placeholder text as the label: it vanishes
+  the moment the user types, so anyone reviewing a half-filled form has to clear a field to
+  remember what it was. A real `<label for>` also makes clicking the label focus the field.
 - **Validate on blur, not on keystroke.** Showing errors mid-typing is hostile; blur is early
   enough to catch problems before submit. Real-time meters (password strength) may run
   alongside, not instead of, blur validation.
@@ -175,28 +202,47 @@ overrides it.
   beyond that, aggregate, filter, or use small multiples.
 - **Restrained gridlines**, low-opacity and horizontal, only where they aid reading; prefer
   direct labels over a detached legend.
-- **`[STANDARD]` Series are distinguishable without colour** — pair colour with direct labels
-  or patterns for colour-blind safety. [WCAG 1.4.1]
 - **Titles state the takeaway**, not just the variable ("Q3 revenue grew 22%", not
   "Q3 revenue").
 
-## Accessibility `[STANDARD]`
+## Legibility and semantics
 
-These are firm requirements, not defaults. Target WCAG 2.2 AA.
+- **Use the element that already behaves correctly.** `nav`, `main`, `button`, `label`, `form`,
+  real headings. A `<button>` gives you Enter and Space activation, `disabled`, and form submit
+  for nothing; a `div` with an `onClick` reimplements all of it by hand, badly, in more code.
+  Reach for a generic wrapper only when no semantic element fits.
+- **Every input has a visible label**, and icon-only controls carry a name in the markup — a
+  `title` or `aria-label` — so the control is identifiable when the glyph is ambiguous.
+- **Text stays legible** at the contrast defaults (see Colour).
+- **Focus stays visible** on every interactive element (see Components).
 
-- **Semantic HTML.** Use the right elements (`nav`, `main`, `button`, `label`, headings in
-  order); do not rebuild interactive semantics on top of `div`s.
-- **Labels and names.** Every input has an associated label; icon-only controls have an
-  accessible name.
-- **Keyboard operable.** All actions are reachable and operable by keyboard with a logical tab
-  order; nothing is mouse-only.
-- **Visible focus** on every interactive element (see Components).
-- **Contrast** meets AA (see Colour).
-- **Reduced motion respected.** Non-essential animation is wrapped in
-  `prefers-reduced-motion`; avoid autoplay motion and rapid flashing. [WCAG 2.3.3]
-- **Never colour alone** to convey meaning (see Colour).
+## Interaction decisions
 
-The Global `accessibility` skill is the procedure for meeting and auditing these.
+These are not thresholds. They are questions resolved **during design, before implementation**,
+whose answers are recorded in the project's `DESIGN.md`. Any answer is valid, including "no, not
+worth it for this surface". They are never raised as review findings, and no severity attaches to
+them — an unanswered question is a gap in the design step, not a defect in the code.
+
+They exist because these are the decisions that quietly never get made. A surface ships with a
+delete button and no Delete key, not because anyone decided against it, but because nothing asked.
+
+Which of these apply is scoped by the project's usage context (captured at `new-project` Gate 1):
+
+- **Keyboard paths for frequent actions.** For each action on this surface, is there a keyboard
+  route a daily operator would want? Delete on a selected item, Enter to submit, Escape to close
+  or cancel, arrow keys to move within a list or grid, a shortcut for the single most-used action.
+  This is what separates a tool driven at speed every day from one clicked through.
+- **Focus behaviour on state change.** When a modal, drawer, or panel opens, where does focus go?
+  When it closes, where does it return? Left unanswered this is a daily irritation for whoever
+  operates the tool.
+- **Control sizing by frequency.** Which controls are hit most often, and are they sized and
+  placed for that frequency? (See Components.)
+- **Presentation robustness** — asked when the usage context includes a projector, a client's
+  screen, or an unfamiliar resolution. Does the layout survive browser zoom and a resolution
+  change without breaking? This is a requirement of presenting, unrelated to eyesight.
+
+Where a project's usage context makes one irrelevant, record that and move on. The record is the
+point: a decision taken is retrievable, a question never asked is not.
 
 ## Nielsen's Heuristics — Secondary Audit Layer
 
@@ -216,11 +262,13 @@ second-pass usability audit. They are qualitative checks, not numeric thresholds
 
 ## Review Severity
 
+Nothing in this rule blocks a merge. Interaction decisions carry no severity at all — they are
+design-step outputs, not review findings.
+
 | Level | Example | Action |
 |---|---|---|
-| CRITICAL | Any `[STANDARD]` accessibility failure (contrast below AA, no visible focus, keyboard trap, meaning by colour alone) | BLOCK — fix before merge |
 | HIGH | Missing empty/error/loading state; destructive action with no guard; placeholder-as-label; off-scale spacing throughout | Fix before merge |
-| MEDIUM | Weak hierarchy; inconsistent component states; too many type sizes | Fix when reasonable |
+| MEDIUM | Body text below the contrast default with no `DESIGN.md` override; no visible focus style; weak hierarchy; inconsistent component states; too many type sizes | Fix when reasonable |
 | LOW | Minor rhythm or alignment polish | Note, optional |
 
 ## Related rules

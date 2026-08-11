@@ -82,7 +82,27 @@ coverage provided by a cross-stack artifact rather than a language-specific one.
   `design-principles.md`) is a framework-agnostic ruleset, not a language row. `new-project`
   provisions it alongside every web frontend stack (React, Angular, Vue, Nuxt, General web),
   so design standards apply regardless of framework. Native-UI stacks (Swift, Kotlin, Flutter,
-  ArkTS) do not receive it — these rules are web-specific (CSS tokens, web WCAG, viewport).
+  ArkTS) do not receive it — these rules are web-specific (CSS tokens, viewport, DOM semantics).
+- **Accessibility conformance is out of scope by design.** No rule, skill, or agent in this store
+  enforces WCAG, and the `accessibility` skill has been retired to `Archive/`. The reason is the
+  delivery model: these projects are internal tooling operated by Emendo consultants, in house and
+  when presenting at client sites. Nothing is delivered to client staff to operate, and nothing is
+  sold as a product, so no conformance regime applies. This is a deliberate gap, not an oversight.
+
+  What replaced it is not nothing. The craft that a conformance floor was carrying incidentally is
+  handled directly, and better, because it is now decided rather than audited:
+  - **Legibility defaults** in `design-principles.md` — contrast thresholds and visible focus, kept
+    with their real reasons (presbyopia, projectors, borrowed screens) and overridable per project.
+  - **Usage context** captured at `new-project` Gate 1 into `docs/PRD.md` — device, viewport range,
+    input devices, and whether presentation robustness applies. Everything downstream derives from
+    it instead of assuming.
+  - **Interaction decisions** asked at `implement-milestone` Step 5 and recorded in `docs/DESIGN.md`
+    — keyboard paths for frequent actions, focus behaviour on state change, control sizing by
+    frequency, presentation robustness. Any answer including "no" is valid; the record is the point.
+
+  If a project ever does need conformance — a client requires it in procurement, or a tool becomes
+  something delivered — restore the archived skill per `Archive/README.md`, which lists the defects
+  to fix before trusting it.
 - **TypeScript backend sub-stack skills.** Beyond the general `frontend-patterns` /
   `backend-patterns` in the matrix, the TypeScript backend surface also ships targeted skills
   provisioned when the stack calls for them: `prisma-patterns` (Prisma ORM, incl. Prisma 7)

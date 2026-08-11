@@ -53,8 +53,29 @@ for a hard sign-off (a rendered view where the environment allows it) and wait f
 explicit approval before implementing. If `docs/DESIGN.md` does not yet exist, establish it first
 per Step 2.
 
-Done: the milestone's UI screens are designed against `docs/DESIGN.md` and the user has signed off,
-or the milestone has no UI and this step was skipped.
+**Then resolve the interaction decisions for each surface this milestone adds**, before
+implementing and as part of the same sign-off. These are the questions in
+`design-principles.md`'s Interaction decisions section, scoped by the project's usage context in
+`docs/DESIGN.md`. Ask them one at a time, per the interaction-design doctrine:
+
+- **Keyboard paths.** For each action on this surface, is there a keyboard route a daily operator
+  would want? Delete on a selected item, Enter to submit, Escape to close, arrow keys within a
+  list, a shortcut for the most-used action.
+- **Focus on state change.** When a modal, drawer, or panel opens, where does focus go, and where
+  does it return on close?
+- **Control sizing.** Which controls are hit most often, and are they sized and placed for it?
+- **Presentation robustness** — only when the usage context includes a projector, a client's
+  screen, or an unfamiliar resolution.
+
+Any answer is valid, including "no, not worth it for this surface". Record every answer in
+`docs/DESIGN.md` under Interaction decisions — including the negatives, so the question is not
+re-asked and the decision stays retrievable. Leaving one blank is the failure mode this step
+exists to prevent: a surface ships with a delete button and no Delete key not because anyone
+decided against it, but because nothing asked.
+
+Done: the milestone's UI screens are designed against `docs/DESIGN.md`, the interaction decisions
+for each new surface are answered and recorded, and the user has signed off — or the milestone has
+no UI and this step was skipped.
 
 ## Step 6 — Build red-green
 
@@ -70,6 +91,12 @@ If Step 2 flagged UI, also run a design review: screenshot the built screen (via
 `verify` skill where the environment supports it) and check it for conformance to `docs/DESIGN.md`,
 plus the `design-quality.md` (aesthetics) and `design-principles.md` (craft floor) rules —
 verified visually, not asserted. For a backend-only milestone this review does not run.
+
+The design review checks that what shipped matches the decisions Step 5 recorded — including that
+the keyboard paths signed off there actually work. It does not re-open those decisions: an
+interaction decision carries no severity, and "this surface has no keyboard shortcut" is not a
+finding when Step 5 recorded that answer. An interaction decision left *unanswered* is a gap in
+Step 5, to be resolved there, not escalated here.
 
 Done: reviews are clean, or their CRITICAL and HIGH findings are fixed and re-verified.
 

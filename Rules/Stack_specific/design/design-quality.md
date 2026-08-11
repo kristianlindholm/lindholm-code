@@ -6,9 +6,9 @@
 This rule states the aesthetic standard (the WHAT) — distinctiveness and anti-template
 policy. For the procedure to reach it — aesthetic direction, a color/type/layout/signature
 token system, and self-critique against AI-default looks — apply the Global `frontend-design`
-skill (the HOW). For the measurable usability-craft floor that every direction must clear
-(layout, type, colour, states, forms, navigation, accessibility), see the companion
-[design-principles.md](design-principles.md).
+skill (the HOW). For the usability-craft floor that every direction must clear (layout, type,
+colour, states, forms, navigation, legibility) and the interaction decisions taken during
+design, see the companion [design-principles.md](design-principles.md).
 
 ## Anti-Template Policy
 
