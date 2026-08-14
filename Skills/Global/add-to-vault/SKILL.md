@@ -10,7 +10,7 @@ Captures the substantial explanations Claude gave in the current conversation �
 
 The conversation is the source: not the user's own inputs, and not fresh-topic research — research only fills concrete gaps. Write only what is verified, and never break the vault's format. A note that states an unconfirmed claim as fact, or that reads unlike its neighbours, is a defect, not a contribution.
 
-The vault holds two sections under one root — a general **Claude Code** section and a **Lindholm Code framework** section. One run writes to exactly one section; the skill asks which before building the candidate list.
+The vault holds two sections under one root — a general **Claude Code** section and a **Lindholm Code framework** section. Every note lands in exactly one section; a run may cover one section or both. The skill asks which before building the candidate list.
 
 ## Step 1 — Scan the session for candidates
 
@@ -40,16 +40,20 @@ Done: the vault root is resolved, and confirmed by a `.obsidian/` folder plus a 
 
 ## Step 3 — Choose the target section
 
-The vault has two sections, and one run writes to exactly one of them. Read the root to find the two section folders, then ask the user which to write to as a numbered choice, closing with a single `Which? (1-2)` (the global interaction-design doctrine):
+The vault has two sections. Every note lands in exactly one of them, but a single run may cover both. Read the root to find the two section folders, then ask the user which to write to as a numbered choice, closing with a single `Which? (1-3)` (the global interaction-design doctrine):
 
 1. **Claude Code** — general, product-level knowledge of how Claude Code itself works: concepts, skills, hooks, agents, memory, rules, commands, workflow. Nothing project-specific and nothing framework-specific. Its folder is the general section (currently `01. Claude Code/`), holding the topic subfolders `Core Concepts`, `Skills`, `Hooks`, `Agents`, `Memory`, `Rules & Config`, `Commands`, `Workflow Optimization`; notes are tagged `#claude-code`.
 2. **Lindholm Code framework** — how *this* framework is built and used: its agents, skills, rules, commands, lifecycle, and authoring conventions. Its folder is the framework section (currently `02. Lindholm Code Framework/`), with lifecycle skills under its `Meta-Skills/` subfolder; notes are tagged `#lindholm-code`.
 
+3. **Both** — cover the two sections in one run, as sequential passes.
+
 Match the sections by role, not by exact name — take the general Claude Code folder and the framework folder as they actually appear at the root. Wait for the pick.
 
-Then keep only the Step 1 candidates that belong to the chosen section. If a strong candidate clearly belongs to the *other* section, list it under a short "belongs to the other section" note and suggest re-running the skill with that section — do not capture it here. If nothing remains for the chosen section, say so (pointing to any other-section candidates) and stop.
+**On 1 or 2**, keep only the Step 1 candidates that belong to the chosen section. If a strong candidate clearly belongs to the *other* section, list it under a short "belongs to the other section" note and suggest re-running the skill with that section — do not capture it here. If nothing remains for the chosen section, say so (pointing to any other-section candidates) and stop.
 
-Done: the target section is chosen, candidates are filtered to it, and any cross-section candidates are noted for a separate run.
+**On 3**, run the sections as two sequential passes, the general Claude Code section first. Each pass resolves its own destinations and its own new-vs-update against its own section only, exactly as a separate run would. Every note still belongs to one section — covering both never merges them and never lets a subject straddle the boundary. Nothing is deferred, since both sections are covered.
+
+Done: the target section or sections are chosen, candidates are filtered to each, and any candidate outside the chosen scope is noted for a separate run.
 
 ## Step 4 — Build and present the candidate list
 
