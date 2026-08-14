@@ -24,15 +24,19 @@ Done: a set of substantial-explanation subjects is identified, or the skill has 
 
 ## Step 2 — Locate the vault
 
-Resolve the vault root in order:
+Resolve the vault root:
 
-1. A path supplied in the invocation or command context.
-2. The `$OBSIDIAN_CLAUDE_VAULT` environment variable.
-3. Otherwise, ask the user for it, and suggest setting `$OBSIDIAN_CLAUDE_VAULT` so it resolves automatically next time.
+1. A path supplied in the invocation or command context — use it.
+2. Otherwise **ask, every run**, as a single open question.
 
-Confirm the resolved root contains `00 - Home.md` (the master index). If it does not, stop and report — this is not the vault.
+Do not read `$OBSIDIAN_CLAUDE_VAULT` or any other stored default, and do not offer to set one. The vault is chosen per run by design, so a run can target a different vault than the last: asking is the feature, not a fallback.
 
-Done: the vault root is resolved and validated by the presence of `00 - Home.md`.
+Then confirm the resolved root really is an Obsidian vault:
+
+- It contains a `.obsidian/` folder. This is the definitive marker — if it is absent, stop and report, because this is not a vault.
+- It contains a top-level home index note (currently `00. Home.md`). Match it by role, not by exact filename: take the top-level note that acts as the master index. If the name differs from the one above, use the note that is actually there rather than stopping.
+
+Done: the vault root is resolved, and confirmed by a `.obsidian/` folder plus a top-level home index note.
 
 ## Step 3 — Choose the target section
 
@@ -87,9 +91,9 @@ Done: each selected subject is written or merged and reads like the notes alread
 
 ## Step 7 — Wire new notes into the index
 
-A note nothing links to is an orphan. For a new note, index it the way sibling notes in the same section are reached — directly from `00 - Home.md` under its section (add a Quick Reference row if it fits that table), or, where that folder is indexed indirectly, through the hub or roster note that lists it (for example `Framework Skills` for a framework skill). Then add reciprocal `[[wikilinks]]` from the `## Related` sections of the closest existing notes. For an update to an already-indexed note, no new index line is needed — confirm the existing links still resolve.
+A note nothing links to is an orphan. For a new note, index it the way sibling notes in the same section are reached — directly from the home index note under its section (add a Quick Reference row if it fits that table), or, where that folder is indexed indirectly, through the hub or roster note that lists it (for example `Framework Skills` for a framework skill). Then add reciprocal `[[wikilinks]]` from the `## Related` sections of the closest existing notes. For an update to an already-indexed note, no new index line is needed — confirm the existing links still resolve.
 
-Done: every written note is reachable from `00 - Home.md`, at least one sibling note back-links to each new note, and no orphan remains.
+Done: every written note is reachable from the home index note, at least one sibling note back-links to each new note, and no orphan remains.
 
 ## Step 8 — Report
 
