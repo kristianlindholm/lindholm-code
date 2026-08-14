@@ -150,7 +150,7 @@ Never silently skip a push, and never report a milestone as pushed when it was n
   docs/PROGRESS.md (a tracked file) forces a redundant follow-up commit on main
   every wrap. The SHA already lives in two authoritative places without churn:
   `git log --graph` (the record) and `.claude/wrap-it-up.json` `lastWrappedSha`
-  (untracked local baseline, written in step 10). The archive's Housekeeping log records the
+  (untracked local baseline, written in step 11). The archive's Housekeeping log records the
   merge as prose (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
 - Always print the plan in this format before executing — milestone wrap example
   (GitHub-backed; the remote is always confirmed before the push is listed):
@@ -192,7 +192,8 @@ after). Only then report "pushed." If the push failed, report the actual state a
 `docs/CHECKLIST.md` (granular tasks captured by `save-for-later` and `give-feedback`, executed by
 `implement-task`) is **finalized** here, never **triaged** here. This skill only commits tasks
 `implement-task` already completed; it does not scan the backlog, promote open `[ ]` items, or
-decide what to work on next.
+decide what to work on next. It appends exactly one kind of new entry — a session finding the user
+approved at the findings sweep (see "Findings sweep") — and that is a write, not a triage.
 
 When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 
@@ -209,6 +210,56 @@ When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 `docs/CHECKLIST.md` is distinct from docs/PROGRESS.md's "Deferred / future tasks": the checklist
 holds granular captured side-tracks, "Deferred" holds milestone-scale future work. Do not move
 items between them.
+
+## Findings sweep
+
+A finding raised during the session and left in the conversation dies with the session —
+`continue-project` reads `docs/CHECKLIST.md`, not the transcript. Sweep before the git step so
+anything worth keeping lands in this wrap's commit, and so the closing instruction stays a pointer
+instead of a list of loose ends.
+
+**What qualifies.** Anything raised this session under the flagging convention — a severity dot
+and its label — that is not already fixed or already written into a document. That convention is
+the bar: it covers risks, warnings, cautions, blockers, and severity-rated findings, and
+explicitly not ordinary explanation or neutral observation. Something never flagged does not
+become a finding here.
+
+**Routing.**
+
+- **A governing-document gap** — something `CLAUDE.md` should say and does not — belongs to step
+  8's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not bring it
+  here.
+- **Anything actionable as work** becomes a proposed `docs/CHECKLIST.md` entry, gated below.
+
+**The gate — one finding per turn.** For each proposed entry, in its own message:
+
+1. State in plain language what was found and why it outlives this session. The entry itself is
+   one line and loses the reasoning; the decision needs the reasoning.
+2. Show the exact entry that would be written.
+3. Close with `Add to the checklist? (Y/N)` (global interaction-design doctrine).
+
+Never batch several findings behind one prompt, and never write an entry before its own Y.
+
+**On N, drop it.** Record it nowhere. A live problem resurfaces from the product on its own; a
+note about a past state does not earn a place in the queue every future session reads.
+
+**Entry format** — identical to `save-for-later`'s, which owns this format; `give-feedback` writes
+it too. If the format changes, change it there first and propagate.
+
+```markdown
+- [ ] 2026-08-14 | the sed -i route in CLAUDE.md strips CR from CRLF files
+      while: wrapping the fully-manual planning task
+```
+
+Use today's date; the `while:` clause names the wrap this surfaced in. Append to the end of the
+file, never overwriting existing entries.
+
+**Appending is not triaging.** A new `[ ]` entry the user has just approved is not a scan, a
+promotion, or a pick from the backlog (see "What this skill does not do"). That prohibition
+governs the open items already on the list, which this step never reads for prioritisation.
+
+**Most wraps surface nothing.** When no flagged finding is outstanding, this step is silent — no
+prompt, and no mention in the closer.
 
 ## Persistence — `.claude/wrap-it-up.json`
 
@@ -262,13 +313,15 @@ leave the rest untouched.
    If found, invoke the graphify update workflow before the git step so that the updated graph
    is included in the milestone commit.
 8. If CLAUDE.md has proposed additions → show diff → confirm.
-9. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
-   execute (or skip) → if a push ran, **verify it landed** before reporting success (see "After a
-   push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
-   removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
-10. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
-11. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
-12. Print a **short** closing instruction (see below).
+9. **Findings sweep** — route this session's severity-flagged findings that are not already fixed
+   or recorded; each proposed checklist entry is gated on its own (see "Findings sweep").
+10. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
+    execute (or skip) → if a push ran, **verify it landed** before reporting success (see "After a
+    push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
+    removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
+11. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
+12. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
+13. Print a **short** closing instruction (see below).
 
 ## Closing Instruction (keep it short)
 
@@ -366,7 +419,8 @@ once every milestone is complete, and `/security-check` ticks it>
 <current milestone only — prior milestones roll to docs/PROGRESS-ARCHIVE.md>
 
 ## What works right now
-<verified capabilities with evidence>
+<verified capabilities — what works and how it was verified; any figure carries the wrap it was
+measured at, never a bare present-tense count>
 
 ## How to run
 <commands, refreshed from the verification gate>
@@ -377,7 +431,7 @@ once every milestone is complete, and `/security-check` ticks it>
 ## Deferred / future tasks (don't lose these)
 
 ## RESUME HERE — <next milestone>
-<2-3 line pointer: what's done, what's next, method — milestone-level only; never a count or list of open checklist items (those live in docs/CHECKLIST.md)>
+<2-3 line pointer: what's done, what's next, method — milestone-level only; no figure stated as currently true (point at the command that produces it) and no list of open checklist items (those live in docs/CHECKLIST.md)>
 
 ## Housekeeping
 Full history, the merge log & per-milestone review logs live in `docs/PROGRESS-ARCHIVE.md`.
@@ -411,5 +465,15 @@ Merged: <e.g. M<n> merged --no-ff into main on <YYYY-MM-DD> (branch feat/...)>
 - **Hardcoding the milestone status token.** Use the table's own legend (`complete`/`done`/…)
   and keep its parenthetical annotations.
 - **Treating this like `/save-session`.** This is for *completed* milestones, not checkpoints.
-- **Triaging the checklist.** Only commit `[x]` tasks `implement-task` finished; never scan, promote, or pick open `[ ]` items here.
-- **Restating an open-items count/list in RESUME HERE or Next steps.** The open granular set lives only in `docs/CHECKLIST.md`, the single countable surface; a count copied into the note duplicates it and can only go stale (`continue-project` reads the checklist directly). State milestone-level next steps only.
+- **Triaging the checklist.** Only commit `[x]` tasks `implement-task` finished; never scan, promote, or pick open `[ ]` items here. Appending a new `[ ]` entry the user approved at the findings sweep is not triaging (see "Findings sweep").
+- **Writing a figure as currently true where nothing updates it.** The warm doc's current-state
+  sections are regenerated only at a milestone wrap, so "999 tests pass" turns false the moment a
+  task changes the count and nothing corrects it. A figure that might be stale is worse than none —
+  its only use is as a baseline, and an untrustworthy baseline sends the reader to run the command
+  anyway. Anchor it or omit it: "at the M35 wrap, 1022 tests passed" stays true, and belongs in the
+  archive's review log, which already carries test deltas. In the warm doc, point at the command
+  that produces the number. A standing figure already sitting there is a finding for the sweep (see
+  "Findings sweep") — this rule stops new ones, the sweep clears the old.
+- **Restating an open-items count/list in RESUME HERE or Next steps.** The instance of the above
+  that bites most often: the open granular set lives only in `docs/CHECKLIST.md`, the single
+  countable surface, and `continue-project` reads it directly. State milestone-level next steps only.
