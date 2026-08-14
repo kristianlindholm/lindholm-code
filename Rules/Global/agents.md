@@ -24,6 +24,8 @@ No user prompt needed:
 3. Bug fix or new feature - Use the `tdd` skill (test-first)
 4. Architectural decision - Use **architect** agent
 
+These fire inside a skill the user invoked by name, and that invocation is the request — no further prompt is needed, and none should be asked for. See the Delegation section of the global `CLAUDE.md`. On your own initiative outside an invoked skill, ask first.
+
 ## Parallel Task Execution
 
 Dispatch independent work concurrently — multiple agent calls in a single message run in parallel; one call per message runs sequentially.

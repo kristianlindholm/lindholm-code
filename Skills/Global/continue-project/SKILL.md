@@ -69,13 +69,18 @@ If docs/PROGRESS.md has a RESUME HERE section:
 - Read that section.
 - Read `.claude/wrap-it-up.json` — note `lastWrappedSha` and `lastWrappedAt`.
 
+Then read the Delivery Milestones table together with the Final gate section:
+- Every milestone complete and the Final gate unticked (`- [ ]`): the delivery plan is finished and the one remaining item is the codebase-wide security audit. Classify the project as awaiting-final-gate.
+- Every milestone complete and no Final gate section present (a project predating it): classify it the same way, and offer to add the section to docs/PROGRESS.md.
+- Milestones still pending: the Final gate is not yet due. Do not surface it.
+
 `docs/PROGRESS-ARCHIVE.md` (if present) is the project's **cold history** — completed-milestone
 narratives, per-milestone review logs, and the merge log that `wrap-it-up` rolls out of the warm
 doc. It is deliberately **not** part of the resume path: do not read it at session start. Consult
 it **on demand** later, when a specific question needs a past decision or review finding — it is a
 reachable resource, not a forbidden one.
 
-Done: the project is classified as first-session, resumable-from-session-file, or resumable-from-milestone, with the relevant file read; and any parked checklist tasks are noted.
+Done: the project is classified as first-session, resumable-from-session-file, resumable-from-milestone, or awaiting-final-gate, with the relevant file read; and any parked checklist tasks are noted.
 
 ## Step 4 — Check git integrity
 
@@ -112,6 +117,8 @@ When this step offers the user a choice, follow the global interaction-design do
 decision per message, options as a numbered list closing with a single `Which? (1-N)`.
 
 Clean state: print the current milestone and what is next. Recommend `/implement-milestone` to execute the next milestone to best practice. Wait for direction.
+
+Awaiting-final-gate: report that every milestone is complete and the one item left is the codebase-wide security audit. Recommend `/security-check`. Do not recommend `/implement-milestone` — no milestone remains to run, and the audit is not one.
 
 If `docs/CHECKLIST.md` holds open `[ ]` tasks: list them, numbered by open-item ordinal (count only `[ ]` items, skipping any `[x]` entries — this is how `/implement-task` resolves `<n>`), as a pickable option alongside the milestone path, and offer `/implement-task <n>` to execute one. The milestone path stays primary; the checklist is an alternative, not a replacement. These are granular parked side-tracks, distinct from docs/PROGRESS.md's milestone-scale "Deferred / future tasks". If any `[x]` done-awaiting-commit tasks exist, note them once: "done, awaiting commit — run `/wrap-it-up`".
 

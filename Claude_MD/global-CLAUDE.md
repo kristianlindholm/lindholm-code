@@ -54,6 +54,22 @@ never appears without its label — meaning is never carried by color alone. Thi
 orthogonal to the Interaction design doctrine: flags emphasize cautions in the body;
 closing decision prompts still follow that doctrine unchanged.
 
+## Delegation
+
+A skill invoked by name is a request for the agents its steps name. At
+`/implement-milestone`'s review gate the `code-reviewer` call is requested — run it
+without asking. This records what the invocation means; it confers no precedence over
+anything. A restriction on unrequested agent calls is satisfied by it, not overridden.
+
+Outside an invoked skill's steps that restriction binds as written. An agent reached for
+on your own initiative — an exploratory fan-out, an unprompted `architect` pass, a skill
+you invoked yourself rather than the user — is not requested. Ask first.
+
+A review you perform yourself is not the review the step asked for, and does not partly
+satisfy it. Dispatch the named agent. If it genuinely cannot run, the step is not done:
+name the agent, say why, and stop for a decision. Concluding that the call is authorised
+and then doing the work by hand anyway is the failure this paragraph exists to prevent.
+
 ## The ruleset
 
 Detailed standards are installed at `~/.claude/rules/`. Consult the relevant file

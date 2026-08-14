@@ -222,9 +222,21 @@ Create docs/PROGRESS.md with this structure:
 | Milestone | Scope | Done-criteria | Status |
 |---|---|---|---|
 | [name] | [scope] | [criteria] | pending |
+
+## Final gate
+
+- [ ] Full codebase security audit — run `/security-check` once every milestone above is complete.
 ```
 
 One row per milestone. wrap-it-up fills in all other docs/PROGRESS.md sections on the first wrap.
+
+The Final gate is deliberately not a milestone. It produces no code, `/implement-milestone`
+never runs it, and `wrap-it-up` never triggers it. Each milestone already gets a diff-scoped
+security review at its own review step; this is the single codebase-wide audit, run once at the
+end so the assembled whole is checked and not only each part in isolation. `continue-project`
+surfaces it at the start of a session once every milestone is complete, and `/security-check`
+ticks the box when the audit passes. It stays a checkbox so there is never any ambiguity about
+whether it was done.
 
 Present the milestone plan. Wait for confirmation.
 

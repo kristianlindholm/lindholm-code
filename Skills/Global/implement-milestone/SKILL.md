@@ -38,7 +38,7 @@ Done: for each non-trivial part, you have either adopted an existing approach or
 
 ## Step 4 — Plan if Step 2 flagged it
 
-If Step 2 called for planning, invoke the `planner` agent for an ordered, phased plan, and record any genuine architectural decision as an ADR. Otherwise state that the milestone is small enough to implement directly.
+If Step 2 called for planning, invoke the `planner` agent for an ordered, phased plan, and record any genuine architectural decision as an ADR. Otherwise state that the milestone is small enough to implement directly. Invoking this skill is the request for the `planner` agent — dispatch it without re-asking.
 
 Done: a confirmed plan exists, or planning is explicitly waived with its reason.
 
@@ -79,13 +79,13 @@ no UI and this step was skipped.
 
 ## Step 6 — Build red-green
 
-For every part Step 2 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the remaining parts directly against the done-criteria. Write all product code — source, tests, and the project manifest — under `product/`, and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`.
+For every part Step 2 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the remaining parts directly against the done-criteria. Write all product code — source, tests, and the project manifest — under `product/`, and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`: invoking this skill is the request for that agent, so dispatch it rather than quietly fixing the build yourself.
 
 Done: the milestone's done-criteria are met and the test and build commands pass — confirmed with evidence, not assumed.
 
 ## Step 7 — Review
 
-Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
+Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this milestone's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
 
 If Step 2 flagged UI, also run a design review: screenshot the built screen (via the `run` or
 `verify` skill where the environment supports it) and check it for conformance to `docs/DESIGN.md`,

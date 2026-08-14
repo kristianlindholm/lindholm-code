@@ -39,13 +39,13 @@ Done: an existing approach is adopted, or none fits and that is confirmed.
 
 ## Step 4 — Build red-green
 
-For every part Step 2 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the rest directly against the done-criterion. Write product code under `product/` and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`.
+For every part Step 2 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the rest directly against the done-criterion. Write product code under `product/` and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`: invoking this skill is the request for that agent, so dispatch it rather than quietly fixing the build yourself.
 
 Done: the task's done-criterion is met and the test and build commands pass — confirmed with evidence, not assumed.
 
 ## Step 5 — Review
 
-Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
+Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this task's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
 
 Done: reviews are clean, or their CRITICAL and HIGH findings are fixed and re-verified.
 
