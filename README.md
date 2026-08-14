@@ -55,9 +55,8 @@ A second distinction governs *where* things are installed:
 | Layer | Global | Stack-specific |
 |-------|--------|----------------|
 | **Rules** | 10 rule files: coding style, testing, code review, security, git workflow, development workflow, agent orchestration, patterns, performance, hooks | Per-language rule sets for 21 stacks (TypeScript, Python, Go, Rust, Swift, Kotlin, and more), plus shared web design rules |
-| **Skills** | 17 skills: the project lifecycle (`new-project`, `implement-milestone`, `wrap-it-up`, ...), TDD, systematic debugging, security auditing, requirements interviewing, and more | 34 skills: language patterns and testing guides, framework deep-dives, and infrastructure skills (Docker, Postgres, Redis, deployment) |
+| **Skills** | 16 skills: the project lifecycle (`new-project`, `implement-milestone`, `wrap-it-up`, ...), TDD, systematic debugging, security auditing, requirements interviewing, and more. User-facing skills are typed as `/<name>` — a skill registers its own slash entry, so there are no separate command files | 34 skills: language patterns and testing guides, framework deep-dives, and infrastructure skills (Docker, Postgres, Redis, deployment) |
 | **Agents** | 5 agents: planner, architect, code-reviewer, code-simplifier, security-reviewer | 25 agents: per-language reviewers and build-resolvers |
-| **Commands** | 13 slash commands — the user-facing entry points to the lifecycle skills | — |
 | **CLAUDE.md** | The shipped global developer-preferences file that wires it all together | — |
 
 ## How the pieces work together
@@ -71,7 +70,6 @@ flowchart TD
         RULES["Rules<br/>coding style, testing, security,<br/>review, git, workflow"]
         SKILLS["Skills<br/>new-project, tdd, debugging,<br/>security-check, wrap-it-up, ..."]
         AGENTS["Agents<br/>planner, architect, code-reviewer,<br/>code-simplifier, security-reviewer"]
-        CMDS["Commands<br/>/new-project, /grill-me,<br/>/implement-milestone, ..."]
     end
 
     subgraph PROJECT["Per-project layer — provisioned by /new-project"]
@@ -83,7 +81,6 @@ flowchart TD
     CM --> RULES
     RULES --> SKILLS
     RULES --> AGENTS
-    CMDS --> SKILLS
     SKILLS -- "provisions, per stack" --> PROJECT
     PRULES -. "override" .-> RULES
 ```
@@ -170,7 +167,6 @@ flowchart LR
         RG["Rules/Global/"]
         SG["Skills/Global/"]
         AG["Agents/Global/"]
-        CG["Commands/Global/"]
         CMD["Claude_MD/global-CLAUDE.md"]
         STACK["*/Stack_specific/"]
     end
@@ -179,7 +175,6 @@ flowchart LR
         HR["rules/"]
         HS["skills/"]
         HA["agents/"]
-        HC["commands/"]
         HCM["CLAUDE.md"]
     end
 
@@ -190,7 +185,6 @@ flowchart LR
     RG --> HR
     SG --> HS
     AG --> HA
-    CG --> HC
     CMD --> HCM
     STACK --> PA
 ```
@@ -200,8 +194,7 @@ flowchart LR
 1. Each `Rules/Global/<topic>.md` to `~/.claude/rules/<topic>.md`.
 2. Each `Skills/Global/<name>/` folder **in full** to `~/.claude/skills/<name>/` — skills ship disclosed reference files that must travel with them.
 3. Each `Agents/Global/<name>.md` to `~/.claude/agents/<name>.md`.
-4. Each `Commands/Global/<name>.md` to `~/.claude/commands/<name>.md`.
-5. `Claude_MD/global-CLAUDE.md` to `~/.claude/CLAUDE.md`.
+4. `Claude_MD/global-CLAUDE.md` to `~/.claude/CLAUDE.md`.
 
 Back up your existing `~/.claude/` first — installation overwrites by name.
 

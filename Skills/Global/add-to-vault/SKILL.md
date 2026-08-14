@@ -28,7 +28,7 @@ Resolve the vault root in order:
 
 1. A path supplied in the invocation or command context.
 2. The `$OBSIDIAN_CLAUDE_VAULT` environment variable.
-3. Otherwise, ask the user for it, and suggest recording it in the command wrapper so it resolves automatically next time.
+3. Otherwise, ask the user for it, and suggest setting `$OBSIDIAN_CLAUDE_VAULT` so it resolves automatically next time.
 
 Confirm the resolved root contains `00 - Home.md` (the master index). If it does not, stop and report — this is not the vault.
 

@@ -56,3 +56,33 @@ the project's `DESIGN.md`. See the note in `COVERAGE.md`.
   Neither exists as a Global skill; both are `Stack_specific`.
 - Two genuine criteria were missing: SC 3.3.8 Accessible Authentication (Minimum) (AA) and
   SC 3.2.6 Consistent Help (A).
+
+### `Commands/Global/` — all 13 wrappers, retired 2026-08-14
+
+**What it was.** One four-line wrapper per user-invoked Global skill: frontmatter `description`
+plus the body line `Invoke the <name> skill and follow it exactly.` They existed to give the user
+a `/name` entry point, back when a skill could not be typed directly.
+
+**Why it was retired.** Claude Code merged slash commands and skills. The official documentation
+states that "A file at `.claude/commands/deploy.md` and a skill at `.claude/skills/deploy/SKILL.md`
+both create `/deploy`", and the changelog records the merge as "simplifying the mental model with
+no change in behavior". A skill now registers its own slash entry, so every wrapper was redundant
+on the path it was written for.
+
+Worse, each wrapper was a second registry entry under the same name carrying no
+`disable-model-invocation` flag. For the 11 wrappers shadowing a guarded skill this defeated that
+guard: the skill was correctly barred from the model's registry by its own flag, and the unguarded
+wrapper filled the slot. Confirmed in a live transcript — the model called
+`Skill(skill="implement-milestone")` against a guarded skill and received
+`{"success":true,"commandName":"implement-milestone"}`, with the wrapper's body injected rather
+than the skill's. The documented precedence rule ("the skill takes precedence... the command is
+never consulted") holds for the user-typed path but not for model invocation of a barred skill.
+
+**Before restoring any of these.** Do not restore a wrapper whose skill carries
+`disable-model-invocation: true` — it reopens the bypass. If a wrapper is ever genuinely needed
+again, give it the same guard as its skill.
+
+**One content note.** `add-to-vault.md` was the only wrapper carrying anything beyond the
+boilerplate: a paragraph on setting `$OBSIDIAN_CLAUDE_VAULT` before running. That ground is
+already covered by the skill's Steps 2 and 3, and the skill's stale pointer to "record it in the
+command wrapper" was rewritten to name the environment variable instead. Nothing was lost.

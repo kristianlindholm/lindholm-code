@@ -39,7 +39,8 @@ paths:
 
 - Server routes run with full network egress. Never pass user-controlled input directly into a server-side `$fetch` URL or host.
 - Validate the param first (h3 utilities above), allowlist the target, pin to `runtimeConfig.public.apiBase`, reject user-supplied absolute URLs.
-- Auto-trigger `/security-check` only for routes that make external network requests (server `$fetch`), handle auth tokens or credentials, or perform sensitive mutations or authorization checks. Examples: SSRF-prone proxy endpoints, token exchange or password reset, admin actions. Skip benign read-only routes that only accept validated query params.
+- Treat these routes as a `code-review.md` security trigger: a route that makes external network requests (server `$fetch`), handles auth tokens or credentials, or performs sensitive mutations or authorization checks must have `security-reviewer` included in the milestone's review step, scoped to that route's diff. Examples: SSRF-prone proxy endpoints, token exchange or password reset, admin actions. Skip benign read-only routes that only accept validated query params.
+- Do not invoke `/security-check` for this. That is the user-invoked, codebase-wide audit that runs once at the end of the milestone plan — not a per-route tool, and not something to trigger automatically.
 
 ## Reference
 

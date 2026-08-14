@@ -354,6 +354,14 @@ in git, since docs/PROGRESS.md is tracked. This invariant is the acceptance chec
 > Handoff/status doc. Read this (plus `CLAUDE.md` and `docs/PRD.md`) when resuming work.
 > Last updated: <YYYY-MM-DD>.
 
+## Delivery Milestones
+<the milestone table from new-project — preserved across wraps; only status tokens change>
+
+## Final gate
+<the codebase-wide security-audit checkbox — preserved across wraps, never regenerated or
+removed. wrap-it-up does not tick it and does not trigger it: `continue-project` surfaces it
+once every milestone is complete, and `/security-check` ticks it>
+
 ## Where we are
 <current milestone only — prior milestones roll to docs/PROGRESS-ARCHIVE.md>
 

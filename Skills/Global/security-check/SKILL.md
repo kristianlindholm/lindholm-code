@@ -10,6 +10,14 @@ Full security and privacy audit. Run on demand or at the end of an implementatio
 
 CRITICAL findings block further implementation until resolved.
 
+## How this audit runs
+
+Dispatch the `security-reviewer` agent for the code-level areas — 2 (authentication and authorization), 3 (input validation), 4 (injection risks), 5 (client exposure) and 6 (dependencies) — and state its scope explicitly: the whole repository. This is the one place that scope is correct; `implement-milestone` and `implement-task` scope the same agent to a diff. Invoking this skill is the request for that agent, so dispatch it without re-asking.
+
+Keep area 1 yourself, together with area 5's git-history question. Privacy, retention, consent, and secrets buried in git history rather than the working tree are not in the agent's brief, and they are why this is a privacy audit as well as a security one.
+
+You also own the severity classification, the blocking rule, and the verdict. The agent reports findings; this skill decides what they mean.
+
 ## Review Areas
 
 Work through each area in order. Flag every finding — do not filter by perceived severity before listing.
@@ -65,3 +73,9 @@ Severity levels:
 - MEDIUM: real risk, address before production release.
 
 End with a summary: total findings by severity, and whether implementation may continue.
+
+## Closing the Final gate
+
+If `docs/PROGRESS.md` carries a Final gate checkbox, every milestone is complete, and this audit finished with no unresolved CRITICAL finding, tick it: change `- [ ]` to `- [x]`, leaving the line otherwise unchanged.
+
+Leave it unticked while any CRITICAL finding stands, and say so plainly. Do not tick it for an interim audit run mid-plan — the gate records that the finished build was audited, not that this skill was run at some point.

@@ -9,7 +9,7 @@ Paths use `~/.claude/` throughout. On Windows that is `C:\Users\<you>\.claude\`.
 ## Before you start
 
 - [ ] The global developer-preferences `CLAUDE.md` deliverable is final (`Claude_MD/global-CLAUDE.md`).
-- [ ] Every user-invoked skill has been run via its `/command` and behaves as written.
+- [ ] Every user-invoked skill has been run via `/<name>` and behaves as written.
 - [ ] Every cross-reference resolves — no broken links to a skill, agent, rule, or command.
 - [ ] No project-specific or "Lindholm" wording remains in any Global artifact.
 - [ ] `CHECKLIST.md` items are closed.
@@ -21,7 +21,7 @@ The `Global/` folder name is an authoring marker. It is NOT kept at the destinat
 
 - [ ] Skills — copy each `Skills/Global/<name>/` folder in full to `~/.claude/skills/<name>/`.
   - Copy the whole folder, not just `SKILL.md`. Disclosed reference files travel with it — e.g. `create-skill` ships `writing-great-skills.md` and `GLOSSARY.md`; `codebase-design` ships `DEEPENING.md` and `DESIGN-IT-TWICE.md`; `tdd` ships `tests.md`, `mocking.md`, and `refactoring.md`.
-- [ ] Commands — copy each `Commands/Global/<name>.md` to `~/.claude/commands/<name>.md`.
+- [ ] Commands — **nothing to install.** Command wrappers were retired to `Archive/` (see `Archive/README.md`); a skill registers its own `/<name>` entry. If `~/.claude/commands/` still holds wrappers from an earlier install, back them up and remove them — each shadows its skill and defeats `disable-model-invocation`.
 - [ ] Agents — copy each `Agents/Global/<name>.md` to `~/.claude/agents/<name>.md`.
 - [ ] Rules — copy each `Rules/Global/<topic>.md` to `~/.claude/rules/<topic>.md`.
 
@@ -45,11 +45,13 @@ The `Global/` folder name is an authoring marker. It is NOT kept at the destinat
   - `CHECKLIST.md` — the build backlog.
   - `COVERAGE.md` — the language-support matrix and gap policy.
   - `MIGRATION.md` — this guide.
+  - `Archive/` — retired artifacts, kept for provenance. Never installed, never provisioned.
 - The `Claude_MD/` folder is a staging area: its `global-CLAUDE.md` installs as `~/.claude/CLAUDE.md` (see above); the folder itself is not copied.
 
 ## Verify after install
 
-- [ ] Each `/command` appears in the slash menu and loads its skill (spot-check `/create-skill`, `/wrap-it-up`).
+- [ ] Each user-invoked skill appears in the slash menu as `/<name>` and loads (spot-check `/create-skill`, `/wrap-it-up`) — the skill registers this itself, with no command file involved.
+- [ ] `~/.claude/commands/` holds no wrapper that shadows an installed skill.
 - [ ] Each user-invoked skill loads, and its disclosed references resolve (open `create-skill` — its `writing-great-skills.md` and `GLOSSARY.md` links work).
 - [ ] The model-invoked skills (`codebase-design`, `tdd`) still carry their descriptions and fire from context.
 - [ ] Agents are listed and callable.

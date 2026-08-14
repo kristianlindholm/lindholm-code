@@ -50,13 +50,15 @@ If a proposed artifact does not clearly fit exactly one of these, stop and
 reconsider before creating it. Precedence: stack-specific overrides global;
 user instructions override everything.
 
-Commands are not a fourth artifact type: a skill ships a paired command wrapper in
-`Commands/`, installed to `~/.claude/commands/` (see `create-skill` Step 5), only
-when a user would invoke it directly. Invocation and the command are independent: the
-command lets a user type `/<name>`; model-invocation (no `disable-model-invocation`)
-lets Claude and other skills reach the skill from context. A skill may be both —
-model-invocable *and* shipped with a command — so a skill invoked by other skills is
-not barred from having one, but a pure sub-skill that a user never types needs none.
+Commands are not an artifact type at all. Claude Code merged slash commands and skills,
+so a skill registers its own `/<name>` entry from its folder name and a wrapper in
+`Commands/` adds nothing. The store's 13 wrappers were retired to `Archive/` on
+2026-08-14 — do not author new ones; a wrapper shadowing a skill that carries
+`disable-model-invocation: true` defeats that guard by offering an unguarded second
+entry under the same name. Invocation is controlled by frontmatter instead:
+`disable-model-invocation: true` stops Claude firing a skill from context while leaving
+the user able to type it, and `user-invocable: false` does the reverse. The two are
+independent, and a skill needing neither is reachable both ways. See `create-skill` Step 5.
 
 ## Conventions for building everything
 
@@ -77,9 +79,15 @@ Frontmatter schema:
 - `description` (required) — for model-invoked skills, written as trigger
   conditions ("Use when..."); for user-invoked skills, a one-line human-facing summary.
 - `disable-model-invocation: true` (optional) — present only on skills that must be
-  invoked explicitly by the user. Omit it on any skill that other skills invoke or
-  that Claude should fire from context (e.g. `grill-me`). Ship a command wrapper only
-  when a user would type the skill directly, independent of this flag.
+  invoked explicitly by the user. It bars Claude from firing the skill from context
+  and keeps its description out of Claude's context; the user can still type
+  `/<name>`. Omit it on any skill that other skills invoke or that Claude should fire
+  from context (e.g. `grill-me`).
+- `user-invocable: false` (optional, rare) — the opposite control: hides the skill from
+  the slash menu while leaving Claude able to invoke it. No skill in this store sets it.
+
+Never author a command wrapper for a skill. A skill registers its own `/<name>` entry;
+a wrapper is redundant and defeats `disable-model-invocation` (see the note above).
 
 Body: actionable and ordered — concrete numbered steps, each ending on a completion
 criterion; not prose essays.

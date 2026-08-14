@@ -6,7 +6,7 @@ Code review ensures quality, security, and maintainability before code is merged
 
 ## Code Review Rule
 
-After completing a milestone implementation: always invoke the `code-reviewer` agent without asking. Pass the diff and the milestone's done-criteria as context.
+After completing a milestone implementation: always invoke the `code-reviewer` agent without asking — the user's invocation of the milestone skill is the request. Pass the diff and the milestone's done-criteria as context. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if the agent cannot be run, the gate is not passed — say so and stop for a decision.
 
 After minor changes (small fixes, config edits, single-function changes): ask the user with a recommendation — "This change is small enough to skip review, but I recommend running one because [reason]. Review now? (Y/N)"
 

@@ -56,23 +56,19 @@ Invoke [`writing-great-skills`](writing-great-skills.md) and apply it. On top of
 
 Done: `SKILL.md` exists, every step ends on a completion criterion, and nothing duplicates the reference or its glossary.
 
-## Step 5 — Add the slash command
+## Step 5 — Verify how it is invoked
 
-Add a command only when a user would invoke this skill directly. A pure sub-skill that only other skills invoke needs none — skip to Step 6. When a user would type it, a matching command makes it invokable inline. Create one at the same scope as the skill:
+A skill registers its own `/<name>` entry from its folder name. **Do not create a command wrapper.** Since Claude Code merged slash commands and skills, a separate file in `commands/` is redundant — and one shadowing a skill that carries `disable-model-invocation: true` defeats that guard, because it offers an unguarded second entry under the same name. This store's 13 wrappers were retired for exactly that reason; see `Archive/README.md`.
 
-- `~/.claude/commands/<name>.md` for a user-level skill, or
-- `./.claude/commands/<name>.md` for a project skill.
+Confirm the frontmatter matches the decision from Step 3:
 
-Its body invokes the skill, so typing `/<name>` triggers it:
+- **User-invoked** — `disable-model-invocation: true`. The user can type `/<name>`; Claude cannot fire it from context, and its description is not loaded into Claude's context.
+- **Model-invoked** — no flag. Claude and other skills reach it from context, and the user can still type `/<name>`.
+- **Hidden from the user** — `user-invocable: false`. A separate, rarely needed control: it removes the skill from the slash menu but leaves Claude able to invoke it.
 
-```
----
-description: <one line — what typing /name does>
----
-Invoke the <name> skill and follow it exactly.
-```
+The two flags govern opposite directions and are independent. A skill needing neither is reachable both ways, which is the default.
 
-Done: either a user would type this skill and `/<name>` loads and runs it, or it is a pure sub-skill and no command was created.
+Done: the frontmatter matches Step 3's decision, no command wrapper was created, and typing `/<name>` loads the skill.
 
 ## Step 6 — Test the skill
 
