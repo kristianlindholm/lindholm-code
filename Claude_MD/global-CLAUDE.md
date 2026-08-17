@@ -70,6 +70,18 @@ satisfy it. Dispatch the named agent. If it genuinely cannot run, the step is no
 name the agent, say why, and stop for a decision. Concluding that the call is authorised
 and then doing the work by hand anyway is the failure this paragraph exists to prevent.
 
+## Working-tree safety
+
+The implementation skills stop before the commit gate by design, so for the whole review
+phase the working tree is the only copy of the work and git cannot recover it. Never use
+git to undo a file — no `git checkout -- <path>`, `git checkout .`, `git restore`,
+`git reset --hard`, `git clean`, `git stash`, or `git apply -R` against the working tree.
+To experiment on a file, copy it aside first and restore from the copy.
+
+This binds you and every agent you dispatch. Before dispatching one that holds `Bash`,
+`Write`, or `Edit`, snapshot the tree as `agents.md` describes; when it returns, verify the
+tree rather than trusting its account of what it did.
+
 ## The ruleset
 
 Detailed standards are installed at `~/.claude/rules/`. Consult the relevant file
@@ -81,7 +93,7 @@ rather than reproducing its content:
 - `security.md` — OWASP Top 10, common vulnerability categories, pre-commit checks, secret management, security response protocol.
 - `git-workflow.md` — conventional commits, PR workflow.
 - `development-workflow.md` — research, planning, TDD, review, and commit pipeline.
-- `agents.md` — when to delegate, and to which agent.
+- `agents.md` — when to delegate, to which agent, and how to snapshot and verify the working tree around a dispatch.
 - `patterns.md` — repository pattern, API response envelope, skeleton projects.
 - `performance.md` — model selection, context-window management.
 - `hooks.md` — hook types, auto-accept guidance, TodoWrite usage.

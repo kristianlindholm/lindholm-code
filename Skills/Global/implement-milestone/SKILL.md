@@ -98,7 +98,9 @@ interaction decision carries no severity, and "this surface has no keyboard shor
 finding when Step 5 recorded that answer. An interaction decision left *unanswered* is a gap in
 Step 5, to be resolved there, not escalated here.
 
-Done: reviews are clean, or their CRITICAL and HIGH findings are fixed and re-verified.
+Before dispatching, snapshot the tree — this step runs before the commit gate, so the work under review is its own only copy. Run `git stash create` and record the commit id it prints; it writes a dangling commit and does **not** touch the working tree. Copy any untracked files `git status --porcelain` marks `??` into `.claude/scratch/`, since the stash commit does not capture them. Record `git diff --stat` and `git status --porcelain` as the before-figures, and re-run both when the agents return: compare before acting on any finding, per `agents.md`. If they diverge, stop and tell the user, naming the snapshot commit id and the scratch copies.
+
+Done: reviews are clean, or their CRITICAL and HIGH findings are fixed and re-verified, and the tree matches its before-figures.
 
 ## Step 8 — Stop at the commit gate
 

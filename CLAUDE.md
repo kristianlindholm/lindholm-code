@@ -71,7 +71,11 @@ Frontmatter schema — all four fields required:
   (e.g. `["Read", "Grep", "Glob"]`); nothing more.
 - `model` — one of `opus`, `sonnet`, `haiku`.
 
-Body: include the standard "Prompt Defense Baseline" section.
+Body: include the standard "Prompt Defense Baseline" section. Any agent that can reach
+the working tree — `tools` containing `Bash`, `Write`, or `Edit` — must also carry the
+standard "Working-Tree Safety" section verbatim, placed directly after it. Copy the text
+from an agent that already has it; it is identical in every one, and a paraphrase is a
+defect. Agents limited to `Read`, `Grep`, and `Glob` omit it.
 
 ### Skills (`Skills/<scope>/<name>/SKILL.md`)
 Frontmatter schema:
