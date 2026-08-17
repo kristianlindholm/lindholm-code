@@ -66,6 +66,20 @@ Any handoff file written for this purpose is transient scratch, not a deliverabl
 
 **Track long work durably.** Conversation memory does not survive context compaction. For a multi-step run, record completed, committed work where it persists — `PROGRESS.md` (`RESUME HERE`), the project checklist, and git history — not only in the running conversation. After a compaction or resume, trust those records and `git log` over recollection: never redo or re-dispatch work they already show as complete.
 
+## Verify the tree after a subagent returns
+
+Review and build-fix agents run *before* the commit gate by design, so the work they touch is uncommitted and git holds no recoverable copy of it. An agent's claim that it restored a file is not evidence that it did.
+
+Before dispatching any agent that holds `Bash`, `Write`, or `Edit`:
+
+- Snapshot the tree with `git stash create`, and record the commit id it prints. It writes a dangling commit and does **not** touch the working tree; it prints nothing when there is nothing to save.
+- Copy any untracked files `git status --porcelain` marks `??` into `.claude/scratch/` — the stash commit does not capture them, and new test files are exactly the work most often lost.
+- Record `git diff --stat` and `git status --porcelain` as the before-figures. `git diff --stat` alone is not enough: it cannot see untracked files.
+
+When the agent returns, re-run both and compare against the before-figures before acting on any finding. If they diverge, stop and tell the user, naming the snapshot commit id and the scratch copies.
+
+Where agents run concurrently against one working tree, treat that tree as shared mutable state: a destructive command from one silently changes what another is reviewing, and nothing raises an error.
+
 ## Related rules
 
 - [development-workflow.md](development-workflow.md) — where each agent slots into the pipeline.

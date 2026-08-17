@@ -366,6 +366,7 @@ After all gates are confirmed, create:
 
 # Claude harness
 .claude/
+*.agent-bak
 
 # User-supplied input (not committed)
 resources/
