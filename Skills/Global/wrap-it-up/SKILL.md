@@ -150,7 +150,7 @@ Never silently skip a push, and never report a milestone as pushed when it was n
   docs/PROGRESS.md (a tracked file) forces a redundant follow-up commit on main
   every wrap. The SHA already lives in two authoritative places without churn:
   `git log --graph` (the record) and `.claude/wrap-it-up.json` `lastWrappedSha`
-  (untracked local baseline, written in step 11). The archive's Housekeeping log records the
+  (untracked local baseline, written in step 12). The archive's Housekeeping log records the
   merge as prose (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
 - Always print the plan in this format before executing — milestone wrap example
   (GitHub-backed; the remote is always confirmed before the push is listed):
@@ -204,12 +204,80 @@ When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 - **Milestone also closing:** the task commit rides along with the milestone wrap; remove the
   `[x]` lines in that wrap commit.
 - **No milestone advanced (task-only):** skip the milestone doc reconciliation entirely — no PRD
-  read-for-context step, no docs/PROGRESS.md milestone flip, no `RESUME HERE` rewrite. Just the gated
-  commit that contains the task's code change plus the checklist line removal.
+  read-for-context step, no docs/PROGRESS.md milestone flip, no `RESUME HERE` rewrite. **The truth
+  pass still runs** (see "Truth pass over docs/PROGRESS.md"). This path skips *rewriting* the warm
+  doc, never *checking* it: it is the path that runs most often and the one that leaves the most
+  false claims behind, precisely because it touches nothing. Otherwise just the gated commit that
+  contains the task's code change plus the checklist line removal.
 
 `docs/CHECKLIST.md` is distinct from docs/PROGRESS.md's "Deferred / future tasks": the checklist
 holds granular captured side-tracks, "Deferred" holds milestone-scale future work. Do not move
 items between them.
+
+## Truth pass over docs/PROGRESS.md
+
+The warm doc is regenerated only at a milestone wrap, so every present-tense claim in it is an
+assertion nothing re-checks in between. Left alone it goes false in silence: a suite count rots the
+next time a test is added, a checklist claim rots the next time `/save-for-later` runs, and the
+project reports neither. The rules under "Common Mistakes" say which claims not to write — they
+bind the writer only at the instant of writing. This pass is what holds them afterwards, by reading
+the finished document back and asking whether what it says is true.
+
+**Runs on every wrap, task-only included.** A task-only commit skips the milestone reconciliation
+(Execution Order steps 5-6); it never skips this pass.
+
+**Step 1 — name the owning surface.** Take each present-tense claim in the warm doc: "Where we
+are", "What works right now", "How to run", "Confirmed decisions", "Next steps", "RESUME HERE".
+For each, name the surface that owns the fact and can settle it:
+
+| Claim | Owning surface |
+|-------|----------------|
+| the suite is green | a fresh run of the test command — this wrap's verification gate |
+| parked or open task state | `docs/CHECKLIST.md` |
+| the codebase-wide security audit | the "Final gate" checkbox in this same file |
+| a milestone's status | the Delivery Milestones table |
+| the branch was pushed | the remote ref (see "After a push runs — verify it landed") |
+| a measured figure (timing, size, throughput) | the wrap it was measured at, carried in the text |
+
+A claim whose owning surface cannot be named is not verifiable. It does not get the benefit of the
+doubt — see Step 2.
+
+Done: every present-tense claim is paired with a surface, or marked unverifiable.
+
+**Step 2 — check it and act.** Against its own surface, each claim is one of:
+
+- **True** — leave it.
+- **False** — correct it if the warm doc should carry the fact at all; delete it if it should not.
+  A claim duplicating a surface that owns it is deleted, not refreshed: refreshing it only resets
+  the clock on the same defect.
+- **Unverifiable** — delete it. Do not soften it, and do not re-word it into something vaguer that
+  survives by saying less. A claim no one can check is the one that rots unnoticed.
+
+docs/PROGRESS.md is an autonomous surface (see "Confirmation Model"), so apply the corrections
+without a gate and report in one line what changed. Never carry a claim you have found false into
+the commit.
+
+Done: every present-tense claim in docs/PROGRESS.md is true, corrected, or gone.
+
+### The suite count does not belong in the warm doc
+
+State the green state and point at the command — "the suite is green as of this wrap; run
+`<command>`" — and put the count in the archive's review log as a delta ("Suite 1032 -> 1046"),
+where the PROGRESS-ARCHIVE template already carries test deltas.
+
+The reason is not that the number rots; anchoring it would fix that. It is that a count means
+nothing on its own. Its only use is as a comparison against the previous wrap, which makes it a
+series, and the series already has a home — so the newest value in the warm doc duplicates a
+surface that owns it. It also rots faster than anything else in the file: a count goes false every
+time someone **adds** a test, which is most commits in a test-first project.
+
+**What the count is actually for, and who does that job.** A count is the only guard against silent
+test loss — a runner that stops collecting a file reports zero failures, green and worthless. That
+guard is this pass, not the prose. Compare the verification gate's fresh count against the newest
+delta recorded in `docs/PROGRESS-ARCHIVE.md`. Up or level is expected. **Down is a finding:**
+surface it before the git step. It may be legitimate — tests removed with the code they covered —
+but it is never assumed, and a milestone is not recorded as verified on a suite that lost tests
+for an unexplained reason.
 
 ## Findings sweep
 
@@ -227,7 +295,7 @@ become a finding here.
 **Routing.**
 
 - **A governing-document gap** — something `CLAUDE.md` should say and does not — belongs to step
-  8's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not bring it
+  9's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not bring it
   here.
 - **Anything actionable as work** becomes a proposed `docs/CHECKLIST.md` entry, gated below.
 
@@ -308,20 +376,24 @@ leave the rest untouched.
    review log — and at most one lingering legacy narrative — plus the Housekeeping merge line into
    `docs/PROGRESS-ARCHIVE.md`, leaving the warm doc describing only the just-shipped + next
    milestone. Obey the no-loss invariant (relocate, never summarize or delete).
-7. **Graphify update (conditional):** Check whether graphify graph files exist in the project
+7. **Truth pass** — read docs/PROGRESS.md back and check every present-tense claim against the
+   surface that owns it; correct or delete what fails (see "Truth pass over docs/PROGRESS.md").
+   This step runs for every wrap, task-only commits included — steps 5-6 are skipped there, this
+   one is not.
+8. **Graphify update (conditional):** Check whether graphify graph files exist in the project
    (look for `.graphify_chunk_*.files.txt` or a `.graphify_version` file at the project root).
    If found, invoke the graphify update workflow before the git step so that the updated graph
    is included in the milestone commit.
-8. If CLAUDE.md has proposed additions → show diff → confirm.
-9. **Findings sweep** — route this session's severity-flagged findings that are not already fixed
-   or recorded; each proposed checklist entry is gated on its own (see "Findings sweep").
-10. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
+9. If CLAUDE.md has proposed additions → show diff → confirm.
+10. **Findings sweep** — route this session's severity-flagged findings that are not already fixed
+    or recorded; each proposed checklist entry is gated on its own (see "Findings sweep").
+11. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
     execute (or skip) → if a push ran, **verify it landed** before reporting success (see "After a
     push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
     removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
-11. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
-12. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
-13. Print a **short** closing instruction (see below).
+12. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
+13. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
+14. Print a **short** closing instruction (see below).
 
 ## Closing Instruction (keep it short)
 
@@ -431,7 +503,7 @@ measured at, never a bare present-tense count>
 ## Deferred / future tasks (don't lose these)
 
 ## RESUME HERE — <next milestone>
-<2-3 line pointer: what's done, what's next, method — milestone-level only; no figure stated as currently true (point at the command that produces it) and no list of open checklist items (those live in docs/CHECKLIST.md)>
+<2-3 line pointer: what's done, what's next, method — milestone-level only. Every present-tense claim written here must survive the truth pass: no suite count (state the green state, point at the command; the count is a delta in the archive's review log), no other figure stated as currently true, and no claim about what `docs/CHECKLIST.md` contains — empty, counted or listed alike>
 
 ## Housekeeping
 Full history, the merge log & per-milestone review logs live in `docs/PROGRESS-ARCHIVE.md`.
@@ -472,8 +544,15 @@ Merged: <e.g. M<n> merged --no-ff into main on <YYYY-MM-DD> (branch feat/...)>
   its only use is as a baseline, and an untrustworthy baseline sends the reader to run the command
   anyway. Anchor it or omit it: "at the M35 wrap, 1022 tests passed" stays true, and belongs in the
   archive's review log, which already carries test deltas. In the warm doc, point at the command
-  that produces the number. A standing figure already sitting there is a finding for the sweep (see
-  "Findings sweep") — this rule stops new ones, the sweep clears the old.
-- **Restating an open-items count/list in RESUME HERE or Next steps.** The instance of the above
-  that bites most often: the open granular set lives only in `docs/CHECKLIST.md`, the single
-  countable surface, and `continue-project` reads it directly. State milestone-level next steps only.
+  that produces the number. A standing figure already sitting there is corrected or deleted by the
+  truth pass — this rule stops new ones, that pass clears the old.
+- **Restating what `docs/CHECKLIST.md` contains, in RESUME HERE or Next steps.** The instance of the
+  above that bites most often: the open granular set lives only in `docs/CHECKLIST.md`, the single
+  countable surface, and `continue-project` reads it directly. Counted, listed and **empty** are one
+  mistake, not three — "the checklist has no open items" is the form written most often, because it
+  is true when written and reads as reassurance, and it turns false the first time
+  `/save-for-later` runs. State milestone-level next steps only.
+- **Leaving a claim in the warm doc that this wrap never checked.** Every rule above binds the
+  writer at the instant of writing and nothing afterwards; the truth pass is what holds them once
+  the document exists. Skipping it — or running it only on the milestone path, where the doc is
+  being rewritten anyway — is how docs/PROGRESS.md rots while every rule against rot is in place.
