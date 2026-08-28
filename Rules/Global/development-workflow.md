@@ -67,3 +67,30 @@ This applies to every form of the claim — "done", "fixed", "passing", "ready" 
 | "I already ran it earlier." | Code changed since. A stale run does not count. |
 
 Red flags that you are about to claim without evidence: using "should", "probably", or "seems to"; expressing satisfaction ("done", "perfect") before running anything; being about to commit or open a PR without a fresh run; trusting an agent's success report over the diff and a re-run.
+
+## Changing files
+
+Use the Write and Edit tools for any change to a file that is part of the work, in preference to a shell command. They match the file's existing line endings, and they **fail loudly** when a search string does not match.
+
+A scripted edit does not. `sed`, a PowerShell `-replace`, or a Python find-and-replace that matches nothing changes nothing and **exits successfully** — the command reports success and the edit never happened. That is the section above defeated at the tool level: the exit code is not evidence the file changed.
+
+The usual reason a search silently fails to match is line endings. A text file ends each line with either LF (one byte, used by Linux, macOS and git's own storage) or CRLF (two bytes, the Windows convention). A search string built with one will not match a file written with the other. Measured on Windows, writing identical content through each path:
+
+| Path | Endings produced |
+|------|------------------|
+| Write / Edit tools | LF (Edit matches the file it is editing) |
+| bash `printf`, heredoc (`cat > f <<'EOF'`) | LF |
+| python `open(f,'wb')`, or `open(f,'w',newline='')` | LF |
+| python `open(f,'w')` — text mode | CRLF |
+| PowerShell `Set-Content`, `Out-File`, `Add-Content` | CRLF |
+| PowerShell `>` with a newline inside the string | **mixed** — CRLF and LF in one file |
+
+**Mixed endings in a single file is the one genuinely damaging state.** No single ending is there for a later search to match, and git cannot report it: checkin normalises mixed, all-CRLF and all-LF to the same blob, so `git status` and `git diff` show the file clean forever. A file that is uniformly CRLF is not damage — an edit that matches its endings works — and it needs no repair.
+
+When a scripted edit is genuinely the right instrument, such as a bulk change across many files:
+
+- **Before:** read the file's dominant line ending and build both the search anchor and the replacement to match it. Never write a lone LF into a CRLF file.
+- **After:** print the byte delta and the resulting ending counts. A zero delta where something should have changed is a silent no-match, not a no-op.
+- Pair the byte delta with an explicit count of sites changed. A same-length replacement is +0 bytes and reads as a failure when it in fact worked.
+
+Do not diagnose line endings with git — see `code-review.md` and the `code-reviewer` agent's false-positive list for why `git -c core.autocrlf=false diff` manufactures the problem it appears to reveal. Count the bytes instead.
