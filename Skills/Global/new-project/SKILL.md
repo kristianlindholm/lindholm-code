@@ -23,6 +23,7 @@ governance, generated code, and user-supplied input so the repository root stays
 project-root/
   CLAUDE.md          root - the harness auto-loads it; a thin pointer into docs/
   .gitignore         root
+  .gitattributes     root - pins line endings so they are a repository decision
   .claude/           config: rules/, skills/, agents/, wrap-it-up.json, sessions/, scratch/
   product/           the actual product code (package.json / pyproject / Cargo.toml / etc. live here)
   docs/              authored governing documents
@@ -333,8 +334,8 @@ Ask: "Will this project live on GitHub? (Y/N)"
   }
   ```
 
-- **No → no version control.** Do not run `git init`; do not create `.gitignore` (nothing
-  to ignore without git). Record:
+- **No → no version control.** Do not run `git init`; do not create `.gitignore` or
+  `.gitattributes` (nothing to ignore, and no checkout to govern, without git). Record:
 
   ```json
   {
@@ -389,6 +390,35 @@ desktop.ini
 ```
 The `docs/adr/` folder is committed to git, not ignored.
 
+**.gitattributes** (root, GitHub-backed projects only — skipped when `gitBackend` is `none`) —
+write exactly these entries:
+```
+# Line endings are a repository decision, not a per-machine accident.
+# Without this file every clone's working tree is whatever that machine's git
+# install defaulted to, and the same commit yields different bytes on disk.
+* text=auto eol=lf
+
+# Binary assets - never converted
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.xlsx binary
+```
+
+LF is chosen because the Write and Edit tools and bash heredocs all produce LF, so it matches
+the tooling that does nearly all the writing, and it makes a CRLF file a single unambiguous
+signal on every platform rather than one that depends on which machine is asking.
+
+This governs only what git itself writes, at checkout and checkin. It has no effect on files
+written by any other tool — see `~/.claude/rules/development-workflow.md`, "Changing files",
+for the paths that produce which endings.
+
 **docs/DESIGN.md** (UI projects only) — written at Gate 3 from the `DESIGN.md` scaffold in this
 skill's own folder, alongside its rendered companion `docs/styleboard.html`. If Gate 3 was
 deferred, both are created by the first UI milestone instead. Omitted entirely for non-UI
@@ -409,13 +439,31 @@ Run this only when `gitBackend` is `github` (skip entirely for `none`). The scaf
 files must already exist (previous section) so they land in the first commit.
 
 1. `git init -b main` — skip if the directory is already a git repository.
-2. Stage everything and make the initial commit: `chore: initialize project scaffold`.
-3. Create and wire the remote in one step:
+2. **Check any pre-existing files before staging them.** This skill does not require an
+   empty directory, and material that was already sitting there arrives with whatever line
+   endings its source gave it. Stage-everything then commits it as-is: git normalises the
+   endings into the blob and never rewrites the working copies, so from that moment the
+   working tree and the repository disagree and no git command will ever say so. This is the
+   one moment the divergence can be caught, because it is the only moment those files pass
+   through a step at all.
+
+   For every text file that is not ignored — read the bytes, count `\r\n` against lone `\n`:
+   - **Both present in one file** — repair it by normalising that file to LF. This is the
+     genuinely broken state: no single ending is there for a later search to match, and git
+     can never report it (mixed, all-CRLF and all-LF normalise to the same blob).
+   - **Uniformly CRLF** — report it and leave it alone. It is not damage; an edit that
+     matches the file's own endings works, and `.gitattributes` normalises it into the blob.
+   - **`resources/` is gitignored and holds the user's own material** — never scan it, never
+     rewrite it. Same for anything else `.gitignore` excludes, and for binary files.
+
+   Report what was found in one line before staging. If nothing pre-existed, say nothing.
+3. Stage everything and make the initial commit: `chore: initialize project scaffold`.
+4. Create and wire the remote in one step:
    `gh repo create <name> --private --source=. --remote=origin --push` (use `--public`
    if the user chose public at Gate 6). If the name already exists on the account, STOP
    and ask whether to use the existing repo or choose a new name — do not overwrite or
    guess.
-4. **Verify with evidence** before reporting success — the same discipline `wrap-it-up`
+5. **Verify with evidence** before reporting success — the same discipline `wrap-it-up`
    applies to every push: `git remote get-url origin` must resolve, and
    `git rev-parse origin/main` must equal local `HEAD`. Only then report the repo as
    published. On any failure (auth lost, network, name collision), report the actual

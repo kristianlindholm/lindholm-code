@@ -75,7 +75,7 @@ When invoked:
 
 ### Pre-Report Gate
 
-Before writing a finding, answer all four questions. If any answer is "no" or
+Before writing a finding, answer all five questions. If any answer is "no" or
 "unsure", downgrade severity or drop the finding.
 
 1. **Can I cite the exact line?** Name the file and line. Vague findings like
@@ -88,6 +88,13 @@ Before writing a finding, answer all four questions. If any answer is "no" or
 4. **Is the severity defensible?** A missing JSDoc is never HIGH. A single
    `any` in a test fixture is never CRITICAL. Severity inflation erodes trust
    faster than missed findings.
+5. **Is this also true of something the change did not touch?** The control
+   question. Before attributing a property to the diff, measure one file, case,
+   or run the diff did not affect. If the property is there too, it is the
+   environment and not the change — drop the finding. An asymmetry across a set
+   of files is evidence about whatever the set actually differs by, which is not
+   always "the ones I edited". This question is skipped most often on findings
+   that feel decisive, and those are the ones it exists to catch.
 
 ### HIGH / CRITICAL Require Proof
 
@@ -143,6 +150,18 @@ specific to this codebase:
 - **Security theater**: flagging `Math.random()` in a non-cryptographic context
   such as animation, jitter, or sampling, or flagging `eval`/`Function` in a
   plugin system that is explicitly a code-loading surface.
+- **"Line endings were silently rewritten"**, argued from the git blob being LF
+  while the working tree is CRLF, or from `git -c core.autocrlf=false diff`
+  showing a whole-file rewrite. On Windows with `core.autocrlf=true` the first is
+  git working correctly and permanently — it stores LF and writes CRLF to disk.
+  The second manufactures the diff: the flag disables the checkin filter, so every
+  line differs because every line ends differently, and it reports a whole-file
+  rewrite for any text file whose stat has changed, edited or not. Do not diagnose
+  line endings with git. Count the bytes: compare the blob and the working tree
+  with both normalised to LF, and check the changed-line total against
+  `git diff --shortstat`. Equal totals mean only intended lines changed. The one
+  real defect here is a single file containing BOTH endings, which git can never
+  report at all.
 
 When tempted to flag one of the above, ask: "Would a senior engineer on this
 team actually change this in review?" If no, skip.

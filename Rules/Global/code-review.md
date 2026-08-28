@@ -120,6 +120,21 @@ Use these agents for code review:
 - **Warning**: Only HIGH issues (merge with caution)
 - **Block**: CRITICAL issues found
 
+## Before Reporting a Finding — the control question
+
+Ask, of every finding, before it is written:
+
+> Is this also true of something the change did not touch?
+
+Measure one file, case, or run the change did not affect. If the property is there too, it is the environment and not the change — drop the finding. A finding can rest on observations that are each individually true and still be false, because the observations describe the environment the change happens to sit in.
+
+Two corollaries, both of which generalise well past code review:
+
+- **A tool flag that "reveals" a problem may be manufacturing it.** Ask what the flag switches off, and what its output would be if nothing were wrong. If the answer is "the same output", the flag proves nothing.
+- **An asymmetry across a set of files is evidence about whatever the set actually differs by** — which is not always "the ones I edited". Name the real variable before attributing it to the change.
+
+This applies to every reviewer, agent or human. The `code-reviewer` agent carries it as the fifth Pre-Report Gate question, along with a list of specific false positives that fail it.
+
 ## Receiving Review Feedback
 
 Review feedback — whether from the user, from a review agent (`code-reviewer`, `security-reviewer`, a language reviewer), or from an external reviewer on a pull request — is a set of findings to evaluate technically, not orders to implement on sight. Verify before implementing, and acknowledge with the fix rather than with performative agreement. This is the sparring-partner stance applied to review: technical correctness over social comfort.
