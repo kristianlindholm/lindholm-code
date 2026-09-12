@@ -337,6 +337,7 @@ Asked **once** on first run (detected where possible), then always visible/overr
 ```json
 {
   "gitBackend": "github",
+  "mode": "product",
   "gitWorkflow": "merge-to-main",
   "mainBranch": "main",
   "remote": "origin",
@@ -345,6 +346,9 @@ Asked **once** on first run (detected where possible), then always visible/overr
   "lastWrappedAt": "2026-06-16"
 }
 ```
+
+`mode` is `product` or `prototype` — written by `new-project` Gate 6 and flipped by
+`promote-prototype` when a prototype is published. This skill preserves it and does not act on it.
 
 `gitBackend` is `github` or `none`. For `github`, `remote` must name a remote that resolves
 via `git remote get-url` (normally `origin`) — never a name that does not exist, since a

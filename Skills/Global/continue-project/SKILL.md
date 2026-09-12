@@ -60,16 +60,19 @@ Then check `docs/CHECKLIST.md` for parked tasks (created by `save-for-later` and
 - Present: read it. Note the open `[ ]` items and any `[x]` items that are done and awaiting commit.
 - Absent or empty: no parked tasks to surface.
 
-If docs/PROGRESS.md has no RESUME HERE section:
+If docs/PROGRESS.md has no RESUME HERE section **and** no milestone row is complete:
 - This is the first session after `/new-project`.
 - Read the Delivery Milestones table in docs/PROGRESS.md — identify Milestone 1.
-- Report: "First session. Milestone 1 is [name]." Recommend `/implement-milestone` to begin it, and stop here.
+- Report: "First session. Milestone 1 is [name]." Recommend `/implement-milestone` to begin it — or, if `.claude/wrap-it-up.json` records `"mode": "prototype"`, recommend `/build-prototype`, which runs the whole plan in one go. Stop here.
 
-If docs/PROGRESS.md has a RESUME HERE section:
-- Read that section.
+Otherwise — a RESUME HERE section is present, or milestones are already complete without one:
+- Read that section if it exists.
 - Read `.claude/wrap-it-up.json` — note `lastWrappedSha` and `lastWrappedAt`.
 
-Then read the Delivery Milestones table together with the Final gate section:
+Then read `mode` from `.claude/wrap-it-up.json` and the Delivery Milestones table together with the Final gate section. A prototype classifies differently from a product: its Final gate is not due until `promote-prototype` has hardened every milestone, so a prototype is never awaiting-final-gate.
+
+- **Prototype (`"mode": "prototype"`) with every milestone complete:** classify as awaiting-promotion. Do not surface the Final gate — it belongs to the end of promotion's hardening stage, not to the prototype.
+- **Prototype with milestones still pending:** the build is unfinished. Neither the Final gate nor promotion is due.
 - Every milestone complete and the Final gate unticked (`- [ ]`): the delivery plan is finished and the one remaining item is the codebase-wide security audit. Classify the project as awaiting-final-gate.
 - Every milestone complete and no Final gate section present (a project predating it): classify it the same way, and offer to add the section to docs/PROGRESS.md.
 - Milestones still pending: the Final gate is not yet due. Do not surface it.
@@ -80,7 +83,7 @@ doc. It is deliberately **not** part of the resume path: do not read it at sessi
 it **on demand** later, when a specific question needs a past decision or review finding — it is a
 reachable resource, not a forbidden one.
 
-Done: the project is classified as first-session, resumable-from-session-file, resumable-from-milestone, or awaiting-final-gate, with the relevant file read; and any parked checklist tasks are noted.
+Done: the project is classified as first-session, resumable-from-session-file, resumable-from-milestone, awaiting-promotion, or awaiting-final-gate, with the relevant file read; and any parked checklist tasks are noted.
 
 ## Step 4 — Check git integrity
 
@@ -118,7 +121,11 @@ decision per message, options as a numbered list closing with a single `Which? (
 
 Clean state: print the current milestone and what is next. Recommend `/implement-milestone` to execute the next milestone to best practice. Wait for direction.
 
+Clean state, prototype: print how much of the plan is built and what remains. Recommend `/build-prototype`, which runs the remaining milestones back to back. Note once that the project has no version control, so the working tree is its only copy.
+
 Awaiting-final-gate: report that every milestone is complete and the one item left is the codebase-wide security audit. Recommend `/security-check`. Do not recommend `/implement-milestone` — no milestone remains to run, and the audit is not one.
+
+Awaiting-promotion: report that the prototype is complete and ask whether to promote it. Promotion publishes it to GitHub behind a blocking pre-commit gate, then hardens it milestone by milestone; until it runs, the project has no version control and nothing has been reviewed. Recommend `/promote-prototype`. Do not recommend `/security-check` — the codebase-wide audit is the last step of promotion, not a step that precedes it.
 
 If `docs/CHECKLIST.md` holds open `[ ]` tasks: list them, numbered by open-item ordinal (count only `[ ]` items, skipping any `[x]` entries — this is how `/implement-task` resolves `<n>`), as a pickable option alongside the milestone path, and offer `/implement-task <n>` to execute one. The milestone path stays primary; the checklist is an alternative, not a replacement. These are granular parked side-tracks, distinct from docs/PROGRESS.md's milestone-scale "Deferred / future tasks". If any `[x]` done-awaiting-commit tasks exist, note them once: "done, awaiting commit — run `/wrap-it-up`".
 
