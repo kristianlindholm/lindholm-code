@@ -10,6 +10,8 @@ Carries the active milestone from its `docs/PROGRESS.md` scope to review-passed,
 
 Stop at the commit gate: do not commit or merge. Do not write implementation before Step 2 has scoped what applies.
 
+This skill is for a product project. If `.claude/wrap-it-up.json` records `"mode": "prototype"`, stop and use `/build-prototype` instead — it runs the whole milestone plan in one continuous pass without the gates below. After `/promote-prototype` has published the project, this skill is the right one again.
+
 This skill sequences the pipeline defined in `development-workflow.md`; that rule, with `agents.md`, `testing.md`, and `code-review.md`, stays the source of truth for each stage. Point to them, do not relearn them here.
 
 ## Step 1 — Load the milestone
@@ -87,8 +89,8 @@ Done: the milestone's done-criteria are met and the test and build commands pass
 
 Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this milestone's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
 
-If Step 2 flagged UI, also run a design review: screenshot the built screen (via the `run` or
-`verify` skill where the environment supports it) and check it for conformance to `docs/DESIGN.md`,
+If Step 2 flagged UI, also run a design review: screenshot the built screen (via the `run`
+skill where the environment supports it) and check it for conformance to `docs/DESIGN.md`,
 plus the `design-quality.md` (aesthetics) and `design-principles.md` (craft floor) rules —
 verified visually, not asserted. For a backend-only milestone this review does not run.
 

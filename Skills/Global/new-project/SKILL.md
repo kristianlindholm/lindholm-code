@@ -6,13 +6,83 @@ disable-model-invocation: true
 
 # New Project
 
-Sequential gates before any code is written. Each gate produces a concrete output and requires explicit user confirmation before the next gate opens. Gate 3 (Design Foundation) runs only for projects with a user-facing UI; it is the only conditional gate, and every other gate runs for every project.
+Sequential gates before any code is written. Gate 0 opens the conversation with the user's own
+brief; every gate after it produces a concrete output and requires explicit user confirmation
+before the next gate opens. Gate 3 (Design Foundation) runs only for projects with a user-facing
+UI; it is the only conditional gate, and every other gate runs for every project.
 
 Do not write code. Do not skip or combine gates.
+
+**First action, before any tool call:** ask Gate 0's first question below. Nothing is read,
+listed, or inferred until all three of Gate 0's questions have been answered.
 
 Every gate asks the user one decision at a time and waits — follow the global
 interaction-design doctrine: present options as a numbered list closing with a single
 `Which? (1-N)`, and never batch several questions into one prompt.
+
+## Gate 0 — Opening Brief
+
+The user opens the conversation, not Claude. Three questions, asked one at a time, before anything
+is read, listed, or inferred. Asking costs no tool call, so there is never a reason to look first.
+
+**Question 1 — what is being built.** Ask it on its own and wait:
+
+> In your own words: what do you want to build?
+
+Take the answer as given. Do not offer a guess for the user to correct, and do not follow it with
+sub-questions — Gate 1's interview is where the detail is drawn out.
+
+**Question 2 — prototype or product.** This answer changes which gates below run, so it comes
+before any of them. Only once Question 1 is answered, ask:
+
+> 1. Product — built to last: reviewed, tested to the coverage gate, on GitHub from the first commit
+> 2. Prototype — a proof of concept, built fast to find out whether it works, and promoted to a
+>    product later if it earns it
+>
+> Which? (1-2)
+
+**Prototype mode relaxes engineering rigor, not product thinking.** The requirements interview, the
+design direction, the milestone plan, and the product map all still run — a prototype exists to
+find out whether this is the right product, so cutting the thinking defeats it. What the mode drops
+is the ceremony around the code: reviewer agents, the coverage gate, ADRs, version control, and the
+confirmation gate between milestones. Every gate below states what changes, and the mode is
+recorded at Gate 6.
+
+Never infer the mode. A modest-sounding brief is not a prototype and a throwaway-looking folder is
+not either — this is the user's decision about how the work will be done, and it is the single
+answer that changes the most about what follows.
+
+**Question 3 — the starting point.** Only once Question 2 is answered, ask:
+
+> 1. Empty folder — nothing here yet
+> 2. Existing code I want to build on
+> 3. Notes, documents, or design references I will point you at
+> 4. Something else — I will describe it
+>
+> Which? (1-4)
+
+If the answer to Question 1 already implies one of these, still ask — but name the option it
+points to, so the user confirms in one word instead of repeating themselves.
+
+**Never infer the product.** A folder name, a stray README, a package manifest, or whatever files
+happen to be present are not a description of what the user wants to build. Guessing from them and
+asking the user to correct the guess is more work for them than starting from a blank page, and it
+anchors the whole interview on Claude's guess. An empty directory offers nothing to infer from at
+all: ask, and say nothing about the directory.
+
+**Then, and only then, look.** Question 3's answer says whether there is anything to read:
+- Answer 1, or any fresh start — read nothing. Go straight to Gate 1.
+- Answers 2, 3, and 4 — survey only what the user named, and only to inform the Gate 1 interview.
+  Report what was found in one line. Draw no conclusions about the product from it.
+
+**Scope for `grill-me`.** Gate 1's interview runs `grill-me`, whose "explore before asking" step
+assumes an existing codebase holds the answer. In this skill that step applies only to material the
+user named in Question 3. Nothing about a product that does not exist yet can be answered by
+exploring a directory — the user is the only source.
+
+Gate 0 produces no file. Its output is the brief, in the user's own words, carried into Gate 1 as
+the interview's opening context. It is a starting point and not a substitute: Gate 1 runs in full
+however complete the brief was.
 
 ## Directory Layout
 
@@ -32,6 +102,8 @@ project-root/
     CHECKLIST.md     granular parked tasks and tactical refinements (save-for-later / give-feedback)
     DESIGN.md        UI projects only
     styleboard.html  UI projects only - generated render, flat beside DESIGN.md
+    FEATURES.md      prototypes only - what the prototype does, recorded as it is built
+    captures/        prototypes only - a current screenshot of each surface
     adr/
       0001-slug.md
   resources/         user-supplied input material (starting docs, design references, inspiration, spreadsheets)
@@ -47,7 +119,8 @@ lands under `docs/` (governance) or `product/` (code), never loose in the root.
 
 Before drafting anything, invoke the `grill-me` skill to interview the user. Lead with
 understanding the end-user's need, then judge whether this is the right thing to build — do
-not infer the product from a one-line prompt. Grill until these are concrete:
+not infer the product from a one-line prompt. Open from the Gate 0 brief: it is the interview's
+starting context, never its conclusion. Grill until these are concrete:
 
 1. Who is it for — the specific users, not a category.
 2. What pain points or needs it solves — the real problem the product exists to serve.
@@ -85,6 +158,11 @@ Then produce docs/PRD.md capturing the outcome of that interview:
   `design/design-principles.md` rule defers to it for viewport range, control sizing, and which
   interaction decisions apply.
 
+**Prototype:** unchanged. The interview runs in full and the PRD is written in full. A prototype
+exists to find out whether this is the right product, so the requirements work is the last thing to
+cut — and Gate 3 reads **usage context** out of `docs/PRD.md`, so thinning this gate leaves the
+design pass improvising the one thing promotion may not change.
+
 Present the draft. Wait for confirmation.
 
 ## Gate 2 — Architecture
@@ -100,6 +178,12 @@ For each significant decision, evaluate all three ADR criteria:
 3. A real trade-off — genuine alternatives existed and one was chosen for specific reasons
 
 If all three apply, create docs/adr/0001-slug.md (create the docs/adr/ directory if it does not exist). ADR format: title, then 1-3 sentences covering context, decision, and why. Sequential numbering.
+
+**Prototype:** make the stack choice and run the activation procedure below in full — the rules,
+skills, and agents provisioned there are what make the build fast, so they are not overhead. Skip
+the ADRs: a prototype's implementation is explicitly replaceable, so there is no hard-to-reverse
+decision to record yet. `promote-prototype` writes an ADR for any decision that still meets the
+three criteria once the code has settled.
 
 Present the architecture summary. Wait for confirmation.
 
@@ -202,6 +286,15 @@ and `design/design-principles.md`) are already provisioned by Gate 2 for every f
    written here — code-level tokens are seeded by the first UI milestone, which lifts the `:root`
    block from `docs/DESIGN.md` into the real token layer.
 
+**Prototype:** one pass, no loop. Run steps 1 through 3 and 5 as written, but replace the step 4
+sign-off loop with a single presentation: commit to a direction, show the styleboard once, and take
+one round of redirection if the user offers it. Do not iterate to approval. The direction is still
+made deliberately — it is simply not negotiated.
+
+Still write `docs/DESIGN.md` in full. Every prototype milestone derives its screens from it, and
+promotion is not allowed to change what it produced, so an improvised visual language here becomes
+permanent by default. This is the gate where a prototype's shortcuts cost the most.
+
 Present the design foundation summary. Wait for confirmation.
 
 ## Gate 4 — Milestones
@@ -238,6 +331,11 @@ end so the assembled whole is checked and not only each part in isolation. `cont
 surfaces it at the start of a session once every milestone is complete, and `/security-check`
 ticks the box when the audit passes. It stays a checkbox so there is never any ambiguity about
 whether it was done.
+
+**Prototype:** unchanged, at full granularity. Do not coarsen the plan to save time. These rows are
+what `build-prototype` runs through back to back, and what `promote-prototype` later hardens one at
+a time — and since a prototype is committed as a single commit, the rows are the *only* thing that
+divides the codebase into reviewable pieces. A coarse plan makes promotion worse, not faster.
 
 Present the milestone plan. Wait for confirmation.
 
@@ -299,6 +397,11 @@ Present the diagram and the assumptions, then ask:
 
 Which? (1-4)
 
+**Prototype:** unchanged, all three views. This gate matters more in prototype mode, not less: a
+prototype removes every confirmation between milestones, so this is the last checkpoint before the
+entire build runs unattended. It is also the cheapest possible place to discover that the product
+in your head and the product in Claude's are different.
+
 On anything but 1, fix the source and not only the picture: amend `docs/PRD.md`, the relevant
 ADR, or the milestone row in `docs/PROGRESS.md`, then redraw and present again. Repeat until the
 user picks 1. This is a hard gate — an unconfirmed map means the plan is not agreed. Redrawing
@@ -311,7 +414,21 @@ One decision, no third option: **will this project live on GitHub?** Every proje
 either GitHub-backed — git plus a remote, with every milestone pushed and verified — or
 it has no version control at all. There are no local-only git repositories.
 
-Ask: "Will this project live on GitHub? (Y/N)"
+**Prototype: do not ask this question.** A prototype has no version control — not GitHub, and not a
+local repository either. Do not run `git init`, and do not write `.gitignore` or `.gitattributes`;
+`promote-prototype` creates all three when the prototype becomes a product, and its blocking
+pre-commit gate is what stands between prototype code and a remote. Record, and skip the rest of
+this gate:
+
+```json
+{
+  "gitBackend": "none",
+  "mode": "prototype",
+  "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
+}
+```
+
+For a product project, ask: "Will this project live on GitHub? (Y/N)"
 
 - **Yes → GitHub-backed.** Confirm the setup parameters (recommend the defaults; ask only
   about what the user wants to change):
@@ -327,6 +444,7 @@ Ask: "Will this project live on GitHub? (Y/N)"
   ```json
   {
     "gitBackend": "github",
+    "mode": "product",
     "gitWorkflow": "merge-to-main",
     "mainBranch": "main",
     "remote": "origin",
@@ -340,6 +458,7 @@ Ask: "Will this project live on GitHub? (Y/N)"
   ```json
   {
     "gitBackend": "none",
+    "mode": "product",
     "storeRoot": "<absolute path to the Lindholm Code store, from Gate 2>"
   }
   ```
@@ -474,5 +593,6 @@ files must already exist (previous section) so they land in the first commit.
 
 After files are created — and, for a GitHub-backed project, the repo published — print a
 concise summary of all decisions made across the gates, including the GitHub URL (or
-"no version control" for a `none` project). Then recommend `/implement-milestone` to
-begin Milestone 1 — the first step once the project is set up.
+"no version control" for a `none` project). Then recommend the first step once the project is set
+up: `/implement-milestone` to begin Milestone 1 for a product project, or `/build-prototype` to
+run the whole plan in one go for a prototype.
