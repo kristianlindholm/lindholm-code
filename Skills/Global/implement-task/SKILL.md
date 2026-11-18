@@ -20,6 +20,8 @@ Read `docs/CHECKLIST.md`. Select the open `[ ]` item by the number given on the 
 
 The entry has no formal done-criteria the way a milestone does. Read the entry text and its `while:` context, then state a concrete done-criterion for the task — what must be true for it to count as finished. Read `CLAUDE.md` and the PRD (`docs/PRD.md`) for constraints that bind the work; product code lives under `product/` per `CLAUDE.md`'s Project Layout.
 
+`CLAUDE.md` is an index — the rules binding every change, plus a `## Rules` table pointing at the topic files holding the rest. **Do not read those files yet, and do not read them all**: Step 3 scopes the task and decides which ones it needs.
+
 Done: one open task is selected, and you can state its scope, a concrete done-criterion, and the part of the codebase it touches.
 
 ## Step 2 — Test the target against the product
@@ -72,7 +74,9 @@ Map the task to an approach, the same gate `implement-milestone` uses, sized for
 - **`security-reviewer`** — only when the work hits one of `code-review.md`'s security triggers (auth, user input, data access, secrets, crypto).
 - **`planner` / `architect`** — normally not needed for a single task. Invoke `planner` only if the task turns out to span components; record an ADR only if a genuine hard-to-reverse decision arises.
 
-Done: the task is mapped to test-first or direct implementation, and the agents that will run — and at which stage — are named.
+**Then read the rules this scope selects**, by `implement-milestone` Step 2's selection list — the practices above name their rows in `CLAUDE.md`'s `## Rules` index, the file the task touches names its subsystem, the kind of code being changed selects `coding-style` / `performance` / `patterns`, and `docs/adr/README.md` names the ADRs whose `Binds` matches. A single task usually selects one or two. Skip the rest — that skip is why the index exists.
+
+Done: the task is mapped to test-first or direct implementation, the agents that will run — and at which stage — are named, and **you can name each topic file and ADR you opened, what selected it, and each one you deliberately skipped.**
 
 ## Step 4 — Research before building
 

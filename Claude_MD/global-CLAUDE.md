@@ -12,12 +12,18 @@ referenced here, not restated.
 - No emojis or icons in any output: code, comments, documentation, plans, or
   generated project files. Exception: the colored severity dots defined under
   "Flagging and severity emphasis" below (each dot always paired with its text label).
-- Precedence when guidance conflicts: user instructions, then the project `CLAUDE.md`,
-  then this global file. Language-specific rules override general rules.
+- Precedence when guidance conflicts, most specific first: user instructions; the project's own
+  rules (`CLAUDE.md` and the topic files its `## Rules` index names); the stack rules provisioned
+  into `.claude/rules/<stack>/`; then this global file and `~/.claude/rules/`. **A project rule
+  beats a stack rule of the same name** — `docs/rules/testing.md` is this project's layer over
+  `.claude/rules/web/testing.md`, not a competitor to it.
 - Rules state the standard to meet. Skills state how to do the work. Agents are who
   does delegated work in a separate context.
-- Read the project's `CLAUDE.md` and `PRD.md` before starting work. Keep `PRD.md`
-  updated as features change — it is the source of truth for what the product does.
+- Read the project's `CLAUDE.md` and `PRD.md` before starting work. `CLAUDE.md` is an index:
+  it carries the rules binding every change plus a `## Rules` table pointing at the topic
+  files holding the rest. Open the ones the work in hand selects — not all of them, and not
+  the index alone. Keep `PRD.md` updated as features change — it is the source of truth for
+  what the product does.
 
 ## Honesty and intellectual integrity
 

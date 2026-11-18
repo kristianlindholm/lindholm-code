@@ -104,7 +104,12 @@ project-root/
     styleboard.html  UI projects only - generated render, flat beside DESIGN.md
     FEATURES.md      prototypes only - what the prototype does, recorded as it is built
     captures/        prototypes only - a current screenshot of each surface
+    rules/           this project's own rules, one file per practice - created on first rule
+      testing.md     named for the practice that selects it, matching .claude/rules/<stack>/
+    architecture/    how one subsystem is built and why - created on first entry
+      scheduler.md   named for the subsystem the scope or diff names
     adr/
+      README.md      the ADR index - number, title, Binds
       0001-slug.md
   resources/         user-supplied input material (starting docs, design references, inspiration, spreadsheets)
 ```
@@ -177,7 +182,47 @@ For each significant decision, evaluate all three ADR criteria:
 2. Surprising without context — a reader would wonder "why did they do it this way?"
 3. A real trade-off — genuine alternatives existed and one was chosen for specific reasons
 
-If all three apply, create docs/adr/0001-slug.md (create the docs/adr/ directory if it does not exist). ADR format: title, then 1-3 sentences covering context, decision, and why. Sequential numbering.
+If all three apply, create `docs/adr/<NNNN>-<slug>.md` with sequential numbering (create the
+`docs/adr/` directory if it does not exist). **This is the canonical ADR format for the whole
+toolchain** — `give-feedback`, `promote-prototype` and the `architect` agent all write ADRs and
+all follow it:
+
+```markdown
+# ADR <NNNN> — <title>
+
+- **Status:** proposed | accepted | superseded by ADR <NNNN>
+- **Date:** YYYY-MM-DD
+- **Binds:** <the practice or subsystem this decision governs>
+
+## Context
+Why this came up, and what constrains the choice.
+
+## Decision
+What was decided.
+
+## Consequences
+What follows, including what this rules out and which alternatives were rejected.
+```
+
+Keep the body as short as the decision allows and as long as it needs. An ADR is where a rule's
+reasoning lives (see `coding-style.md`, "Authored governance documents"), so it is the one place
+that is *not* bounded by a length target.
+
+**`Binds` is what makes the ADR findable.** It names the practice (`testing`, `performance`,
+`security`, …) or the subsystem the decision governs, and it is what the index below selects on.
+
+**Maintain `docs/adr/README.md`** — the index, created with the first ADR. One line per ADR:
+
+```markdown
+# ADRs
+
+| # | Title | Binds |
+|---|---|---|
+| 0001 | Single-file vanilla JS, no build step | packaging |
+```
+
+Without it, `docs/adr/` is write-only: a project reaches 47 ADRs and nothing can select the three
+that bind the work in hand.
 
 **Prototype:** make the stack choice and run the activation procedure below in full — the rules,
 skills, and agents provisioned there are what make the build fast, so they are not overhead. Skip
@@ -227,9 +272,8 @@ do not have to ask again.
    marker so the result is one subfolder per language:
    `.claude/rules/<lang>/<topic>.md`. Keep the rule filenames as-is.
    Do NOT copy `Global/` rules — global rules are already installed system-wide in
-   `~/.claude/rules/`. Reference the copied language rules from the project
-   `CLAUDE.md` when the project needs them enforced. Skip any tech choice with no
-   matching ruleset entry.
+   `~/.claude/rules/`. Note which rules you copied: they are what the `## Rules` index lists
+   when `CLAUDE.md` is created below. Skip any tech choice with no matching ruleset entry.
 
 3. Copy each matched skill directory from
    `<storeRoot>/Skills/Stack_specific/`
@@ -547,10 +591,14 @@ projects.
 from the `project-CLAUDE.md` scaffold in this skill's own folder. Fill every placeholder from
 the confirmed gate decisions (Purpose from Gate 1; Tech Stack and Architecture from Gate 2;
 visual language from Gate 3 if run; Git Conventions from Gate 6), fill the Project Layout
-section from the Directory Layout above, reference any language-specific rulesets provisioned
-in Gate 2 step 2 (including the `design/` rules for frontend stacks), and delete the scaffold's
-guidance comments. Keep it project-specific: do not restate global preferences or the general
-ruleset.
+section from the Directory Layout above, and delete the scaffold's guidance comments. Keep it
+project-specific: do not restate global preferences or the general ruleset.
+
+**This file is an index, not a container** (`coding-style.md`, "Authored governance documents").
+It holds what binds *every* change, plus one `## Rules` line per topic. Its index covers both
+trees — the stack rules provisioned in Gate 2 step 2 (including `design/` for frontend stacks)
+and this project's own `docs/rules/`, which starts empty and gains a file the first time a rule
+is agreed. A reader does not care which tree a rule came from, so there is one index, not two.
 
 ## Initialize and publish to GitHub
 

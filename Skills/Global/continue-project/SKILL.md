@@ -14,7 +14,11 @@ Do not skip this. Do not start coding before it completes.
 
 Orient to project conventions, tech stack, and project-specific rules. These apply to everything done in this session. Note the Project Layout section: product code lives under `product/`, governing documents under `docs/`, user-supplied input under `resources/`. Confirm those three folders exist; if the project predates this layout (docs at the root), surface it rather than assuming the new paths.
 
-Done: project conventions, stack, and rules are loaded and will govern this session, and the expected folder layout is confirmed or its absence noted.
+`CLAUDE.md` is an index — the rules binding every change, plus a `## Rules` table naming the topic files under `docs/rules/` and `docs/architecture/` that hold the rest. **Read the index, not the files it names.** Which of them a session needs is decided by the work, in `implement-milestone` Step 2 or `implement-task` Step 3; loading them all at session start is the one way to make this arrangement cost more than the single file it replaced.
+
+A project without `docs/rules/` or `docs/architecture/` predates this arrangement, exactly like docs at the root. That is not drift and not a gap: those folders are created when the first rule or subsystem note is agreed. Note it and carry on.
+
+Done: project conventions, stack, and rules are loaded and will govern this session, the expected folder layout is confirmed or its absence noted, and the Rules index is read without its topic files.
 
 ## Step 2 — Check for new languages
 
@@ -44,6 +48,11 @@ If a gap is found, ask once:
 On no: proceed — do not ask again this session.
 
 On yes: activate the missing artifacts by performing `/new-project`'s activation procedure (Gate 2, steps 1-4) for each detected-but-missing language. Map each detected language to its row in that skill's tech-choice table, and source the copies from the store root (see below). That procedure is the single source of truth for the copy: which artifacts map to which language, where they land (`.claude/rules/<lang>/<topic>.md` with the `Stack_specific/` marker dropped), deduplication, and skip-on-no-match.
+
+Then give each newly copied rule its line in `CLAUDE.md`'s `## Rules` index. **In a project that
+predates the index there is no such heading** — add it, listing the rules already provisioned
+under `.claude/rules/` as well as the new ones, and leave the rest of the file alone. Converting
+the whole file is migration work, not something to do inside a language-activation step.
 
 Resolve the store root once: read `storeRoot` from `.claude/wrap-it-up.json`. If it is absent, ask the user for the absolute path to the Lindholm Code store (where this configuration repository lives), use it, and write it back into `.claude/wrap-it-up.json` so it is asked only once.
 

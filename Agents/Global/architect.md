@@ -116,41 +116,18 @@ This is per-decision trade-off analysis. Choosing between distinct whole-solutio
 
 ## Architecture Decision Records (ADRs)
 
-For significant architectural decisions, create ADRs:
+A significant architectural decision gets an ADR in the project's `docs/adr/`, numbered in
+sequence, in this shape — title, then a `Status` / `Date` / `Binds` block, then Context,
+Decision, Consequences. **This shape is required even where the existing ADRs in that directory
+differ from it**, because older ones predate the `Binds` field and an ADR without `Binds` cannot
+be selected from the index. Match those older ADRs only for fields this shape does not name.
 
-```markdown
-# ADR-001: Use Redis for Semantic Search Vector Storage
+Two things are easy to miss and both make the ADR unreachable:
 
-## Context
-Need to store and query 1536-dimensional embeddings for semantic market search.
-
-## Decision
-Use Redis Stack with vector search capability.
-
-## Consequences
-
-### Positive
-- Fast vector similarity search (<10ms)
-- Built-in KNN algorithm
-- Simple deployment
-- Good performance up to 100K vectors
-
-### Negative
-- In-memory storage (expensive for large datasets)
-- Single point of failure without clustering
-- Limited to cosine similarity
-
-### Alternatives Considered
-- **PostgreSQL pgvector**: Slower, but persistent storage
-- **Pinecone**: Managed service, higher cost
-- **Weaviate**: More features, more complex setup
-
-## Status
-Accepted
-
-## Date
-2025-01-15
-```
+- **`Binds`** names the practice (`testing`, `performance`, `security`, …) or the subsystem the
+  decision governs. It is what a later reader selects on.
+- **`docs/adr/README.md` is the index.** Add the new ADR's row — number, title, `Binds` — in the
+  same change that creates the ADR. An ADR missing from the index is one nothing will find.
 
 ## System Design Checklist
 

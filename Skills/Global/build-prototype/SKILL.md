@@ -33,6 +33,12 @@ done-criteria from the Delivery Milestones table in `docs/PROGRESS.md`, the `RES
 if present, and `CLAUDE.md` plus `docs/PRD.md` for the constraints that bind the work. Product
 code lives under `product/`.
 
+A prototype has **no `docs/rules/` and no `docs/architecture/`**, for the same reason it has no
+ADRs (Gate 2): its implementation is explicitly replaceable, so there is no settled rule to
+record yet. `CLAUDE.md`'s `## Rules` index covers only the stack rules provisioned at Gate 2.
+`promote-prototype` creates the project's own rule and architecture files once the code has
+settled — do not create them here, and do not treat their absence as a gap.
+
 A prototype has no version control (Gate 6), so there is no baseline diff to read and nothing to
 roll back to. The working tree is the only copy of everything this skill produces.
 

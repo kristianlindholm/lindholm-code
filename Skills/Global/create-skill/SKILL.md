@@ -23,7 +23,9 @@ A skill is warranted only when all three hold:
 - Claude would handle it differently without explicit guidance.
 - No existing skill in the library already covers it — search the library before writing.
 
-Done: the interview has made the intent concrete, and each of the three is stated and holds. If any fails, stop — handle it inline or as a rule in `CLAUDE.md`, and do not create the skill.
+Done: the interview has made the intent concrete, and each of the three is stated and holds. If any fails, stop and do not create the skill.
+
+**Handling it inline is the default.** A one-off gets done now and recorded nowhere. Only a constraint that will recur becomes a rule, and then it goes to the project's topic file — `docs/rules/<practice>.md`, with its line in `CLAUDE.md`'s `## Rules` index — not into `CLAUDE.md` itself, which holds only what binds every change. Propose it the way `wrap-it-up` does: name the file, show the diff, and wait for a yes. A rejected skill proposal is not a licence to write an unreviewed rule.
 
 ## Step 2 — Locate the skill
 

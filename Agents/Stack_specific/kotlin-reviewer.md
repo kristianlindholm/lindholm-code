@@ -34,7 +34,9 @@ Run `git diff --staged` and `git diff` to see changes. If no diff, check `git lo
 
 Check for:
 - `build.gradle.kts` or `settings.gradle.kts` to understand module layout
-- `CLAUDE.md` for project-specific conventions
+- `CLAUDE.md` for the rules binding every change, plus the `## Rules` index. Open the topic files
+  the diff selects (its paths name subsystems, its content names practices) and the ADRs whose
+  `Binds` matches in `docs/adr/README.md` — not all of them, and not the index alone
 - Whether this is Android-only, KMP, or Compose Multiplatform
 
 ### Step 2b: Security Review

@@ -47,8 +47,9 @@ they are not preserved at the destination:
 - Agents are WHO does delegated work in a separate context.
 
 If a proposed artifact does not clearly fit exactly one of these, stop and
-reconsider before creating it. Precedence: stack-specific overrides global;
-user instructions override everything.
+reconsider before creating it. Precedence, most specific first: user instructions; a project's
+own rules (its `CLAUDE.md` and the topic files under `docs/rules/`); stack-specific; then global.
+A project rule beats a stack rule of the same name — the two trees are layers, not competitors.
 
 Commands are not an artifact type at all. Claude Code merged slash commands and skills,
 so a skill registers its own `/<name>` entry from its folder name and a wrapper in

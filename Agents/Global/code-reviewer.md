@@ -354,7 +354,16 @@ Do not withhold approval to appear rigorous. If the diff is clean, approve it.
 
 ## Project-Specific Guidelines
 
-When available, also check project-specific conventions from `CLAUDE.md` or project rules:
+Check project-specific conventions, which override the general standards above where they differ.
+`CLAUDE.md` carries the rules binding every change plus a `## Rules` index; the rest sit in topic
+files. **Select them from the diff you are reviewing** — the paths in it name the subsystems, and
+the kind of change names the practices — then open those rows and the ADRs whose `Binds` matches
+in `docs/adr/README.md`. Do not open every topic file, and do not review against the general
+defaults alone: a project that raised its file-size cap to 2400 lines records that in a topic
+file, and flagging a 1500-line file as oversized would be a false positive drawn from the wrong
+surface.
+
+Conventions worth checking for, wherever the index puts them:
 
 - File size limits (e.g., 200-400 lines typical, 800 max)
 - Emoji policy (many projects prohibit emojis in code)

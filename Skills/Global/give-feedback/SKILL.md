@@ -64,7 +64,9 @@ c. Evaluate the change against ADR criteria:
    - Hard to reverse
    - Surprising without context
    - A real trade-off with genuine alternatives
-   If all three apply, draft an ADR in docs/adr/ before updating the milestone plan.
+   If all three apply, draft an ADR in docs/adr/ before updating the milestone plan — in
+   `new-project`'s canonical format, including its `Binds` field, and add its row to
+   `docs/adr/README.md` in the same change. An ADR missing from the index is one nothing finds.
 d. Present the updated milestone plan as a confirmation gate: what changed (bulleted), then `Proceed? (Y/N)` (global interaction-design doctrine). Wait for confirmation before any implementation begins.
 
 Done: docs/PRD.md and the milestone plan reflect every requirement change, any qualifying ADR is drafted, and the updated plan is presented and awaiting confirmation.
