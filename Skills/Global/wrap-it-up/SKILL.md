@@ -150,7 +150,7 @@ Never silently skip a push, and never report a milestone as pushed when it was n
   docs/PROGRESS.md (a tracked file) forces a redundant follow-up commit on main
   every wrap. The SHA already lives in two authoritative places without churn:
   `git log --graph` (the record) and `.claude/wrap-it-up.json` `lastWrappedSha`
-  (untracked local baseline, written in step 12). The archive's Housekeeping log records the
+  (untracked local baseline, written in step 13). The archive's Housekeeping log records the
   merge as prose (e.g. "M5 merged --no-ff into main on 2026-07-03"), not the hash.
 - Always print the plan in this format before executing — milestone wrap example
   (GitHub-backed; the remote is always confirmed before the push is listed):
@@ -200,7 +200,16 @@ When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 - Include them in the gated git ritual. Derive each commit message from the task's entry text,
   inferring the conventional type from the diff (`feat`, `fix`, `refactor`, ...).
 - **Remove the `[x]` line (and its `while:` context line) from `docs/CHECKLIST.md` as part of
-  the same commit** — the deletion and the work land together.
+  the same commit** — the deletion and the work land together. This is Execution Order step 11,
+  which runs before the git plan is printed, so the deletions are in the working tree by the time
+  the plan is confirmed.
+- **Then read the file back and confirm no `[x]` line survives.** Without that check the removal
+  is the easiest thing in the wrap to skip, and skipping it inverts the commit: the one that was
+  meant to close the task is the one that preserves it, in a queue every future session reads.
+  Measured across two projects before this step existed — 34 `[x]` lines committed by five wraps
+  and not one removed by any of the twelve commits that touched those files, while the instruction
+  to remove them had been in this skill since its first commit. The read-back is the difference
+  between an instruction and a step that holds.
 - **Milestone also closing:** the task commit rides along with the milestone wrap; remove the
   `[x]` lines in that wrap commit.
 - **No milestone advanced (task-only):** skip the milestone doc reconciliation entirely — no PRD
@@ -286,18 +295,46 @@ A finding raised during the session and left in the conversation dies with the s
 anything worth keeping lands in this wrap's commit, and so the closing instruction stays a pointer
 instead of a list of loose ends.
 
-**What qualifies.** Anything raised this session under the flagging convention — a severity dot
-and its label — that is not already fixed or already written into a document. That convention is
-the bar: it covers risks, warnings, cautions, blockers, and severity-rated findings, and
-explicitly not ordinary explanation or neutral observation. Something never flagged does not
-become a finding here.
+**The checklist is for tasks, not findings.** An entry is real work that sits outside the scope of
+this session. That is the whole bar, and very little clears it.
 
-**Routing.**
+A severity dot is not the bar. The milestone review dispatches `code-reviewer` and
+`security-reviewer`, and those rate every finding they raise — so arriving here wearing a dot
+means only that a reviewer spoke. Being flagged and being a task are different things, and
+treating the first as evidence of the second is what fills a checklist with review output.
 
+**Routing — take the first branch that fits.**
+
+- **Something you could just do now** — do it, now, in this wrap. The sweep runs before the git
+  step, so the fix lands in this wrap's commit alongside everything else. Expect most findings to
+  take this branch: a thing small enough to park is usually small enough to finish, and finishing
+  it costs one edit against a queue entry that every future session reads and steps over.
 - **A governing-document gap** — something `CLAUDE.md` should say and does not — belongs to step
   9's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not bring it
   here.
-- **Anything actionable as work** becomes a proposed `docs/CHECKLIST.md` entry, gated below.
+- **Real work, outside this session's scope** — too large to absorb into the wrap, or it belongs
+  to a milestone that is not this one. Only this branch reaches the gate below.
+- **Everything else** — drop it. If it is not worth doing now, it is almost never worth doing
+  later: the judgement that defers it today is the same judgement that will skip it every session
+  from here, and the entry outlives the context that made it legible.
+
+**Not tasks — drop these; never propose them.** Each shape below has reached a real checklist:
+
+| Shape | How it reads | What to do |
+|---|---|---|
+| A measurement | "one `persist()` of a hundred 600-step boards costs about 180 ms" | it is a result — the review log in `docs/PROGRESS-ARCHIVE.md`, if anywhere |
+| A disclosed ceiling | "these three builds carry no bill — bounded by the schema, not a problem" | nothing; it was measured and it was fine |
+| A limit of what was verified | "the clipboard tier is verified against Excel only" | the review log, if anywhere |
+| A probe | "MEASURE the autosave cost with many boards", "look at the test document in resources" | run it now, or drop it |
+| A coverage note | "no fixture varies how many lanes one step names beyond six" | write the fixture now, or drop it |
+
+A probe is the clearest case: an entry asking a future session to go and look at something is
+work that takes about as long as writing the entry did.
+
+**The one-line test.** The format below is one line plus a `while:` clause. If an entry needs a
+paragraph to argue that it belongs, that paragraph is the finding and there is no task underneath
+it — drop it, or do the work now. Entries have reached twenty-five lines on this route, and each
+one was a review finding wearing a checkbox.
 
 **The gate — one finding per turn.** For each proposed entry, in its own message:
 
@@ -326,8 +363,10 @@ file, never overwriting existing entries.
 promotion, or a pick from the backlog (see "What this skill does not do"). That prohibition
 governs the open items already on the list, which this step never reads for prioritisation.
 
-**Most wraps surface nothing.** When no flagged finding is outstanding, this step is silent — no
-prompt, and no mention in the closer.
+**Most wraps propose nothing.** Silence is the ordinary outcome, not a sign the sweep was skipped:
+the findings were fixed in the wrap or dropped, which is where the routing sends nearly all of
+them. When nothing clears the bar, this step says nothing — no prompt, and no mention in the
+closer. A wrap that proposes an entry every time is misreading the bar, not finding more work.
 
 ## Persistence — `.claude/wrap-it-up.json`
 
@@ -389,15 +428,22 @@ leave the rest untouched.
    If found, invoke the graphify update workflow before the git step so that the updated graph
    is included in the milestone commit.
 9. If CLAUDE.md has proposed additions → show diff → confirm.
-10. **Findings sweep** — route this session's severity-flagged findings that are not already fixed
-    or recorded; each proposed checklist entry is gated on its own (see "Findings sweep").
-11. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
+10. **Findings sweep** — route this session's outstanding findings: fix what this wrap can absorb,
+    drop what is not real work, and propose a checklist entry only for work that sits outside this
+    session's scope. Most wraps propose nothing. Each proposal is gated on its own (see "Findings
+    sweep").
+11. **Checklist finalization** — open `docs/CHECKLIST.md` (if present) and delete every `[x]` line
+    together with its indented `while:` line, so the deletions are already in the working tree when
+    the git plan is printed. Then **read the file back and confirm no `[x]` survives** (see
+    "Checklist task commits"). Read the file here rather than trusting the note taken at step 2 —
+    nine steps is too far to carry it. This step runs for every wrap, task-only commits included.
+    With no `[x]` lines present it is silent.
+12. **Resolve the remote** (see Git Ritual → Remote resolution) → print the git plan → confirm →
     execute (or skip) → if a push ran, **verify it landed** before reporting success (see "After a
-    push runs — verify it landed"). If `[x]` checklist tasks are being committed, the plan includes
-    removing their lines from `docs/CHECKLIST.md` in the same commit (see "Checklist task commits").
-12. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
-13. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
-14. Print a **short** closing instruction (see below).
+    push runs — verify it landed"). Step 11's deletions ride in this commit alongside the work.
+13. Update `.claude/wrap-it-up.json` (new `lastWrappedSha`, `lastWrappedAt`).
+14. **Session cleanup** — if `.claude/sessions/` holds exactly one `save-session` handoff file, delete it (the milestone `RESUME HERE` now supersedes it). If more than one exists, list them numbered and ask which to delete, closing with a single `Which? (1-N)` (global interaction-design doctrine); do not delete by default.
+15. Print a **short** closing instruction (see below).
 
 ## Closing Instruction (keep it short)
 
