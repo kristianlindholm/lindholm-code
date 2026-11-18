@@ -38,7 +38,10 @@ redirects you there if it detects a non-clean boundary (see Boundary Guard).
 | `docs/PROGRESS-ARCHIVE.md` | The **cold** append-only history (completed-milestone narratives, review logs, merge log). Not auto-loaded; consulted on demand. Roll history into it each wrap; never delete or rewrite existing entries | Created lazily on first rollup |
 | `docs/DESIGN.md` (+ `docs/styleboard.html`) | UI projects only. If a UI milestone changed the visual language, reconcile the tokens/sections with what shipped and regenerate the styleboard; the diff is ground truth | No — discovered |
 | `README.md`, `CHANGELOG.md`, other docs | Update only if affected; never invent | No — discovered |
-| `CLAUDE.md` | Propose genuine new conventions only; **the one gated file** | No — rare |
+| `CLAUDE.md` | The **index**, plus the rules binding every change. Propose a cross-cutting rule only; anything narrower is routed to a topic file below | No — rare |
+| `docs/rules/<practice>.md` | This project's rules, one file per practice. Where a genuine new convention lands | No — rare |
+| `docs/architecture/<subsystem>.md` | How one subsystem is built and why. Where new architecture detail lands | No — rare |
+| `docs/adr/` + its `README.md` | Where a proposed rule's reasoning lands when it needs one. Gated like the rest; the ADR and its index row go in the same diff | No — rare |
 
 The PRD is a single file (`docs/PRD.md`). It is a requirements document —
 read it for context but do not add or modify milestone status there.
@@ -66,7 +69,8 @@ the casing of existing cells.
 
 - docs/PROGRESS.md, README, CHANGELOG → applied **autonomously** (all reversible via git).
 - **PRD → read for context only.** No writes.
-- **CLAUDE.md additions → confirmation gate.** Show the diff and ask: "Proposed CLAUDE.md additions: [diff]. Add? (Y/N)" Reject = skip that edit only; continue.
+- **Project-rule additions → confirmation gate.** The gated surface is `CLAUDE.md`, `docs/rules/`, `docs/architecture/` and `docs/adr/` together — the gate follows the rule, not the file, so routing a rule into a topic file never routes it past the user. Show the diff and ask: "Proposed addition to `<file>`: [diff]. Add? (Y/N)" Reject = skip that edit only; continue.
+- **Say where it lands, as part of the proposal.** A rule binding every change stays in `CLAUDE.md`; one binding a practice goes to `docs/rules/<practice>.md`; an architecture fact goes to `docs/architecture/<subsystem>.md`; the reasoning behind any of them goes to an ADR. Adding a topic file means adding its line to the `## Rules` index in the same diff — a file missing from the index is one nothing finds. Routing is part of what is approved, not an implementation detail decided afterwards.
 - **Git operation → its own explicit gate.** Always print the commit message(s) and git actions in full before executing — even when a default workflow is saved. See the Git Ritual section for the exact format. Awareness over automation.
 
 ## Verification Gate (soft)
@@ -214,7 +218,7 @@ When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
   `[x]` lines in that wrap commit.
 - **No milestone advanced (task-only):** skip the milestone doc reconciliation entirely — no PRD
   read-for-context step, no docs/PROGRESS.md milestone flip, no `RESUME HERE` rewrite. **The truth
-  pass still runs** (see "Truth pass over docs/PROGRESS.md"). This path skips *rewriting* the warm
+  pass still runs** (see "Truth pass over docs/PROGRESS.md, and over the rules index"). This path skips *rewriting* the warm
   doc, never *checking* it: it is the path that runs most often and the one that leaves the most
   false claims behind, precisely because it touches nothing. Otherwise just the gated commit that
   contains the task's code change plus the checklist line removal.
@@ -223,7 +227,7 @@ When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 holds granular captured side-tracks, "Deferred" holds milestone-scale future work. Do not move
 items between them.
 
-## Truth pass over docs/PROGRESS.md
+## Truth pass over docs/PROGRESS.md, and over the rules index
 
 The warm doc is regenerated only at a milestone wrap, so every present-tense claim in it is an
 assertion nothing re-checks in between. Left alone it goes false in silence: a suite count rots the
@@ -265,6 +269,30 @@ Done: every present-tense claim is paired with a surface, or marked unverifiable
 docs/PROGRESS.md is an autonomous surface (see "Confirmation Model"), so apply the corrections
 without a gate and report in one line what changed. Never carry a claim you have found false into
 the commit.
+
+**Step 3 — check the index resolves, and report anything over the standard.** Two cheap reads,
+both of which catch failures nothing else would.
+
+*The index and the files must agree.* Every line in `CLAUDE.md`'s `## Rules` index points at a
+file that exists, and every file in `docs/rules/` and `docs/architecture/` has a line. A file with
+no line is invisible — it will never be opened, however good it is. A line with no file is a
+promise that breaks the moment someone follows it. This is the store's "references must resolve"
+rule applied to a project.
+
+**Repairing either is a proposed edit to `CLAUDE.md`, so it goes through step 9's gate** — this
+pass finds the mismatch and reports it; it does not fix it here. `docs/PROGRESS.md` is autonomous
+and `CLAUDE.md` is not, and an index repair is no exception.
+
+*Report what is over the standard.* `coding-style.md` ("Authored governance documents") bounds
+these files and the entries inside them. Name any that exceed it, with its size, and stop there —
+**report, never silently rewrite.** Tightening a rule is a change like any other and goes through
+step 9's gate.
+
+This check exists because a standard nothing reads back is a prose hint (`coding-style.md`
+records what that cost).
+
+Done: the index resolves in both directions or the mismatch is queued for step 9, and any file or
+entry over the standard is named with its size.
 
 Done: every present-tense claim in docs/PROGRESS.md is true, corrected, or gone.
 
@@ -309,9 +337,11 @@ treating the first as evidence of the second is what fills a checklist with revi
   step, so the fix lands in this wrap's commit alongside everything else. Expect most findings to
   take this branch: a thing small enough to park is usually small enough to finish, and finishing
   it costs one edit against a queue entry that every future session reads and steps over.
-- **A governing-document gap** — something `CLAUDE.md` should say and does not — belongs to step
-  9's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not bring it
-  here.
+- **A governing-document gap** — a standing rule the project should carry and does not — belongs
+  to step 9's proposed-additions path, which carries its own show-diff-and-confirm gate. Do not
+  bring it here. Name where it lands as part of the proposal: `CLAUDE.md` only if it binds every
+  change, otherwise `docs/rules/<practice>.md` or `docs/architecture/<subsystem>.md`, with its
+  line in the `## Rules` index.
 - **Real work, outside this session's scope** — too large to absorb into the wrap, or it belongs
   to a milestone that is not this one. Only this branch reaches the gate below.
 - **Everything else** — drop it. If it is not worth doing now, it is almost never worth doing
@@ -420,14 +450,16 @@ leave the rest untouched.
    `docs/PROGRESS-ARCHIVE.md`, leaving the warm doc describing only the just-shipped + next
    milestone. Obey the no-loss invariant (relocate, never summarize or delete).
 7. **Truth pass** — read docs/PROGRESS.md back and check every present-tense claim against the
-   surface that owns it; correct or delete what fails (see "Truth pass over docs/PROGRESS.md").
+   surface that owns it; correct or delete what fails. Then check the `## Rules` index resolves
+   both ways, and report any file or entry over the `coding-style.md` standard (see "Truth pass
+   over docs/PROGRESS.md, and over the rules index").
    This step runs for every wrap, task-only commits included — steps 5-6 are skipped there, this
    one is not.
 8. **Graphify update (conditional):** Check whether graphify graph files exist in the project
    (look for `.graphify_chunk_*.files.txt` or a `.graphify_version` file at the project root).
    If found, invoke the graphify update workflow before the git step so that the updated graph
    is included in the milestone commit.
-9. If CLAUDE.md has proposed additions → show diff → confirm.
+9. If there are proposed rule additions → name the file each lands in → show diff → confirm.
 10. **Findings sweep** — route this session's outstanding findings: fix what this wrap can absorb,
     drop what is not real work, and propose a checklist entry only for work that sits outside this
     session's scope. Most wraps propose nothing. Each proposal is gated on its own (see "Findings
@@ -526,7 +558,8 @@ in git, since docs/PROGRESS.md is tracked. This invariant is the acceptance chec
 ```markdown
 # PROGRESS — <Project>
 
-> Handoff/status doc. Read this (plus `CLAUDE.md` and `docs/PRD.md`) when resuming work.
+> Handoff/status doc. Read this (plus `CLAUDE.md`, `docs/PRD.md`, and the topic files
+> `CLAUDE.md`'s Rules index names for the work in hand) when resuming work.
 > Last updated: <YYYY-MM-DD>.
 
 ## Delivery Milestones

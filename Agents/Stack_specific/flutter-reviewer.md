@@ -35,7 +35,9 @@ Run `git diff --staged` and `git diff` to see changes. If no diff, check `git lo
 Check for:
 - `pubspec.yaml` — dependencies and project type
 - `analysis_options.yaml` — lint rules
-- `CLAUDE.md` — project-specific conventions
+- `CLAUDE.md` — the rules binding every change, plus the `## Rules` index. Open the topic files
+  the diff selects (its paths name subsystems, its content names practices) and the ADRs whose
+  `Binds` matches in `docs/adr/README.md` — not all of them, and not the index alone
 - Whether this is a monorepo (melos) or single-package project
 - **Identify the state management approach** (BLoC, Riverpod, Provider, GetX, MobX, Signals, or built-in). Adapt review to the chosen solution's conventions.
 - **Identify the routing and DI approach** to avoid flagging idiomatic usage as violations

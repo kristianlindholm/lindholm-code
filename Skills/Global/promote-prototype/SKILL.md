@@ -152,7 +152,17 @@ For each milestone, run what prototype mode skipped:
 - **Tests** — backfill to the 80% coverage gate in `testing.md`. A confirmed bug finding gets a
   failing test first, through the `tdd` skill, so the fix is proven and cannot regress.
 - **ADRs** — a decision made during the build that meets `new-project`'s three criteria gets an ADR
-  written now, in `docs/adr/`, numbered in sequence.
+  written now, in `docs/adr/`, numbered in sequence and in that skill's canonical format. Fill its
+  `Binds` field and add its row to `docs/adr/README.md`, which this step creates if the prototype
+  had no ADRs. The index is what makes them reachable later.
+- **Project rules** — a prototype has no `docs/rules/`, and it recorded none during the build, so
+  there is no list to copy from. The candidates are what hardening just turned up: a review
+  finding that was a standing rule rather than a one-off fix, a constraint the build kept
+  rediscovering, a convention the code already follows everywhere. Propose each one the way
+  `wrap-it-up` step 9 does — name the file it lands in (`docs/rules/<practice>.md`, or `CLAUDE.md`
+  only if it binds every change), show the diff including its line in the `## Rules` index, and
+  wait for a yes. **Most promotions propose none**; a prototype that needed a standing rule would
+  usually have failed review instead.
 - **Design review** — for a milestone with UI, check the built screens against `docs/DESIGN.md`,
   `design-quality.md`, and `design-principles.md`.
 - **Re-verify the contract** — re-run that milestone's entries in `docs/FEATURES.md` and re-capture

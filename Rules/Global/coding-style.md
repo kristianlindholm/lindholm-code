@@ -40,6 +40,41 @@ MANY SMALL FILES > FEW LARGE FILES:
 - Extract utilities from large modules
 - Organize by feature/domain, not by type
 
+## Authored governance documents
+
+The limits above govern code, and the same ones apply here: 200-400 lines typical, 800 max. One
+addition, because a document can be inside its size limit and still be unusable.
+
+The cost of leaving documents unbounded has been measured once, and once is enough to cite: a
+project `CLAUDE.md` reached 110,868 bytes from 3,835, across 80 commits of which 79 made it
+larger and one made it smaller by 21 bytes.
+
+**A file loaded into every session is an index, not a container.** `CLAUDE.md` holds what binds
+*every* change, plus one line per topic pointing at the file that holds the rest. Detail lives in
+`docs/rules/<practice>.md`, `docs/architecture/<subsystem>.md`, and `docs/adr/`, consulted when
+the work touches them. This mirrors how `~/.claude/CLAUDE.md` indexes `~/.claude/rules/`:
+**consult the relevant file rather than reproducing its content.**
+
+**Bound the entry, not only the file.** A 20,000-byte rule is a problem wherever it is filed, and
+splitting files does not touch it. A rule states what to do; the argument for it lives in the ADR
+that decided it.
+
+The bound is **40 lines per entry** — a trigger to look, like the 800-line file cap, not a hard
+ceiling. Past it, check whether what has accumulated is the rule or the argument for the rule. If
+it is the argument, it belongs in an ADR and the rule should point at it.
+
+**Three things that are not rules and do not belong in one:**
+- *Its own revision history* — "raised from 800, to 1400 on …, to 1500 on …". The rule states what
+  is true now; the ADR carries why it changed.
+- *A restatement of a surface that already owns it.* A rule that both points at an owning file and
+  repeats its content has doubled the reading and created a second thing to keep true.
+- *Narrative of the incident that prompted it.* Keep the instruction it produced.
+
+**A standard nothing checks is a prose hint.** The runaway file above had a template asking for
+"2-3 sentences"; that is why this standard names its enforcer. `wrap-it-up`'s truth pass reads
+these documents back each wrap and reports what is over — it reports only, since changing a rule
+goes through the same approval as writing one.
+
 ## Error Handling
 
 ALWAYS handle errors comprehensively:

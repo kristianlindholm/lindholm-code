@@ -44,7 +44,7 @@ RIGHT (vertical):
 
 ### 1. Planning
 
-When exploring the codebase, read project context (`CLAUDE.md`, and any ADRs in `docs/adr/`) so that test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
+When exploring the codebase, read project context so that test names and interface vocabulary match the project's domain language: `CLAUDE.md`, the testing rows of its `## Rules` index (`docs/rules/testing.md` and the stack's `testing.md`), and the ADRs that bind the area under test. Select those from `docs/adr/README.md` by its `Binds` column — **do not read every ADR**, which in a mature project means hundreds of kilobytes and is why this instruction used to go unfollowed. Respect the ADRs covering the area you are touching.
 
 Before writing any code:
 

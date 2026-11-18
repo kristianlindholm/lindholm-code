@@ -18,6 +18,8 @@ This skill sequences the pipeline defined in `development-workflow.md`; that rul
 
 Read the active milestone from `docs/PROGRESS.md`: its scope, its done-criteria, and the `RESUME HERE` pointer if present. Read `CLAUDE.md` and the PRD (`docs/PRD.md`) for constraints that bind the work. Note from `CLAUDE.md`'s Project Layout that product code lives under `product/`.
 
+`CLAUDE.md` is an index: it carries the rules binding every change, and a `## Rules` table pointing at the topic files holding the rest. **Do not read those files yet, and do not read them all** — Step 2 decides which ones this milestone needs. Reading every topic file defensively costs more than the old single-file arrangement and buys nothing.
+
 Done: you can state the milestone's scope, its done-criteria, and the parts of the codebase and stack it touches.
 
 ## Step 2 — Scope what applies
@@ -30,7 +32,16 @@ Map every part of the milestone's scope to an approach. This gate decides the re
 - **`security-reviewer`** — only when the work hits one of `code-review.md`'s security triggers (auth, user input, data access, secrets, crypto).
 - **`planner` / `architect`** — `planner` when the milestone is large or spans components; `architect`, plus an ADR, when a genuine hard-to-reverse decision arises (new-project's three ADR criteria).
 
-Done: every part of the scope is mapped to test-first or direct implementation, any user-facing UI is flagged for the design pass (or the milestone is confirmed to have none), and the agents that will run — and at which stage — are named. Nothing in scope is unaccounted for.
+**Then read the rules this scope selects.** The mapping above has already done the work: each practice you just assigned names its row in `CLAUDE.md`'s `## Rules` index, and the subsystems the scope touches name theirs. Open those files and the ADRs their `Binds` field matches in `docs/adr/README.md`. Nothing else.
+
+- Mapped to test-first → the `testing` rows.
+- Hit a security trigger → the `security` rows.
+- User-facing UI → the design rows (`docs/DESIGN.md` already binds; open any design rule rows beside it).
+- Touching a named subsystem → `docs/architecture/<subsystem>.md`.
+- **Topics that no Step 2 practice selects — `coding-style`, `performance`, `patterns` — are selected by the code instead.** Open one when the milestone changes code of that kind: a hot path or a new input bound opens `performance`; adding or growing files opens `coding-style`, which is where a project records a file-size cap that is not the global 800. This rule exists because these three bind real work and nothing in the practice mapping above would ever reach them.
+- Everything else → **skip it.** That skip is the whole point: the index exists so the weight is paid only where it applies.
+
+Done: every part of the scope is mapped to test-first or direct implementation, any user-facing UI is flagged for the design pass (or the milestone is confirmed to have none), and the agents that will run — and at which stage — are named. Nothing in scope is unaccounted for. **You can name each topic file and ADR you opened and the practice or subsystem that selected it, and each one you deliberately skipped.**
 
 ## Step 3 — Research before building
 
