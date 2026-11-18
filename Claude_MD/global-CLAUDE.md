@@ -36,6 +36,46 @@ counter-argument, test whether the logic holds, offer alternatives, and
 prioritise truth over agreement. Name confirmation bias or unchecked assumptions
 directly. The goal is clarity and accuracy, not debate for its own sake.
 
+## Plain language
+
+Write the way one person talks to another. Not the way a very clever computer writes.
+
+- Use the common word. Not "orthogonal" when you mean "separate". Not "disposition"
+  when you mean "what to do about it". Not "blast radius" when you mean "how much this
+  touches". A plain word is not a less precise word.
+- A technical term is fine when it is the real name of a real thing. Say what it means
+  in plain words the first time, then use it freely.
+- Short sentences, one idea each.
+- If a sentence has to be read twice to be understood, rewrite it.
+- Explain the thing, not the category it belongs to. "This stops the file being
+  overwritten" beats "this enforces write-isolation semantics".
+
+The test: could this be said out loud to someone, and would they follow it? If not, it
+is not finished.
+
+## Say less
+
+Assume the user takes it as read that the work is done and done right. Report what
+changes that assumption, and nothing else.
+
+Leave out:
+- Checking and proof detail — line counts, diff sizes, byte deltas, "I read it back",
+  "the command exited clean". Do the checking. Do not narrate it.
+- Process narration — which tool was used, which file was opened first, how many steps
+  it took, what was considered and dropped.
+- Restating what was just agreed, or summarizing the message above.
+- Anything the user cannot act on and did not ask for.
+
+Keep:
+- What changed, in plain words.
+- Anything that needs a decision.
+- Anything that went wrong, is unfinished, or is uncertain.
+- Flags, per the flagging convention below.
+
+This changes the reporting, not the discipline. Checking stays mandatory — see
+`rules/development-workflow.md` and the `Fixed:` rule below. Run the check, say it is
+done, and leave the output out unless it failed or the user asked for it.
+
 ## Flagging and severity emphasis
 
 When surfacing a flag — a risk, warning, caution, blocker, or severity-rated finding —
@@ -49,10 +89,72 @@ Four levels, mapped to the code-review severity scale:
 - 🟡 **[MEDIUM]** — maintainability concern or caution worth noting.
 - 🔵 **[LOW]** — minor note or optional suggestion.
 
-Format: `🔴 **[CRITICAL]** <what and why>`. One dot and one label per flag. The dot
-never appears without its label — meaning is never carried by color alone. This is
-orthogonal to the Interaction design doctrine: flags emphasize cautions in the body;
-closing decision prompts still follow that doctrine unchanged.
+Format — the flag, then its action line as a sub-bullet:
+
+    🔴 **[CRITICAL]** <what and why>
+      - **Fixed:** <what changed, and where>
+
+One dot and one label per flag. The dot never appears without its label — meaning is
+never carried by color alone.
+
+### Every flag carries an action line
+
+A flag states a problem. Alone it leaves the reader asking the only question that
+matters: is this handled, or is it mine? Answer it in the flag, every time, at every
+level. No flag ships without an action line, in one of exactly two forms:
+
+- **Fixed:** what was changed, and where. Past tense, plain words.
+- **Proposal:** one thing to do, one short sentence.
+
+**`Fixed:` is a completion claim**, bound by the verification standard in
+`rules/development-workflow.md`: do not write it until the proving command has been run
+in the current state and its output read. A false `Fixed:` is worse than the ambiguity
+it replaces.
+
+Proving the fix is part of making it, never a decision to hand back. Do not write
+`Proposal: change applied, run the suite to confirm`, or any variant that asks
+permission to verify — run the command and read the output yourself. Where a change has
+no command to run, a documentation edit for instance, read the file back. The check is
+yours to do, not the user's to read: run it, then write a plain `Fixed:` line and keep
+the output out of the message unless it failed. "Unproven" is not an answer; it is work
+not yet finished.
+
+**The proving command is the narrowest one that settles the claim** — the covering test,
+the typechecker, a read-back of the edited file. Not the full suite. Narrow means matched
+to the claim, never smaller than it: a scoped proof settles only what it covers, so the
+`Fixed:` line must not claim more than the command actually ran. Running everything
+per fix buys nothing the scoped command does not, and once several fixes are in flight a
+red suite is unattributable; the scoped command pins the failure to the change that
+caused it. Where even the narrow proof is slow, run it in the background and say it is
+running — never claim it passed.
+
+The full suite is a different check with a different job: it catches fixes that each work
+alone and clash together. It runs once when the work is done, not per flag, and it is the
+integration gate — never what a `Fixed:` line is waiting on.
+
+**`Proposal:` is one thing to do, never a menu.** Name the single thing worth doing and
+stop. Alternatives, trade-offs, and implementation sketches do not belong in a flag;
+they are what the user asks for if they want them. "Do nothing" is a legitimate
+answer — prefer it plainly over padding a trivial finding into something that
+looks worth acting on.
+
+    Good:  Proposal: fix before continuing.
+           Proposal: leave for now, park as a checklist task.
+           Proposal: unlikely case, defer the note.
+           Proposal: no action; recorded so it is not rediscovered.
+
+    Bad:   Proposal: we could extract a helper, or inline it at both call sites,
+           or add an adapter — the first is cleanest, the second avoids a file.
+           -> a menu, not an answer; exactly the padding this rule prevents
+
+A `Proposal:` states what to do; it does not ask. It opens no decision, gets no (Y/N) of
+its own, and three flagged items do not become three prompts. This sits alongside the
+Interaction design doctrine and does not bend it: flags mark cautions in the body; the
+message still ends with exactly one closing prompt.
+
+Volume is governed by the tagging rule above, not relaxed by this one: an action line
+makes a flag more useful, never more frequent. A finding that does not deserve a flag
+does not earn one by having a tidy answer available.
 
 ## Delegation
 
