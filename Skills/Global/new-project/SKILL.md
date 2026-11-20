@@ -216,10 +216,15 @@ that is *not* bounded by a length target.
 ```markdown
 # ADRs
 
-| # | Title | Binds |
-|---|---|---|
-| 0001 | Single-file vanilla JS, no build step | packaging |
+| # | Title | Binds | File |
+|---|---|---|---|
+| 0001 | Single-file vanilla JS, no build step | packaging | `0001-single-file-vanilla-js.md` |
 ```
+
+**The `File` column is not decoration.** A reader selects by `Binds` and then has to open
+something, and the slug is not derivable from the title. Without the filename the only ways to
+reach the ADR are listing the directory — which the reading skills forbid — or guessing. Carry
+the filename and the index is followable on its own.
 
 Without it, `docs/adr/` is write-only: a project reaches 47 ADRs and nothing can select the three
 that bind the work in hand.

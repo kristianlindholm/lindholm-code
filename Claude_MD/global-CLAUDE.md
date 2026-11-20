@@ -15,8 +15,10 @@ referenced here, not restated.
 - Precedence when guidance conflicts, most specific first: user instructions; the project's own
   rules (`CLAUDE.md` and the topic files its `## Rules` index names); the stack rules provisioned
   into `.claude/rules/<stack>/`; then this global file and `~/.claude/rules/`. **A project rule
-  beats a stack rule of the same name** — `docs/rules/testing.md` is this project's layer over
-  `.claude/rules/web/testing.md`, not a competitor to it.
+  overrides a stack rule on the points it addresses — it does not replace the file.**
+  `docs/rules/testing.md` layers over `.claude/rules/web/testing.md`, so where the project file is
+  silent the stack file still governs. Same-named files are both read; only conflicts are decided
+  by precedence.
 - Rules state the standard to meet. Skills state how to do the work. Agents are who
   does delegated work in a separate context.
 - Read the project's `CLAUDE.md` and `PRD.md` before starting work. `CLAUDE.md` is an index:

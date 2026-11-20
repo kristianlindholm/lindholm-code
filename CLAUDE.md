@@ -49,7 +49,8 @@ they are not preserved at the destination:
 If a proposed artifact does not clearly fit exactly one of these, stop and
 reconsider before creating it. Precedence, most specific first: user instructions; a project's
 own rules (its `CLAUDE.md` and the topic files under `docs/rules/`); stack-specific; then global.
-A project rule beats a stack rule of the same name — the two trees are layers, not competitors.
+A project rule overrides a stack rule on the points it addresses; it does not replace the file.
+Both are read, and precedence decides only where they conflict.
 
 Commands are not an artifact type at all. Claude Code merged slash commands and skills,
 so a skill registers its own `/<name>` entry from its folder name and a wrapper in
