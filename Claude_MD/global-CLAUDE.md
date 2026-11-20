@@ -18,7 +18,8 @@ referenced here, not restated.
   overrides a stack rule on the points it addresses — it does not replace the file.**
   `docs/rules/testing.md` layers over `.claude/rules/web/testing.md`, so where the project file is
   silent the stack file still governs. Same-named files are both read; only conflicts are decided
-  by precedence.
+  by precedence. Within the project's own tier, a cross-cutting rule in `CLAUDE.md` beats a topic
+  file — it was put there because it binds every change.
 - Rules state the standard to meet. Skills state how to do the work. Agents are who
   does delegated work in a separate context.
 - Read the project's `CLAUDE.md` and `PRD.md` before starting work. `CLAUDE.md` is an index:

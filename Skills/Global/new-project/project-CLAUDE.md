@@ -52,6 +52,12 @@ gate was deferred until the first UI milestone.]
 file they touch. Typically a handful. A rule that binds one practice or one subsystem is not
 cross-cutting; it goes to its topic file and is reached through the index below.
 
+Placement decides how often a rule is in force, so when in doubt leave it here. This file is
+loaded into every session; a topic file is opened only when the work selects that practice, so
+a rule filed there binds a milestone that touches it and binds nothing else. That is the point
+for a testing rule, and a quiet failure for an invariant that should have stayed here. In a
+conflict the cross-cutting rule wins.
+
 State the rule, not its history. If it needs paragraphs to justify itself, those paragraphs
 are an ADR and the rule points at it.]
 
