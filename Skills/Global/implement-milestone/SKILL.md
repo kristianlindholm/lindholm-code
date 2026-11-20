@@ -34,7 +34,9 @@ Map every part of the milestone's scope to an approach. This gate decides the re
 
 **Then name the rules this scope selects — in writing, before opening any of them.** Read `CLAUDE.md`'s `## Rules` index and `docs/adr/README.md`, then write the list: every file you are about to open and the practice, subsystem or `Binds` value that selected it. Only then open them, and open exactly that list.
 
-**The index is the only way you find these files.** Do not list, glob or search `docs/rules/`, `docs/architecture/` or `docs/adr/` — a sweep of those directories reads every file in them, which costs more than the single document this arrangement replaced and leaves you selecting after the fact instead of before it. If a file is not in the index it is not yours to open; if the index names a file that does not exist, say so.
+**The index is the only way you find these files.** Do not list, glob or search `docs/rules/`, `docs/architecture/` or `docs/adr/` — a sweep of those directories reads every file in them, leaving you to select after the fact instead of before it. If a file is not in the index it is not yours to open. If the index names a file that does not exist, report it and carry on without it; do not go looking for a renamed one.
+
+An older ADR index may list entries by number and title with no filename. Opening `docs/adr/<NNNN>-*.md` by its number is the one lookup this rule allows, since the slug cannot be derived from the title — note the gap so the index gains a `File` column.
 
 Naming the set first is what makes it a decision. A list written afterwards is a description of what you happened to read.
 
@@ -45,7 +47,7 @@ Naming the set first is what makes it a decision. A list written afterwards is a
 - **Topics that no Step 2 practice selects — `coding-style`, `performance`, `patterns` — are selected by the code instead.** Open one when the milestone changes code of that kind: a hot path or a new input bound opens `performance`; adding or growing files opens `coding-style`, which is where a project records a file-size cap that is not the global 800. This rule exists because these three bind real work and nothing in the practice mapping above would ever reach them.
 - Everything else → **skip it.** That skip is the whole point: the index exists so the weight is paid only where it applies.
 
-Done: every part of the scope is mapped to test-first or direct implementation, any user-facing UI is flagged for the design pass (or the milestone is confirmed to have none), and the agents that will run — and at which stage — are named. Nothing in scope is unaccounted for. **The selected list was written before anything was opened, what you opened matches it exactly, and no rules directory was swept.**
+Done: every part of the scope is mapped to test-first or direct implementation, any user-facing UI is flagged for the design pass (or the milestone is confirmed to have none), and the agents that will run — and at which stage — are named. Nothing in scope is unaccounted for. **The selected list was written before anything was opened, what you opened matches it exactly, no rules directory was swept, and you can name what you deliberately skipped.**
 
 ## Step 3 — Research before building
 

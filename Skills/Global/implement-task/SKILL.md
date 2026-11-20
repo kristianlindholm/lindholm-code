@@ -76,9 +76,9 @@ Map the task to an approach, the same gate `implement-milestone` uses, sized for
 
 **Then name the rules this scope selects, in writing, before opening any of them** — by `implement-milestone` Step 2's selection list, which this step follows exactly: read `CLAUDE.md`'s `## Rules` index and `docs/adr/README.md`, write the list with what selected each entry, then open exactly that list. A single task usually selects one or two.
 
-**Do not list, glob or search `docs/rules/`, `docs/architecture/` or `docs/adr/`.** The index is how you find these files; sweeping the directories reads all of them and turns selection into something you describe afterwards rather than decide first.
+**Do not list, glob or search `docs/rules/`, `docs/architecture/` or `docs/adr/`.** The index is how you find these files; sweeping the directories reads all of them and turns selection into something you describe afterwards rather than decide first. A file not in the index is not yours to open; one the index names that does not exist is reported and carried on without. Where an older ADR index gives only a number, opening `docs/adr/<NNNN>-*.md` by that number is allowed — the slug cannot be derived from the title.
 
-Done: the task is mapped to test-first or direct implementation, the agents that will run — and at which stage — are named, and **you can name each topic file and ADR you opened, what selected it, and each one you deliberately skipped.**
+Done: the task is mapped to test-first or direct implementation, the agents that will run — and at which stage — are named, and **the selected list was written before anything was opened, what you opened matches it exactly, no rules directory was swept, and you can name what you deliberately skipped.**
 
 ## Step 4 — Research before building
 
