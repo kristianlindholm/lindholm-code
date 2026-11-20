@@ -60,8 +60,9 @@ are an ADR and the rule points at it.]
      rather than reproducing its content — the same arrangement ~/.claude/CLAUDE.md uses over
      ~/.claude/rules/. Covers both trees, because a reader does not care which one a rule came
      from: .claude/rules/<stack>/ holds rules provisioned from the store and is never hand-
-     edited; docs/rules/ holds this project's own. Where both name the same topic, the project
-     file wins.
+     edited; docs/rules/ holds this project's own. Where both name the same topic, read both: the
+     project file overrides on the points it addresses and the stack file governs the rest. It
+     replaces nothing.
 
      A ROW EXISTS ONLY ONCE ITS FILE DOES. At creation that means the stack rules provisioned
      in Gate 2 and nothing else: docs/rules/, docs/architecture/ and docs/adr/ all start empty
