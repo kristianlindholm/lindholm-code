@@ -192,7 +192,6 @@ all follow it:
 
 - **Status:** proposed | accepted | superseded by ADR <NNNN>
 - **Date:** YYYY-MM-DD
-- **Binds:** <the practice or subsystem this decision governs>
 
 ## Context
 Why this came up, and what constrains the choice.
@@ -208,8 +207,11 @@ Keep the body as short as the decision allows and as long as it needs. An ADR is
 reasoning lives (see `coding-style.md`, "Authored governance documents"), so it is the one place
 that is *not* bounded by a length target.
 
-**`Binds` is what makes the ADR findable.** It names the practice (`testing`, `performance`,
-`security`, …) or the subsystem the decision governs, and it is what the index below selects on.
+**`Binds` is what makes the ADR findable, and it lives in the index, not in the ADR.** It names
+the practice (`testing`, `performance`, `security`, …) or the subsystem the decision governs.
+Every reader selects on it from `docs/adr/README.md`; nothing reads it from the ADR file. Putting
+it in both would restate a surface that already owns it — see `coding-style.md`, "Authored
+governance documents" — and give you a second copy to keep true.
 
 **Maintain `docs/adr/README.md`** — the index, created with the first ADR. One line per ADR:
 
