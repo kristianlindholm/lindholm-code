@@ -117,17 +117,17 @@ This is per-decision trade-off analysis. Choosing between distinct whole-solutio
 ## Architecture Decision Records (ADRs)
 
 A significant architectural decision gets an ADR in the project's `docs/adr/`, numbered in
-sequence, in this shape — title, then a `Status` / `Date` / `Binds` block, then Context,
-Decision, Consequences. **This shape is required even where the existing ADRs in that directory
-differ from it**, because older ones predate the `Binds` field and an ADR without `Binds` cannot
-be selected from the index. Match those older ADRs only for fields this shape does not name.
+sequence: title, then `Status` and `Date`, then Context, Decision, Consequences. Match the
+existing ADRs in that directory for anything this shape does not name.
 
-Two things are easy to miss and both make the ADR unreachable:
+What makes it reachable is the index, not the file:
 
+- **`docs/adr/README.md` is the index.** Add the new ADR's row — number, title, `Binds`,
+  filename — in the same change that creates the ADR. An ADR missing from the index is one
+  nothing will find.
 - **`Binds`** names the practice (`testing`, `performance`, `security`, …) or the subsystem the
-  decision governs. It is what a later reader selects on.
-- **`docs/adr/README.md` is the index.** Add the new ADR's row — number, title, `Binds` — in the
-  same change that creates the ADR. An ADR missing from the index is one nothing will find.
+  decision governs. It belongs in that index row and nowhere else: every reader selects on it
+  there, so a copy in the ADR itself is a second thing to keep true and nothing reads it.
 
 ## System Design Checklist
 
