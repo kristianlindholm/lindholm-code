@@ -61,7 +61,7 @@ Worked example:
 > Right: "The target is met by <control>, except <the four gaps>. Stated as its own item, that gap coverage is not something you would park today. Recommend closing. 1. Close it 2. Build the gap coverage only 3. Build as written. Which? (1-3)"
 > Wrong: "The premise is partly already shipped — here are two ways to build it." (recommends building because the gaps are the nameable part)
 
-On a decision to close, go to Step 7: the flip and the commit gate are identical for a resolved item and a built one. On a decision to build a narrowed version, make that the target and continue to Step 3.
+On a decision to close, go to Step 8: the flip and the commit gate are identical for a resolved item and a built one. On a decision to build a narrowed version, make that the target and continue to Step 3.
 
 Done: the target is confirmed not-yet-met and stated in final form — adjusted for any same-work sibling and any reframing the code revealed — or the skill has stopped and offered to close because the target is already met.
 
@@ -72,6 +72,7 @@ Map the task to an approach, the same gate `implement-milestone` uses, sized for
 - **Test-first (`tdd` skill)** — applies wherever the task adds or changes behavior. Skip only where there is nothing to assert: docs, config, a trivial rename.
 - **Reviewer agents** — the general `code-reviewer`, plus the stack's reviewer for each language touched (`go-reviewer`, `react-reviewer`, ...).
 - **`security-reviewer`** — only when the work hits one of `code-review.md`'s security triggers (auth, user input, data access, secrets, crypto).
+- **Build-resolver** — the stack's `*-build-resolver` for each language touched, for Step 6. Name it here even though it may not be needed, so Step 6 has a list rather than a search. Not every language has one and not every project provisions one: if `.claude/agents/` holds no resolver for this stack, record that here and Step 6 clears the build without a dispatch.
 - **`planner` / `architect`** — normally not needed for a single task. Invoke `planner` only if the task turns out to span components; record an ADR only if a genuine hard-to-reverse decision arises.
 
 **Then name the rules this scope selects, in writing, before opening any of them** — by `implement-milestone` Step 2's selection list, which this step follows exactly: read `CLAUDE.md`'s `## Rules` index and `docs/adr/README.md`, write the list with what selected each entry, then open exactly that list. A single task usually selects one or two.
@@ -88,11 +89,29 @@ Done: an existing approach is adopted, or none fits and that is confirmed.
 
 ## Step 5 — Build red-green
 
-For every part Step 3 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the rest directly against the done-criterion. Write product code under `product/` and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`: invoking this skill is the request for that agent, so dispatch it rather than quietly fixing the build yourself.
+For every part Step 3 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the rest directly against the done-criterion. Write product code under `product/` and run build/test commands from there.
 
-Done: the task's done-criterion is met and the test and build commands pass — confirmed with evidence, not assumed.
+Compile and type errors met along the way are part of the cycle; fix them and carry on. Do not dispatch an agent mid-cycle — Step 6 is where a build that will not come green is handed off.
 
-## Step 6 — Review
+Done: the task's done-criterion is met, and the build and test commands have been run — whatever they report.
+
+## Step 6 — Clear the build
+
+Run the build, typecheck and test commands now, and read the output.
+
+**Green — say so and go to Step 7.** Nothing to dispatch.
+
+**Red — dispatch the build-resolver named in Step 3 over the failures.** Invoking this skill is the request for that agent; dispatch it rather than fixing the build yourself. Give it the failing command and its output, scoped to this task's work. When it returns, re-run the commands yourself: its report that the build is fixed is not evidence, the command is.
+
+**Red, and Step 3 recorded no resolver for this stack** — fix it yourself and say so. Most projects have no build-resolver provisioned, and several supported languages have none in the store at all; that is a coverage decision, not a reason to stall.
+
+Clearing the build is its own step, not a clause inside Step 5. Do not fold it back in: a dispatch asked for mid-cycle does not happen, and one you arrive at does.
+
+If the resolver cannot fix it, stop and report.
+
+Done: the build, typecheck and test commands pass — confirmed by running them after any dispatch, not by an agent's report.
+
+## Step 7 — Review
 
 Run the reviewer agents named in Step 3: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this task's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
 
@@ -102,7 +121,7 @@ Before dispatching, snapshot the tree — this step runs before the commit gate,
 
 Done: reviews are clean, or their CRITICAL and HIGH findings are fixed, re-verified, and the fix diff has been through one further review pass — and the tree matches its before-figures.
 
-## Step 7 — Mark done, stop at the commit gate
+## Step 8 — Mark done, stop at the commit gate
 
 Confirm the work against the done-criterion as it stands after Step 2. On verified completion, flip that entry in `docs/CHECKLIST.md` from `- [ ]` to `- [x]`, leaving the line and its `while:` context otherwise unchanged. Do not delete the line. Do not commit or merge.
 
