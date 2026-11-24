@@ -16,6 +16,20 @@ Located in `~/.claude/agents/`:
 
 For test-driven development, use the `tdd` skill (test-first workflow); there is no separate TDD agent.
 
+## Choosing a model tier
+
+Each agent declares its own `model:`. To choose it, or to decide whether to escalate mid-task:
+
+- Start at the default. Escalate only with a reason.
+- Before escalating, make the model able to check its own work. A verifiable loop beats a bigger model.
+- Raise effort before changing model — effort is the cheaper dial.
+- Keep cheap models on work whose output is cheap to check: search, reading logs, summarising. Keep
+  judgment and edits on the main model.
+- Price the task, not the token. The hardest few tasks carry most of the spend.
+
+No model is named here on purpose. The line-up changes, and a model name in a rule file is a claim
+with an expiry date whose reader already knows the current answer better than the file does.
+
 ## Immediate Agent Usage
 
 No user prompt needed:
@@ -47,15 +61,6 @@ Do not parallelize when the tasks share state (agents editing the same files con
 
 When parallel agents return, check that their changes do not conflict, integrate them, and run the full test suite — independent agents can each make a correct change that clashes with another.
 
-## Multi-Perspective Analysis
-
-For complex problems, use split role sub-agents:
-- Factual reviewer
-- Senior engineer
-- Security expert
-- Consistency reviewer
-- Redundancy checker
-
 ## Working with subagents efficiently
 
 Dispatching an agent and reading its reply both spend the controller's context. Two practices keep a long run lean and recoverable.
@@ -84,4 +89,3 @@ Where agents run concurrently against one working tree, treat that tree as share
 
 - [development-workflow.md](development-workflow.md) — where each agent slots into the pipeline.
 - [code-review.md](code-review.md) — review delegation and the reviewer agents.
-- [performance.md](performance.md) — model selection per agent role.

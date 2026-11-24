@@ -204,9 +204,8 @@ rather than reproducing its content:
 - `security.md` — OWASP Top 10, common vulnerability categories, pre-commit checks, secret management, security response protocol.
 - `git-workflow.md` — conventional commits, PR workflow.
 - `development-workflow.md` — research, planning, TDD, review, and commit pipeline.
-- `agents.md` — when to delegate, to which agent, and how to snapshot and verify the working tree around a dispatch.
+- `agents.md` — when to delegate, to which agent, how to choose its model tier, and how to snapshot and verify the working tree around a dispatch.
 - `patterns.md` — repository pattern, API response envelope, skeleton projects.
-- `performance.md` — model selection, context-window management.
 - `hooks.md` — hook types, auto-accept guidance, TodoWrite usage.
 
 ## Interaction design

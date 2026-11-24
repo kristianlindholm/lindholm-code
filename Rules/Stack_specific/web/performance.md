@@ -1,4 +1,5 @@
-> This file extends the global `performance.md` rule with web-specific performance content.
+> Web application performance standards: Core Web Vitals targets and bundle budgets. There is no
+> global counterpart — this file stands on its own.
 
 # Web Performance Rules
 

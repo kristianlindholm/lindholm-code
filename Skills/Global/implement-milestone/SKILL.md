@@ -119,7 +119,9 @@ Step 5, to be resolved there, not escalated here.
 
 Before dispatching, snapshot the tree — this step runs before the commit gate, so the work under review is its own only copy. Run `git stash create` and record the commit id it prints; it writes a dangling commit and does **not** touch the working tree. Copy any untracked files `git status --porcelain` marks `??` into `.claude/scratch/`, since the stash commit does not capture them. Record `git diff --stat` and `git status --porcelain` as the before-figures, and re-run both when the agents return: compare before acting on any finding, per `agents.md`. If they diverge, stop and tell the user, naming the snapshot commit id and the scratch copies.
 
-Done: reviews are clean, or their CRITICAL and HIGH findings are fixed and re-verified, and the tree matches its before-figures.
+**Then review the fix**, per `code-review.md`'s "The fix gets reviewed too": one further `code-reviewer` dispatch over the fix diff only. A new CRITICAL or HIGH from that pass is a design signal, not a cue to fix again — stop and raise it.
+
+Done: reviews are clean, or their CRITICAL and HIGH findings are fixed, re-verified, and the fix diff has been through one further review pass — and the tree matches its before-figures.
 
 ## Step 8 — Stop at the commit gate
 

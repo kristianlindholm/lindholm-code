@@ -86,3 +86,45 @@ again, give it the same guard as its skill.
 boilerplate: a paragraph on setting `$OBSIDIAN_CLAUDE_VAULT` before running. That ground is
 already covered by the skill's Steps 2 and 3, and the skill's stale pointer to "record it in the
 command wrapper" was rewritten to name the environment variable instead. Nothing was lost.
+
+### `Rules/Global/performance.md` — retired 2026-11-24
+
+**What it was.** A 59-line, 1,741-byte global rule in four parts: a model-selection tier table
+(Haiku / Sonnet / Opus), context-window management, extended-thinking configuration, and a
+build-troubleshooting pointer.
+
+**Why it was retired.** Four reasons, only one of them staleness.
+
+*Two subjects shared one name.* The global file was about **Claude's** performance. But
+`Rules/Stack_specific/web/performance.md` opened by declaring itself an extension of it while
+covering Core Web Vitals and bundle budgets — **the application's** performance — and
+`implement-milestone` Step 2 selected the topic for application performance too ("a hot path or a
+new input bound opens `performance`"). Every consumer read the name the other way round. Under the
+layering rule a web project's performance question resolved to Core Web Vitals over model
+selection.
+
+*The tier table was stale and unread.* It called Sonnet the best coding model and never mentioned
+the current top tier. Worse than wrong, it was never consulted at the decision point: a model tier
+is set in each agent's `model:` frontmatter, which this rule never touched. A model name in a rule
+file is a claim with an expiry date and no reader.
+
+*The extended-thinking block was configuration, not a standard.* Keyboard toggles, a settings key
+and an environment variable are advice to the operator. Rules state what Claude must meet.
+
+*The build-resolver pointer restated `agents.md`*, which `coding-style.md` names as one of the
+three things that is not a rule.
+
+**What was kept.** The escalation procedure, stripped of every model name, price and benchmark, now
+lives in `agents.md` under "Choosing a model tier": start at the default, make the model able to
+check its own work before escalating, raise effort before changing model, keep cheap models on
+cheap-to-check work, price the task rather than the token. None of it expires.
+
+**What was dropped on purpose.** The "avoid the last 20% of the context window" line. It is a
+hardcoded threshold of exactly the kind its replacement rejects, nothing read it, and
+`development-workflow.md` — the proposed destination — turned out to have no session-conduct
+section to host it. It was advice to the operator, not a standard.
+
+**Before restoring.** The name `performance.md` is now free for *application* performance, which is
+what both surviving consumers already assume it means. Restoring this file under that name would
+recreate the collision it was retired for. Restore the content under a different name, or not at
+all.
