@@ -41,22 +41,45 @@ requests and has no server process, so two of the four are `n/a` by design, not 
 
 ## Framework noise
 
-Lines that a clean run still emits. Excluded from "clean", and counted in the report.
+Lines that a clean run still emits. Excluded from "clean", and counted in the report. **Every
+channel needs its own set** — the browser console is not the only one that chatters.
+
+**Runtime channel (browser console)**
 
 | Emitted by | Lines |
 |---|---|
 | React, development build | `Download the React DevTools for a better development experience` |
 | Next.js with Turbopack | `[HMR] connected`, `[Fast Refresh] rebuilding`, `[Fast Refresh] done in Nms` |
 
-Observed on Next.js 16.2.7 and 16.2.10. A warning is never noise — a deprecation notice is often the
-first sign of a breakage, so only the lines above are excluded.
+**Process channel (server stdout and stderr)**
+
+| Emitted by | Lines |
+|---|---|
+| npm | the run banner, two lines before anything else |
+| Next.js with Turbopack | the version and `Local` / `Network` / `Environments` block, `Ready in Xs`, one `Compiling <route>` per route on first touch, and one `GET <path> <status> in Nms` per request |
+
+A request log line is noise; the same line carrying a status you did not expect is not. Read the
+status before excluding the line.
+
+Observed on Next.js 16.2.7 and 16.2.10. A warning is never noise in either channel — a deprecation
+notice is often the first sign of a breakage, so only the lines above are excluded.
 
 ## Probing without writing
 
 The aim is an operation that forces the application to touch a dependency and then stops. A request
-that **reads before it decides** does this: an authentication attempt queries the user store before
-it compares anything, so an attempt with an address that cannot exist — `@example.invalid` — reaches
-the database and writes nothing.
+that **reads before it decides** does this — where one exists. One worked example, and one case where
+it does not apply:
+
+- **Authentication against a user store:** the attempt queries the store before comparing anything,
+  so an attempt with an address that cannot exist — `@example.invalid` — reaches the database and
+  writes nothing.
+- **Authentication against a hashed secret in the environment:** touches no dependency at all. The
+  comparison is local. This is not a variant of the case above; it is the absence of it.
+
+**Where no application path reaches a dependency without a session,** probe it directly using the
+application's own configuration and request shape, and label the result out-of-band. That proves the
+dependency is alive. It proves nothing about the application's path to it, and the report must not
+let the two read as the same thing.
 
 Before any probe that does write, establish what the dependency actually is. A hosted datasource is
 not a local file, and a write may land somewhere shared. Ask.
@@ -69,7 +92,7 @@ re-testable in a minute by the control the method prescribes.
 | Observed | What it would have caused |
 |---|---|
 | Service-worker registration fails in the Browser pane even for a three-line worker served with the correct type from a throwaway server | A false defect report against an application whose PWA support was fine. **Do not read service-worker state here.** |
-| `read_page` returned "(empty page)" while `get_page_text` and `find` returned the full content at the same moment | Reporting a rendered page as blank. An empty tree is not evidence of an empty page. |
+| `read_page` returned "(empty page)" while `get_page_text` and `find` returned the full content at the same moment | Reporting a rendered page as blank. **Check the reported Viewport first: `0x0` means the pane has not sized the tab yet — re-read rather than conclude.** Under `filter: "interactive"` an empty result can also simply mean the page has no interactive elements. |
 | A dead database returned HTTP 200 through an authentication endpoint, with console, network and page all clean | Reporting a completely non-functional application as working. This is why the process's own output is a channel. |
 
 The shape of the control that settled the first one: serve a minimal equivalent from a throwaway

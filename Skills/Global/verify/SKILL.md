@@ -58,31 +58,47 @@ reading code.
    not stop the run; it makes attribution harder, and the report says so.
    *Done: the suite's state is recorded.*
 
-4. **Confirm, then start.** Read the start path — the start script and whatever it runs on
-   initialisation — and say what starting will touch. **Stop if that includes writes nobody
-   sanctioned.** Where the configuration offers several targets, name them and ask rather than guess.
-   Where something already holds the port, attach to it and say so rather than starting a second
-   instance.
-   *Done: the application answers, the report names which instance, and what startup writes has been
-   stated.*
+4. **Confirm, then start.** Read the **start command** and whatever it runs on initialisation, and
+   say what *starting* will touch. This is the start path only — what the application does once a
+   page is requested is not knowable before starting, and belongs to the channels. **Stop if
+   starting includes writes nobody sanctioned.** Where the configuration offers several targets,
+   name them and ask rather than guess. Where something already holds the port, attach to it and
+   say so rather than starting a second instance.
+   **Let the control finish first.** A suite and an application compete for the same machine, and
+   workers that time out under load look exactly like test failures.
+   *Done: the application answers, the report names which instance, and the Startup writes row is
+   filled.*
 
 5. **Read every channel the environment exposes.** What the process says, what the runtime says,
    what crossed a boundary, what a person would see. **No channel is privileged** — a rendering
    fault appears in none of the others, and a dead dependency can appear in only one.
    *Done: every channel carries a value in the report; none is omitted.*
 
-6. **Probe each lifecycle dependency**, preferring a path that writes nothing. An operation that
-   reads before it decides will exercise a dependency without changing anything.
-   *Done: each dependency has a result, or is stated as unreachable without a write.*
+6. **Probe each lifecycle dependency**, preferring a path that writes nothing. Look first for an
+   operation the application itself performs that reads before it decides.
 
-7. **Reproduce before reporting.** Re-run any failure against a minimal case the change never
-   touched — a throwaway instance, a second application, an untouched route. If the control fails
-   identically, the finding is the environment: drop it.
-   *Done: every reported failure has survived a control, or is labelled environmental.*
+   **Where no such path exists**, probe the dependency directly, using the application's own
+   configuration and request shape — and label it **out-of-band**. The distinction is not cosmetic:
+   an out-of-band probe proves the dependency is alive and proves nothing about the application's
+   path to it. An application whose every route returns early without a session gives you only this.
+   *Done: each dependency is recorded as answering through the application, answering out-of-band,
+   or unreachable without a write.*
+
+7. **Reproduce before reporting.** Re-run anything the channels surfaced against a minimal case the
+   change never touched — a throwaway instance, a second application, an untouched route. Three
+   outcomes, and the third is the one that gets skipped:
+   - **The control fails identically** — it is the environment. Drop it.
+   - **The control is clean and the cause traces to this application** — report it.
+   - **The control is clean but nothing ties it to this application** — an error whose stack holds
+     no application frames, say. Label it **unattributed** and report it as that. It is neither a
+     defect nor environmental, and calling it either is a guess.
+
+   *Done: everything surfaced is labelled defect, environmental or unattributed, and every defect
+   has survived a control.*
 
 8. **Report, then stop what was started.**
-   *Done: the report is complete, the process is stopped, and **the port is confirmed free** — not
-   merely the task stopped.*
+   *Done: every row carries a value, Findings included — "none" is a value and an empty row is not;
+   the process is stopped; and **the port is confirmed free**, not merely the task stopped.*
 
 Step 7 is the one that carries the weight. Without it the report is a list of things the environment
 happens to do.
@@ -102,18 +118,28 @@ VERIFY — <project> — <date>
 
 Prerequisites   ready | not ready (<what is missing>)
 Control         suite passing | failing (<command>)
+Startup writes  nothing beyond gitignored build output | <what starting touches>
 Start           ready in Xs on :<port> | attached to existing | failed (<why>)
 
 Channel         State
 <channel>       clean (<n> noise lines excluded) | <what it showed> | n/a (<why>)
 
 Probes
-  <dependency>  <how probed, write or no-write>  <result>
+  <dependency>  through the app | out-of-band | unreachable without a write    <result>
+
+Findings
+  <anything reproduced that is not a start, dependency or surface failure> | none
 
 Verdict         WORKING | BROKEN (<one line>) | NOT VERIFIED (<why>)
 ```
 
-Three verdicts, not a severity scale. The outcomes are working, broken, or couldn't-tell.
+**Three verdicts, not a severity scale.** The outcomes are working, broken, or couldn't-tell.
+
+**Findings exists because running a system reveals things that are not failures of the three
+checks.** A route that performs database work before redirecting an unauthenticated request breaks
+nothing that verify tests, and no unit test can see it. **WORKING with a non-empty Findings block is
+a valid and expected result** — that combination is the point of the row, not a contradiction. Keep
+each finding to a line or two; it is a pointer, not a report.
 
 **"Clean" carries its exclusions.** A development server's console is never empty. *"clean (3
 framework lines excluded)"* is honest; *"clean"* is not, if three lines were dropped. What counts as
