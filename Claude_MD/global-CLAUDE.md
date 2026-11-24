@@ -268,9 +268,3 @@ Example — opening a requirements interview with several facts to gather:
           2. My household
           3. A wider audience
           Which? (1-3)
-
-## graphify
-
-`graphify` (`~/.claude/skills/graphify/SKILL.md`) turns any input into a knowledge graph.
-When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before
-doing anything else.
