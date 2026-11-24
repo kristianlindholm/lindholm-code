@@ -102,7 +102,19 @@ For every part Step 2 marked test-first, run the `tdd` skill: a failing test (re
 
 Done: the milestone's done-criteria are met and the test and build commands pass — confirmed with evidence, not assumed.
 
-## Step 7 — Review
+## Step 7 — Run it
+
+Invoke the `verify` skill: start the application and read what the running system says. Invoking this skill is the request for it — run it without re-asking.
+
+**This step reports; it does not block.** A verify finding is information for the review that follows, not a gate on the milestone. Where verify reports "not ready to verify" — an absent dependency, a missing declared key — that is a setup gap, not a defect in this milestone's work.
+
+It runs before the review rather than after, for two reasons. A startup failure gets fixed inside the diff the reviewer then reads, so one review pass covers both. And starting an application writes build artifacts into the working tree, while Step 8 opens by snapshotting the tree and comparing before-figures — running verify first makes those writes part of the baseline rather than a divergence that trips the check.
+
+Skip it only where there is nothing to start: a milestone that touched documentation, configuration or rules and produced no runnable change.
+
+Done: verify's report is in hand with every channel carrying a value, or the milestone is confirmed to have produced nothing runnable.
+
+## Step 8 — Review
 
 Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this milestone's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
 
@@ -123,7 +135,7 @@ Before dispatching, snapshot the tree — this step runs before the commit gate,
 
 Done: reviews are clean, or their CRITICAL and HIGH findings are fixed, re-verified, and the fix diff has been through one further review pass — and the tree matches its before-figures.
 
-## Step 8 — Stop at the commit gate
+## Step 9 — Stop at the commit gate
 
 Do not commit or merge — that ritual belongs to `wrap-it-up`. Confirm the milestone against its done-criteria, then recommend the next move:
 
