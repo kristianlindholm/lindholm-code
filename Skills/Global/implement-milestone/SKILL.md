@@ -100,7 +100,9 @@ no UI and this step was skipped.
 
 For every part Step 2 marked test-first, run the `tdd` skill: a failing test (red), the minimal code to pass (green), then refactor. Implement the remaining parts directly against the done-criteria. Write all product code — source, tests, and the project manifest — under `product/`, and run build/test commands from there. Hand a failing build to the stack's `*-build-resolver`: invoking this skill is the request for that agent, so dispatch it rather than quietly fixing the build yourself.
 
-Done: the milestone's done-criteria are met and the test and build commands pass — confirmed with evidence, not assumed.
+Once the done-criteria are met and the suite is green, dispatch `code-simplifier` over this milestone's diff — invoking this skill is the request for that agent, so dispatch it without re-asking. Scope it to the code this milestone touched, never the wider codebase, and treat "nothing worth changing" as a normal result. **Then re-run the test and build commands.** The agent's claim to have preserved behaviour is not evidence; the suite is. If anything fails, restore from the `<file>.agent-bak` copies its own working-tree procedure requires — never with git. Its edits are ordinary working-tree changes and go to Step 8's review with the rest of the diff; running it here, before Step 8 snapshots the tree, keeps those writes inside the baseline rather than making them a divergence no agent appears to have caused.
+
+Done: the milestone's done-criteria are met, `code-simplifier` has had its pass, and the test and build commands pass — confirmed with evidence, not assumed.
 
 ## Step 7 — Run it
 
