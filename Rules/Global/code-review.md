@@ -76,17 +76,6 @@ Use these agents for code review:
 | **go-reviewer** | Go specific issues |
 | **rust-reviewer** | Rust specific issues |
 
-## Review Workflow
-
-```
-1. Run git diff to understand changes
-2. Check security checklist first
-3. Review code quality checklist
-4. Run relevant tests
-5. Verify coverage >= 80%
-6. Use appropriate agent for detailed review
-```
-
 ## Common Issues to Catch
 
 ### Security
@@ -188,6 +177,27 @@ If you pushed back and were wrong, state the correction factually and move on �
 ### Acting on findings
 
 Resolve findings by severity (see Review Severity Levels): fix CRITICAL and HIGH before proceeding, fix MEDIUM when reasonable, note LOW. A confirmed bug finding gets a failing test first (the `tdd` skill) so the fix is proven and cannot regress.
+
+### The fix gets reviewed too
+
+A fix for a CRITICAL or HIGH finding is itself unreviewed code, and nothing looks at it. Once the
+blocking findings are resolved, dispatch the reviewer **once more, over the fix diff only**.
+
+**Where that diff comes from.** At the review gate the work is uncommitted, so plain `git diff`
+shows the original change and the fixes together. The fix diff is `git diff <snapshot>`, against the
+`git stash create` commit the review step records before its first dispatch — it exists for
+working-tree safety and serves here too. Without naming it this rule would be unfollowable, which is
+the defect it is written to avoid.
+
+Not scoped by severity. One dispatch reads one diff, so it covers every fix in it whichever findings
+produced them — and severity of the original finding is a poor proxy for risk of the fix. A one-line
+null guard closing a CRITICAL is safer than a HIGH "split this 200-line function" that restructures
+three files.
+
+**One re-dispatch, not three.** If it returns a new CRITICAL or HIGH, that is not a cue for another
+fix — it is the signal `systematic-debugging` names: each fix revealing a problem in a different
+place means the design is wrong, not the hypothesis. Stop and raise the structural question with the
+user.
 
 ## Integration with Other Rules
 
