@@ -93,7 +93,9 @@ For every part Step 3 marked test-first, run the `tdd` skill: a failing test (re
 
 Compile and type errors met along the way are part of the cycle; fix them and carry on. Do not dispatch an agent mid-cycle — Step 6 is where a build that will not come green is handed off.
 
-Done: the task's done-criterion is met, and the build and test commands have been run — whatever they report.
+Done: the task's done-criterion is met, and each part's covering tests have been run — whatever they report.
+
+The covering tests, not the whole suite. This is the inner loop, where the proving command is the narrowest one that settles the claim. Step 6 runs the full build and suite at the point the dispatch decision is made; running them here as well measures the same tree twice and buys nothing.
 
 ## Step 6 — Clear the build
 
