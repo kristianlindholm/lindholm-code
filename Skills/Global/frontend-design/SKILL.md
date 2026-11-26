@@ -46,9 +46,26 @@ When writing the code, be careful of structuring your CSS selector specificities
 
 Try to do a lot of this planning and iteration in your thinking, and only show ideas to the user when you have higher confidence it'll delight them.
 
-## Restraint and self-critique
+## Restraint
 
-Spend your boldness in one place. Let the signature element be the one memorable thing, keep everything around it quiet and disciplined, and cut any decoration that does not serve the brief. Not taking a risk can be a risk itself! Build to a quality floor without announcing it: legible text, visible focus, and a layout that holds across the project's declared viewport range. Critique your own work as you build, taking screenshots if your environment supports it – a picture is worth 1000 tokens. Consider Chanel's advice: before leaving the house, take a look in the mirror and remove one accessory. Human creators have memory and always try to do something new, so if you have a space to quickly jot down notes about what you've tried, it can help you in future passes.
+Spend your boldness in one place. Let the signature element be the one memorable thing, keep everything around it quiet and disciplined, and cut any decoration that does not serve the brief. Not taking a risk can be a risk itself! Build to a quality floor without announcing it: legible text, visible focus, and a layout that holds across the project's declared viewport range. Consider Chanel's advice: before leaving the house, take a look in the mirror and remove one accessory. Human creators have memory and always try to do something new, so if you have a space to quickly jot down notes about what you've tried, it can help you in future passes.
+
+## Critique again — look at what you built
+
+This is the sixth phase named in the process heading above, and the only one that asks you to stop building and look. A critique asked for in the middle of building does not happen; one you arrive at does. So arrive at it: when the screens are built, stop, and run this as its own piece of work.
+
+Screenshot every screen you built — via the `run` skill where the project has a running app — and look at the images. Reading your own markup is not this step: you cannot see spacing collapse, a type scale that flattens at the rendered size, or a palette that goes muddy against a real background by reading the CSS that produced them. Where the environment cannot screenshot, say so and run the pass against the rendered page by whatever means it does offer; do not pass over it in silence.
+
+Check each image against four things:
+
+- **The three default looks** named at the top of the process section. Does the built page read as one of them? You may have planned away from a default and drifted back while implementing — a default is what the hands reach for when the attention is on making the layout work.
+- **The signature element.** The plan named one thing the page would be remembered by. Find it in the image. A signature that survived as a class name but not as something you can see was dropped, not built.
+- **`design-quality.md`** — the banned patterns and the required qualities, taken one at a time against the image rather than recalled as a general impression.
+- **`design-principles.md`** — the craft floor: legibility, focus states, spacing, and the declared viewport range. In milestone mode, `docs/DESIGN.md` as well: the screens compose its tokens, they do not introduce new ones.
+
+Then fix what the images show, and look again. Two passes of looking beat one pass of looking and one of asserting.
+
+Done: every screen built has been seen as an image and checked against the three defaults, the signature, and both design rules, with what that turned up either fixed or written down.
 
 ## More on writing in design
 
