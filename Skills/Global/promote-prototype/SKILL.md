@@ -180,7 +180,10 @@ Mark each row as it merges by appending a parenthetical annotation to the status
 the table's own vocabulary rather than a hardcoded word, and preserves parenthetical annotations.
 
 Done: every milestone has been reviewed, tested to the coverage gate, and re-verified against the
-feature log, with each pass merged and pushed.
+feature log, with each pass merged and pushed. A milestone with UI has had its built screens seen
+and checked against `docs/DESIGN.md` and both design rules, or is recorded as having no UI. Every
+build decision meeting the ADR criteria has an ADR and a row in `docs/adr/README.md`, or none arose
+and that is stated.
 
 ### Step 8 — The final gate
 
