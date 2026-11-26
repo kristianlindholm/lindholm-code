@@ -28,6 +28,16 @@ MANDATORY workflow:
 
 - **`tdd` skill** - Use PROACTIVELY for new features; enforces write-tests-first
 
+## What a test costs to run
+
+A test needing a browser, database, container, or server starts that resource **once per run**, not
+once per test. Each test gets an isolated slice of the running resource — a fresh browser context, a
+rolled-back transaction, a schema per worker. Reuse the process; never reuse the state.
+
+Spawning per test is the obvious way to write a harness and is fine at ten tests. At two hundred the
+startup dwarfs the assertions and the suite takes minutes. If a suite is already slow, use the
+`speed-up-tests` skill, which measures before changing anything.
+
 ## Test Structure (AAA Pattern)
 
 Prefer Arrange-Act-Assert structure for tests:

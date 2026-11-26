@@ -41,6 +41,7 @@ Before marking code complete:
 - [ ] No console.log or debug statements
 - [ ] Tests exist for new functionality
 - [ ] Test coverage meets 80% minimum
+- [ ] No heavyweight resource (browser, database, container, server) started per test
 
 ## Security Review Triggers
 
