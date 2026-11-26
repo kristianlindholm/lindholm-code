@@ -127,7 +127,7 @@ Dispatch `code-simplifier` over this milestone's diff — invoking this skill is
 
 **Then re-run the test and build commands.** The agent's claim to have preserved behaviour is not evidence; the suite is. If anything fails, restore from the `<file>.agent-bak` copies its own working-tree procedure requires — never with git.
 
-Its edits are ordinary working-tree changes and go to Step 10's review with the rest of the diff. Running it here, before Step 10 snapshots the tree, keeps those writes inside the baseline rather than making them a divergence no agent appears to have caused.
+Its edits are ordinary working-tree changes and go to Step 11's review with the rest of the diff. Running it here, before Step 11 snapshots the tree, keeps those writes inside the baseline rather than making them a divergence no agent appears to have caused.
 
 Done: `code-simplifier` has had its pass and the test and build commands still pass.
 
@@ -137,26 +137,29 @@ Invoke the `verify` skill: start the application and read what the running syste
 
 **This step reports; it does not block.** A verify finding is information for the review that follows, not a gate on the milestone. Where verify reports "not ready to verify" — an absent dependency, a missing declared key — that is a setup gap, not a defect in this milestone's work.
 
-It runs before the review rather than after, for two reasons. A startup failure gets fixed inside the diff the reviewer then reads, so one review pass covers both. And starting an application writes build artifacts into the working tree, while Step 10 opens by snapshotting the tree and comparing before-figures — running verify first makes those writes part of the baseline rather than a divergence that trips the check.
+It runs before the review rather than after, for two reasons. A startup failure gets fixed inside the diff the reviewer then reads, so one review pass covers both. And starting an application writes build artifacts into the working tree, while Step 11 opens by snapshotting the tree and comparing before-figures — running verify first makes those writes part of the baseline rather than a divergence that trips the check.
 
 Skip it only where there is nothing to start: a milestone that touched documentation, configuration or rules and produced no runnable change.
 
 Done: verify's report is in hand with every channel carrying a value, or the milestone is confirmed to have produced nothing runnable.
 
-## Step 10 — Review
+## Step 10 — Design review (only if Step 2 flagged UI)
+
+Skip this step entirely for a milestone with no user-facing UI — backend, API, domain logic, data, infrastructure. Say that Step 2 recorded no UI, and go to Step 11.
+
+The application is already running from Step 9. Screenshot the screens this milestone added or changed — via the `run` skill where the environment supports it — and look at them. Check each against `docs/DESIGN.md` (the approved visual language), `design-quality.md` (the aesthetic standard) and `design-principles.md` (the craft floor). **Verified visually, not asserted:** a claim that a screen conforms, made without the image in front of you, does not pass this step.
+
+Check too that what shipped matches the decisions Step 5 recorded — including that the keyboard paths signed off there actually work. This step does not re-open those decisions: an interaction decision carries no severity, and "this surface has no keyboard shortcut" is not a finding when Step 5 recorded that answer. An interaction decision left *unanswered* is a gap in Step 5, to be resolved there, not escalated here.
+
+Fix what the screenshots show, then look again. Those fixes land inside the diff Step 11 reviews, and the screenshots are written before Step 11 snapshots the tree, so both stay inside the baseline rather than becoming a divergence no agent appears to have caused.
+
+This is a step of its own, not a clause inside the review. Do not fold it back in: a visual check asked for in the middle of another step does not happen, and one you arrive at does.
+
+Done: every screen this milestone added or changed has been seen in a screenshot and checked against `docs/DESIGN.md` and both design rules, with findings fixed or recorded — or Step 2 recorded no user-facing UI and this step was skipped.
+
+## Step 11 — Review
 
 Run the reviewer agents named in Step 2: `code-reviewer` and each stack reviewer, plus `security-reviewer` if flagged. Invoking this skill is the request for those agents — dispatch them without re-asking. Scope every one of them to this milestone's diff, never the whole codebase: the codebase-wide audit is a separate gate that runs once, after the last milestone. Reviewing the diff yourself is not a substitute and does not partly satisfy this gate; if an agent cannot run, the gate is not passed — say so and stop for a decision. Resolve every CRITICAL and HIGH finding before the gate; record any accepted MEDIUM or LOW item.
-
-If Step 2 flagged UI, also run a design review: screenshot the built screen (via the `run`
-skill where the environment supports it) and check it for conformance to `docs/DESIGN.md`,
-plus the `design-quality.md` (aesthetics) and `design-principles.md` (craft floor) rules —
-verified visually, not asserted. For a backend-only milestone this review does not run.
-
-The design review checks that what shipped matches the decisions Step 5 recorded — including that
-the keyboard paths signed off there actually work. It does not re-open those decisions: an
-interaction decision carries no severity, and "this surface has no keyboard shortcut" is not a
-finding when Step 5 recorded that answer. An interaction decision left *unanswered* is a gap in
-Step 5, to be resolved there, not escalated here.
 
 Before dispatching, snapshot the tree — this step runs before the commit gate, so the work under review is its own only copy. Run `git stash create` and record the commit id it prints; it writes a dangling commit and does **not** touch the working tree. Copy any untracked files `git status --porcelain` marks `??` into `.claude/scratch/`, since the stash commit does not capture them. Record `git diff --stat` and `git status --porcelain` as the before-figures, and re-run both when the agents return: compare before acting on any finding, per `agents.md`. If they diverge, stop and tell the user, naming the snapshot commit id and the scratch copies.
 
@@ -164,7 +167,7 @@ Before dispatching, snapshot the tree — this step runs before the commit gate,
 
 Done: reviews are clean, or their CRITICAL and HIGH findings are fixed, re-verified, and the fix diff has been through one further review pass — and the tree matches its before-figures.
 
-## Step 11 — Stop at the commit gate
+## Step 12 — Stop at the commit gate
 
 Do not commit or merge — that ritual belongs to `wrap-it-up`. Confirm the milestone against its done-criteria, then recommend the next move:
 
