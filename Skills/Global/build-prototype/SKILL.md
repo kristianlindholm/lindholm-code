@@ -76,7 +76,9 @@ Then run Step 3 for that milestone, mark its row complete in `docs/PROGRESS.md`,
 into the next milestone.
 
 Done: every milestone's done-criteria are met and the app builds and runs — confirmed by running
-it, not assumed.
+it, not assumed — and every surface the run added has its interaction decisions recorded in
+`docs/DESIGN.md`, negatives included. With no stops there is nobody to ask, so an unrecorded
+decision is not a deferred one; it is one the next milestone re-improvises.
 
 ## Step 3 — Record and re-check at every milestone boundary
 

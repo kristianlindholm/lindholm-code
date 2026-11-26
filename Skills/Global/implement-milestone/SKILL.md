@@ -60,7 +60,7 @@ Done: for each non-trivial part, you have either adopted an existing approach or
 
 If Step 2 called for planning, invoke the `planner` agent for an ordered, phased plan, and record any genuine architectural decision as an ADR. Otherwise state that the milestone is small enough to implement directly. Invoking this skill is the request for the `planner` agent — dispatch it without re-asking.
 
-Done: a confirmed plan exists, or planning is explicitly waived with its reason.
+Done: a confirmed plan exists, or planning is explicitly waived with its reason — and any architectural decision the milestone surfaced has an ADR, or none arose and that is stated. The negative is recorded for the same reason Step 5 records its negatives: so the question was asked, not merely unanswered.
 
 ## Step 5 — Design the UI surfaces (only if Step 2 flagged UI)
 
