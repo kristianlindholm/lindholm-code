@@ -49,11 +49,19 @@ Done: every item is labeled a requirement change, a defect, or a tactical change
 
 ## Step 3 — Consolidate
 
-With every item categorized and the full set in view, merge genuine same-work items: several observations that describe one piece of work — the same fix, the same screen or component — become a single item carrying the combined intent. Merge only within one routing destination; keep genuinely distinct items separate.
+With every item categorized and the full set in view, decide each item's disposition. There are three, not two:
 
-Present the consolidated set to the user as a confirmation gate: what will be routed where, grouped by category (bulleted), then `Proceed? (Y/N)` (global interaction-design doctrine). Wait for confirmation before routing.
+- **Merge** — several observations describe one piece of work: the same fix, the same screen or component. They become a single item carrying the combined intent. Merge only within one routing destination.
+- **Bundle** — items that are genuinely distinct work but one sitting: they touch the same files or the same surface, so fixing them together costs one test run, one review and one commit instead of three. They stay distinct *inside* a single checklist entry (Step 5's nested form). Do not merge them — merging loses the separate targets, and each one still has to be measured and met on its own.
+- **Separate** — everything else. One entry each.
 
-Done: same-work items are merged, distinct items kept separate, and the consolidated overview is confirmed by the user before any routing.
+**Bundle on what the fix touches, never on when the feedback arrived.** You have the files in hand: Step 1 required you to investigate the code and state each item's technical implication, so by now every item names the function or file that would change. That is the key. Two items raised in the same breath about two unrelated screens are two entries; two items raised ten minutes apart that both land in the same renderer are one bundle.
+
+A bundle is bounded by what one sitting can finish and one commit should carry. Past that it is the "too large for a single checklist task" case in Step 5 — a milestone, not a bigger bundle.
+
+Present the consolidated set to the user as a confirmation gate: what will be routed where, grouped by category (bulleted), naming each bundle and the items inside it, then `Proceed? (Y/N)` (global interaction-design doctrine). Wait for confirmation before routing.
+
+Done: every item is marked merge, bundle, or separate; bundles are formed on shared files or surface rather than on arrival time; and the consolidated overview — bundles and their contents named — is confirmed by the user before any routing.
 
 ## Step 4 — Requirement path
 
@@ -81,7 +89,7 @@ Ensure `docs/CHECKLIST.md` exists (create the `docs/` folder if the project pred
 # Checklist — parked tasks and tactical refinements
 ```
 
-Append one entry per item to the end of the file, never overwriting existing entries, in `save-for-later`'s format — a dated `[ ]` line with an indented `while:` context clause naming the feedback origin:
+Append to the end of the file, never overwriting existing entries, in `save-for-later`'s format — a dated `[ ]` line with an indented `while:` context clause naming the feedback origin:
 
 ```markdown
 - [ ] 2026-07-06 | results screen empty state reads as an error, not "no data yet"
@@ -90,9 +98,31 @@ Append one entry per item to the end of the file, never overwriting existing ent
       while: end-user feedback on the export screen
 ```
 
-Use today's date. Keep the format identical to `save-for-later` so both writers and every reader stay in sync; if that format changes, change it in one place. A tactical change too large for a single checklist task becomes a new milestone in the Delivery Milestones plan instead of a checklist entry — it needs no PRD change, since it does not change what the product does (a broad design-polish pass is the typical case).
+One entry per **disposition**, not per observation: a merged item is one entry, a separate item is one entry, and a bundle is one entry holding several pieces of work.
 
-Done: every tactical change and every defect is an open `[ ]` entry in `docs/CHECKLIST.md` in `save-for-later`'s format, except any too large for one task, which is a milestone in the plan.
+### A bundled entry
+
+A bundle gets one `[ ]` line that names the shared surface and how many pieces it holds, then one indented bullet per piece carrying that piece's full text, then a single `while:` line closing the entry:
+
+```markdown
+- [ ] 2026-07-06 | the results screen — three fixes
+  - the empty state reads as an error, not "no data yet". `emptyPanel` in `results-view.js`
+    renders the error template whenever `rows.length === 0`...
+  - the export button does nothing on click — `onExport` is bound but never wired to the
+    download handler...
+  - the column header truncates at 12 characters with no title attribute...
+  while: end-user feedback on the results screen
+```
+
+The `while:` line is indented to the bullets but is not itself a bullet, which is what marks it as the entry's and not the last piece's. There is one `while:` per entry, never one per piece — the bundle has a single origin, which is part of why it is a bundle.
+
+**Sub-items are plain bullets. Never `- [ ]` or `- [x]`.** A checkbox at any indent is read as an entry of its own: `continue-project` numbers open items by counting `[ ]` lines, so a sub-checkbox shifts every number the user types, and `wrap-it-up` deletes every `[x]` line it finds, so a ticked sub-item would be removed from inside an entry that is still open. The parent line carries the only checkbox.
+
+Keep each piece's text as full as it would have been as its own entry. The bundle changes how the work is grouped, not how carefully it is written down — and `implement-task` measures each piece against the product separately, so each one needs its own target in its own words.
+
+Use today's date. The entry line and the `while:` line are `save-for-later`'s format and stay identical to it, so both writers and every reader stay in sync; if that shared format changes, change it in one place. The nested bullet list above is this skill's own extension — `save-for-later` parks one task at a time and never writes one. A tactical change too large for a single checklist task becomes a new milestone in the Delivery Milestones plan instead of a checklist entry — it needs no PRD change, since it does not change what the product does (a broad design-polish pass is the typical case).
+
+Done: every tactical change and every defect is in `docs/CHECKLIST.md` as an open `[ ]` entry or as a plain bullet inside a bundled one, no sub-item carries a checkbox, and anything too large for one task is a milestone in the plan.
 
 ## What this skill does not do
 
