@@ -55,13 +55,17 @@ With every item categorized and the full set in view, decide each item's disposi
 - **Bundle** — items that are genuinely distinct work but one sitting: they touch the same files or the same surface, so fixing them together costs one test run, one review and one commit instead of three. They stay distinct *inside* a single checklist entry (Step 5's nested form). Do not merge them — merging loses the separate targets, and each one still has to be measured and met on its own.
 - **Separate** — everything else. One entry each.
 
+**Bundle on the parked-fix path only** — tactical changes and defects, which is the only path with a form to hold one. A requirement change goes to `docs/PRD.md`, the milestone plan, and possibly an ADR; there is no nested entry there and two requirement changes touching one file are still two requirement changes. Like merge, bundle works within one routing destination and never across two.
+
+**A tactical item sharing a surface with a requirement change is a warning, not a bundle.** It is the most common way these collide: the same screen produces both an observation about how it reads and a decision about what it does. Check whether the milestone the requirement change creates already closes the tactical item. If it does, say so inside the parked entry and say which of the two to do — the answer is usually "not both". If it does not, the tactical item is parked as normal, and may be bundled with other *tactical* items on that surface.
+
 **Bundle on what the fix touches, never on when the feedback arrived.** You have the files in hand: Step 1 required you to investigate the code and state each item's technical implication, so by now every item names the function or file that would change. That is the key. Two items raised in the same breath about two unrelated screens are two entries; two items raised ten minutes apart that both land in the same renderer are one bundle.
 
 A bundle is bounded by what one sitting can finish and one commit should carry. Past that it is the "too large for a single checklist task" case in Step 5 — a milestone, not a bigger bundle.
 
 Present the consolidated set to the user as a confirmation gate: what will be routed where, grouped by category (bulleted), naming each bundle and the items inside it, then `Proceed? (Y/N)` (global interaction-design doctrine). Wait for confirmation before routing.
 
-Done: every item is marked merge, bundle, or separate; bundles are formed on shared files or surface rather than on arrival time; and the consolidated overview — bundles and their contents named — is confirmed by the user before any routing.
+Done: every item is marked merge, bundle, or separate; every bundle is on the parked-fix path, formed on shared files or surface rather than on arrival time, with any tactical item that shares a surface with a requirement change checked against the milestone that change creates; and the consolidated overview — bundles and their contents named — is confirmed by the user before any routing.
 
 ## Step 4 — Requirement path
 
