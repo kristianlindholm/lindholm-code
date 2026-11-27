@@ -202,10 +202,15 @@ approved at the findings sweep (see "Findings sweep") — and that is a write, n
 When `docs/CHECKLIST.md` holds `[x]` done-awaiting-commit tasks:
 
 - Include them in the gated git ritual. Derive each commit message from the task's entry text,
-  inferring the conventional type from the diff (`feat`, `fix`, `refactor`, ...).
-- **Remove the `[x]` line (and its `while:` context line) from `docs/CHECKLIST.md` as part of
-  the same commit** — the deletion and the work land together. This is Execution Order step 11,
-  which runs before the git plan is printed, so the deletions are in the working tree by the time
+  inferring the conventional type from the diff (`feat`, `fix`, `refactor`, ...). **One commit per
+  entry**, including a bundled entry that holds several pieces of work — the bundle was formed
+  because its pieces belong in one commit.
+- **Remove the whole entry from `docs/CHECKLIST.md` as part of the same commit** — its `[x]`
+  line, every indented line beneath it, and its `while:` context line. An entry wraps across
+  several physical lines and a bundled one carries plain-bullet sub-items, so removing only the
+  line bearing the checkbox leaves the rest of the entry orphaned in the file, reading as work
+  still parked. The deletion and the work land together. This is Execution Order step 11, which
+  runs before the git plan is printed, so the deletions are in the working tree by the time
   the plan is confirmed.
 - **Then read the file back and confirm no `[x]` line survives.** Without that check the removal
   is the easiest thing in the wrap to skip, and skipping it inverts the commit: the one that was
@@ -464,8 +469,9 @@ leave the rest untouched.
     drop what is not real work, and propose a checklist entry only for work that sits outside this
     session's scope. Most wraps propose nothing. Each proposal is gated on its own (see "Findings
     sweep").
-11. **Checklist finalization** — open `docs/CHECKLIST.md` (if present) and delete every `[x]` line
-    together with its indented `while:` line, so the deletions are already in the working tree when
+11. **Checklist finalization** — open `docs/CHECKLIST.md` (if present) and delete every `[x]` entry
+    whole: its `[x]` line, every indented line under it, and its `while:` line (see "Checklist task
+    commits" — a bundled entry's sub-items are plain bullets and go with it), so the deletions are already in the working tree when
     the git plan is printed. Then **read the file back and confirm no `[x]` survives** (see
     "Checklist task commits"). Read the file here rather than trusting the note taken at step 2 —
     nine steps is too far to carry it. This step runs for every wrap, task-only commits included.
